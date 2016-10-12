@@ -34,13 +34,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-include_directories(src/generator
+include_directories(src
                     ${CMAKE_SOURCE_DIR}/srcSAX/src/srcsax
                     ${CMAKE_SOURCE_DIR}/srcSAX/src/cpp
                     ${CMAKE_SOURCE_DIR}/srcSAX/src/windows
                     ${CMAKE_SOURCE_DIR}/srcSAXEventDispatch/src/dispatcher
                     ${CMAKE_SOURCE_DIR}/srcSAXEventDispatch/src/policy_classes
-                    test/driver)
+                    )
 
 add_subdirectory(srcSAX/src)
 add_subdirectory(srcSAXEventDispatch/src)
