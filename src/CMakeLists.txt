@@ -21,4 +21,4 @@
 file(GLOB SOURCE *.cpp)
 file(GLOB HEADER *.hpp)
 
-add_library(srcptr ${HEADERS} ${SOURCE})
+add_executable(srcptr ${HEADERS} ${SOURCE})
