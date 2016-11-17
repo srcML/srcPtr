@@ -99,7 +99,7 @@ class srcPtrPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEve
             bool rhsIsAddress = (((modifierrhs == "&") || (rhs.isPointer)) || (rhs.isReference));
 
             if((lhsIsPointer && rhsIsAddress) && assignmentOperator) {
-              if(std::find(data.references[lhs.nameofidentifier].begin(), data.references[lhs.nameofidentifier].end(), lhs.nameofidentifier) == data.references[lhs.nameofidentifier].end())  //If not in vector
+              if(std::find(data.references[lhs.nameofidentifier].begin(), data.references[lhs.nameofidentifier].end(), rhs.nameofidentifier) == data.references[lhs.nameofidentifier].end())  //If not in vector
                  data.references[lhs.nameofidentifier].push_back(rhs.nameofidentifier);
             }
             ResetVariables();
