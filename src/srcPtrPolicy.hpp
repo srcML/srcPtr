@@ -1,3 +1,6 @@
+#ifndef INCLUDED_SRC_PTR_POLICY_HPP
+#define INCLUDED_SRC_PTR_POLICY_HPP
+
 #include <srcSAXEventDispatcher.hpp>
 #include <srcSAXHandler.hpp>
 //#include <DeclTypePolicy.hpp>
@@ -9,6 +12,7 @@
 #include <string>
 #include <algorithm>
 #include <srcPtrSingleton.hpp>
+
 
 class srcPtrPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEventDispatch::PolicyDispatcher, public srcSAXEventDispatch::PolicyListener {
     public:
@@ -96,7 +100,7 @@ class srcPtrPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEve
 
             if((lhsIsPointer && rhsIsAddress) && assignmentOperator) {
               if(std::find(data.references[lhs.nameofidentifier].begin(), data.references[lhs.nameofidentifier].end(), lhs.nameofidentifier) == data.references[lhs.nameofidentifier].end())  //If not in vector
-                data.references[lhs.nameofidentifier].push_back(rhs.nameofidentifier);
+                 data.references[lhs.nameofidentifier].push_back(rhs.nameofidentifier);
             }
             ResetVariables();
           };
@@ -107,3 +111,5 @@ class srcPtrPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEve
           };
         }
 };
+
+#endif

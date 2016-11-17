@@ -1,5 +1,5 @@
-#ifndef src_ptr_singleton_hpp
-#define src_ptr_singleton_hpp
+#ifndef INCLUDED_SRC_PTR_SINGLETON
+#define INCLUDED_SRC_PTR_SINGLETON
 
 #include <srcPtrDeclPolicy.hpp>
 

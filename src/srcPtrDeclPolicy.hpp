@@ -1,5 +1,5 @@
-#ifndef src_Ptr_Policy_hpp
-#define src_Ptr_Policy_hpp
+#ifndef INCLUDED_SRC_PTR_DECL_POLICY_HPP
+#define INCLUDED_SRC_PTR_DECL_POLICY_HPP
 
 #include <srcSAXEventDispatcher.hpp>
 #include <srcSAXHandler.hpp>

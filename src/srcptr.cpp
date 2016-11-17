@@ -70,7 +70,7 @@ int main(int argc, char * argv[]) {
       srcmlfile.close();
     }
     else {
-      std::cout << "Error reading file" << std::endl;
+      std::cout << "Error reading file." << std::endl;
       return 1;
     }
 
