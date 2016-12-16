@@ -18,83 +18,43 @@
  * You should have received a copy of the GNU General Public License
  * along with srcPtr.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <iostream>
-#include <fstream>
-#include <string>
+
+#include <srcSAXEventDispatcher.hpp>
+#include <srcSAXHandler.hpp>
+#include <srcSAXHandler.hpp>
+
 #include <srcPtrDeclPolicy.hpp>
 #include <srcPtrPolicy.hpp>
-#include <srcPtrSingleton.hpp>
+#include <srcPtrPolicyData.hpp>
 
-class srcPtrDeclPolicyContainer : public srcSAXEventDispatch::PolicyDispatcher, public srcSAXEventDispatch::PolicyListener{
-    public:
-        ~srcPtrDeclPolicyContainer(){}
-        srcPtrDeclPolicyContainer(std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners){}
-        void Notify(const PolicyDispatcher * policy, const srcSAXEventDispatch::srcSAXEventContext & ctx) override {
-            decldata = *policy->Data<srcPtrDeclPolicy::srcPtrDeclData>();
-        }
-    protected:
-        void * DataInner() const override {
-            return (void*)0; //To silence the warning
-        }
-    public:
-        srcPtrDeclPolicy::srcPtrDeclData decldata;
-};
+#include <fstream>
+#include <iostream>
+#include <string>
 
-class ptrPolicyContainer : public srcSAXEventDispatch::PolicyDispatcher, public srcSAXEventDispatch::PolicyListener{
-    public:
-        ~ptrPolicyContainer(){}
-        ptrPolicyContainer(std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners){}
-        void Notify(const PolicyDispatcher * policy, const srcSAXEventDispatch::srcSAXEventContext & ctx) override {
-            pointerdata = *policy->Data<srcPtrPolicy::srcPtrPolicyData>();
-        }
-    protected:
-        void * DataInner() const override {
-            return (void*)0; //To silence the warning
-        }
-    public:
-        srcPtrPolicy::srcPtrPolicyData pointerdata;
-};
+int main(int argc, char *argv[]) {
+   if (argc == 2) {
+      std::ifstream srcmlfile(argv[1]);
+      std::string srcmlstr((std::istreambuf_iterator<char>(srcmlfile)), std::istreambuf_iterator<char>());
 
-int main(int argc, char * argv[]) {
-  if(argc == 2) {
-    std::string srcmlstr;
+      // First Run
+      srcPtrDeclPolicy * declpolicy = new srcPtrDeclPolicy();
+      srcSAXController control(srcmlstr);
+      srcSAXEventDispatch::srcSAXEventDispatcher<> handler{declpolicy};
+      control.parse(&handler);
 
-    std::string line;
-    std::ifstream srcmlfile (argv[1]);
-    if (srcmlfile.is_open())
-    {
-      while (getline (srcmlfile,line))
-      {
-        srcmlstr = srcmlstr + (line + "\n");
+      // Second Run
+      srcPtrPolicy* policy = new srcPtrPolicy();
+      policy->SetDeclData(declpolicy->GetData());
+      srcSAXController control2(srcmlstr);
+      srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
+      control2.parse(&handler2);
+
+      for (auto x : policy->GetData().references) {
+         std::cout << x.first.linenumber << " : " << x.first.nameoftype << " " << x.first << " ";
+         for (auto y : x.second)
+            std::cout << y << " ";
+         std::cout << std::endl;
       }
-      srcmlfile.close();
-    }
-    else {
-      std::cout << "Error reading file." << std::endl;
-      return 1;
-    }
-
-
-    //First Run
-    srcPtrDeclPolicyContainer sigData;
-    srcSAXController control(srcmlstr);
-    srcSAXEventDispatch::srcSAXEventDispatcher<srcPtrDeclPolicy> handler {&sigData};
-    control.parse(&handler);
-
-    srcPtrSingleton::Instance()->SetValue(sigData.decldata);
-
-    //Second Run
-    ptrPolicyContainer ptrpolicy;
-    srcSAXController control2(srcmlstr);
-    srcSAXEventDispatch::srcSAXEventDispatcher<srcPtrPolicy> handler2 {&ptrpolicy};
-    control2.parse(&handler2);
-
-    for(auto x : ptrpolicy.pointerdata.references) {
-      std::cout << x.first << " ";
-      for(auto y : x.second)
-        std::cout << y << " ";
-      std::cout << std::endl;
-    }
-}
-  return 0;
+   }
+   return 0;
 }

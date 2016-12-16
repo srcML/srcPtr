@@ -3,113 +3,108 @@
 
 #include <srcSAXEventDispatcher.hpp>
 #include <srcSAXHandler.hpp>
-//#include <DeclTypePolicy.hpp>
 #include <srcPtrDeclPolicy.hpp>
-#include <vector>
+#include <srcPtrUtilities.hpp>
+#include <srcPtrPolicyData.hpp>
+
+#include <algorithm>
 #include <exception>
 #include <iostream>
 #include <map>
 #include <string>
-#include <algorithm>
-#include <srcPtrSingleton.hpp>
-
+#include <vector>
 
 class srcPtrPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEventDispatch::PolicyDispatcher, public srcSAXEventDispatch::PolicyListener {
-    public:
+public:
+   ~srcPtrPolicy() {
+   }
 
-        struct srcPtrPolicyData {
-          std::map<std::string, std::vector<std::string>> references; //TODO: This would need to return the datastructure described by Steensgard.
-        };
+   srcPtrPolicy(std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners) {
+      InitializeEventHandlers();
+      //declData = srcPtrSingleton::Instance()->GetValue();
+   }
 
-        ~srcPtrPolicy() {
+   void Notify(const PolicyDispatcher *policy, const srcSAXEventDispatch::srcSAXEventContext &ctx) override {
+   }
 
-        }
+   void SetDeclData(srcPtrDeclPolicy::srcPtrDeclData toset) {
+      declData = toset;
+   }
 
-        srcPtrPolicy(std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}): srcSAXEventDispatch::PolicyDispatcher(listeners){
-            InitializeEventHandlers();
-            declData = srcPtrSingleton::Instance()->GetValue();
-        }
+   srcPtrPolicyData GetData() {
+      return data;
+   }
 
-        void Notify(const PolicyDispatcher * policy, const srcSAXEventDispatch::srcSAXEventContext & ctx) override {
+protected:
+   void *DataInner() const override {
+      return new srcPtrPolicyData(data);
+   }
 
-        }
+private:
+   void ResetVariables() {
+      lhs.Clear();
+      rhs.Clear();
+      assignmentOperator = false;
+      modifierlhs = "";
+      modifierrhs = "";
+   }
 
-        void SetData(srcPtrDeclPolicy::srcPtrDeclData toset) {
-          declData = toset;
-        }
+   srcPtrPolicyData data;
+   srcPtrDeclPolicy::srcPtrDeclData declData;
 
-    protected:
-        void * DataInner() const override {
-            return new srcPtrPolicyData(data);
-        }
-    private:
+   // For use in collecting assignments
+   srcPtrVar lhs;
+   std::string modifierlhs;
+   std::string modifierrhs;
+   srcPtrVar rhs;
+   bool assignmentOperator = false;
 
-        void ResetVariables() {
-          lhs.clear();
-          rhs.clear();
-          assignmentOperator = false;
-          modifierlhs = "";
-          modifierrhs = "";
-        }
+   void InitializeEventHandlers() {
+      using namespace srcSAXEventDispatch;
 
-        srcPtrPolicyData data;
-        srcPtrDeclPolicy::srcPtrDeclData declData;
+      openEventMap[ParserState::exprstmt] = [this](srcSAXEventContext &ctx) { ResetVariables(); };
 
-        //For use in collecting assignments
-        std::string modifierlhs;
-        DeclTypePolicy::DeclTypeData lhs;
-        std::string modifierrhs;
-        DeclTypePolicy::DeclTypeData rhs;
-        bool assignmentOperator = false;
-
-        void InitializeEventHandlers(){
-          using namespace srcSAXEventDispatch;
-
-          openEventMap[ParserState::exprstmt] = [this](srcSAXEventContext& ctx) {
-            ResetVariables();
-          };
-
-          closeEventMap[ParserState::name] = [this](srcSAXEventContext& ctx) {
-            if(ctx.IsOpen(ParserState::expr)) {
-              if(lhs.nameofidentifier == "") {
-                DeclTypePolicy::DeclTypeData * decl = declData.FindVarWithIdentifier(ctx.currentToken);
-                if (decl != nullptr) {
-                  lhs = * decl;
-                }
-              } else {
-                DeclTypePolicy::DeclTypeData * decl = declData.FindVarWithIdentifier(ctx.currentToken);
-                if (decl != nullptr)
-                  rhs = * decl;
-              }
+      closeEventMap[ParserState::name] = [this](srcSAXEventContext &ctx) {
+         if (ctx.IsOpen(ParserState::expr)) {
+            if (lhs.nameofidentifier == "") {
+               DeclTypePolicy::DeclTypeData *decl = declData.FindVarWithIdentifier(ctx.currentToken);
+               if (decl != nullptr) {
+                  lhs = *decl;
+               }
+            } else {
+               DeclTypePolicy::DeclTypeData *decl = declData.FindVarWithIdentifier(ctx.currentToken);
+               if (decl != nullptr)
+                  rhs = *decl;
             }
-          };
+         }
+      };
 
-          closeEventMap[ParserState::op] = [this](srcSAXEventContext& ctx) {
-            if((ctx.currentToken == "=") && (lhs.nameofidentifier != ""))
-              assignmentOperator = true;
-            else if((lhs.nameofidentifier == "")) {
-              modifierlhs = ctx.currentToken;
+      closeEventMap[ParserState::op] = [this](srcSAXEventContext &ctx) {
+         if ((ctx.currentToken == "=") && (lhs.nameofidentifier != ""))
+            assignmentOperator = true;
+         else if ((lhs.nameofidentifier == "")) {
+            modifierlhs = ctx.currentToken;
+         } else if ((rhs.nameofidentifier == ""))
+            modifierrhs = ctx.currentToken;
+      };
+
+      closeEventMap[ParserState::exprstmt] = [this](srcSAXEventContext &ctx) {
+         bool lhsIsPointer = (modifierlhs != "*");
+         bool rhsIsAddress = (((modifierrhs == "&") || (rhs.isPointer)) || (rhs.isReference));
+
+         if ((lhsIsPointer && rhsIsAddress) && assignmentOperator) {
+            if (std::find(data.references[lhs].begin(), data.references[lhs].end(), rhs) == data.references[lhs].end()) {
+               data.references[lhs].push_back(rhs);
             }
-            else if((rhs.nameofidentifier == ""))
-              modifierrhs = ctx.currentToken;
-          };
+         }
+         ResetVariables();
+      };
 
-          closeEventMap[ParserState::exprstmt] = [this](srcSAXEventContext& ctx) {
-            bool lhsIsPointer = (modifierlhs != "*");
-            bool rhsIsAddress = (((modifierrhs == "&") || (rhs.isPointer)) || (rhs.isReference));
-
-            if((lhsIsPointer && rhsIsAddress) && assignmentOperator) {
-              if(std::find(data.references[lhs.nameofidentifier].begin(), data.references[lhs.nameofidentifier].end(), rhs.nameofidentifier) == data.references[lhs.nameofidentifier].end())  //If not in vector
-                 data.references[lhs.nameofidentifier].push_back(rhs.nameofidentifier);
-            }
-            ResetVariables();
-          };
-
-          closeEventMap[ParserState::function] = [this](srcSAXEventContext& ctx) {  //End of Policy
-              NotifyAll(ctx);
-              InitializeEventHandlers();
-          };
-        }
+      closeEventMap[ParserState::function] = [this](srcSAXEventContext &ctx) { // End of Policy
+         NotifyAll(ctx);
+         InitializeEventHandlers();
+      };
+   }
 };
 
 #endif
