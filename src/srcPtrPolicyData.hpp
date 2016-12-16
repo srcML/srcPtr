@@ -34,17 +34,12 @@ public:
       }
    };
 
-   std::vector<srcPtrVar> GetPointsTo(srcPtrVar) {
-      return data[srcPtrVar];
+   std::vector<srcPtrVar> GetPointsTo(srcPtrVar ptr) {
+      return data[ptr];
    };
 
 private:
    std::map<srcPtrVar, std::vector<srcPtrVar>> data;
 };
-
-struct srcPtrPolicyData {
-   std::map<srcPtrVar, std::vector<srcPtrVar>> references;
-};
-
 
 #endif

@@ -49,12 +49,7 @@ int main(int argc, char *argv[]) {
       srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
       control2.parse(&handler2);
 
-      for (auto x : policy->GetData().references) {
-         std::cout << x.first.linenumber << " : " << x.first.nameoftype << " " << x.first << " ";
-         for (auto y : x.second)
-            std::cout << y << " ";
-         std::cout << std::endl;
-      }
+      policy->GetData().Print();
    }
    return 0;
 }

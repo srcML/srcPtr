@@ -31,13 +31,13 @@ public:
       declData = toset;
    }
 
-   srcPtrPolicyData GetData() {
+   srcPtrDataMap GetData() {
       return data;
    }
 
 protected:
    void *DataInner() const override {
-      return new srcPtrPolicyData(data);
+      return new srcPtrDataMap(data);
    }
 
 private:
@@ -49,7 +49,7 @@ private:
       modifierrhs = "";
    }
 
-   srcPtrPolicyData data;
+   srcPtrDataMap data;
    srcPtrDeclPolicy::srcPtrDeclData declData;
 
    // For use in collecting assignments
@@ -93,9 +93,7 @@ private:
          bool rhsIsAddress = (((modifierrhs == "&") || (rhs.isPointer)) || (rhs.isReference));
 
          if ((lhsIsPointer && rhsIsAddress) && assignmentOperator) {
-            if (std::find(data.references[lhs].begin(), data.references[lhs].end(), rhs) == data.references[lhs].end()) {
-               data.references[lhs].push_back(rhs);
-            }
+            data.AddPointsToRelationship(lhs, rhs);
          }
          ResetVariables();
       };
