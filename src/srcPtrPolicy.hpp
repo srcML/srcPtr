@@ -1,11 +1,11 @@
 #ifndef INCLUDED_SRC_PTR_POLICY_HPP
 #define INCLUDED_SRC_PTR_POLICY_HPP
 
+#include <srcPtrDeclPolicy.hpp>
+#include <srcPtrPolicyData.hpp>
+#include <srcPtrUtilities.hpp>
 #include <srcSAXEventDispatcher.hpp>
 #include <srcSAXHandler.hpp>
-#include <srcPtrDeclPolicy.hpp>
-#include <srcPtrUtilities.hpp>
-#include <srcPtrPolicyData.hpp>
 
 #include <algorithm>
 #include <exception>
@@ -21,7 +21,6 @@ public:
 
    srcPtrPolicy(std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners) {
       InitializeEventHandlers();
-      //declData = srcPtrSingleton::Instance()->GetValue();
    }
 
    void Notify(const PolicyDispatcher *policy, const srcSAXEventDispatch::srcSAXEventContext &ctx) override {

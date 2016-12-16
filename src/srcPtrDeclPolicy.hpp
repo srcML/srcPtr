@@ -7,9 +7,9 @@
 #include <srcSAXEventDispatcher.hpp>
 #include <srcSAXHandler.hpp>
 
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
 
 class srcPtrDeclPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEventDispatch::PolicyDispatcher, public srcSAXEventDispatch::PolicyListener {
 public:
@@ -47,11 +47,10 @@ public:
          FunctionSignaturePolicy::SignatureData signatureData = *policy->Data<FunctionSignaturePolicy::SignatureData>();
          data.functionDeclarations.push_back(signatureData);
       }
-
    }
-  srcPtrDeclData GetData() {
-    return data;
-  }
+   srcPtrDeclData GetData() {
+      return data;
+   }
    srcPtrDeclData data;
 
 protected:

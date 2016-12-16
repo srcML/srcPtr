@@ -27,7 +27,7 @@ struct srcPtrVar {
               (this->isStatic == rhs.isStatic));
    }
 
-   bool operator<(const srcPtrVar &rhs) const {   //Function required for STL datastructures
+   bool operator<(const srcPtrVar &rhs) const { // Function required for STL datastructures
       return (this->nameofidentifier < rhs.nameofidentifier);
    }
 
@@ -49,7 +49,7 @@ struct srcPtrVar {
       return nameofidentifier;
    }
 
-   friend std::ostream& operator<< (std::ostream& stream, const srcPtrVar& var);
+   friend std::ostream &operator<<(std::ostream &stream, const srcPtrVar &var);
 
    std::string nameoftype;
    std::string nameofidentifier;
@@ -62,7 +62,7 @@ struct srcPtrVar {
    bool isStatic;
 };
 
-std::ostream& operator<< (std::ostream& stream, const srcPtrVar& var) {
+std::ostream &operator<<(std::ostream &stream, const srcPtrVar &var) {
    stream << var.nameofidentifier;
    return stream;
 }
