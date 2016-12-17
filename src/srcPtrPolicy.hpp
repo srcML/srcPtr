@@ -17,26 +17,25 @@
 class srcPtrPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEventDispatch::PolicyDispatcher, public srcSAXEventDispatch::PolicyListener {
 public:
    ~srcPtrPolicy() {
+      delete data;
    }
-
-   srcPtrPolicy(std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners) {
+   srcPtrPolicy(srcPtrDeclPolicy::srcPtrDeclData decldata, srcPtrData* outputtype, std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners) {
+      declData = decldata;
+      data = outputtype;
       InitializeEventHandlers();
    }
 
    void Notify(const PolicyDispatcher *policy, const srcSAXEventDispatch::srcSAXEventContext &ctx) override {
    }
 
-   void SetDeclData(srcPtrDeclPolicy::srcPtrDeclData toset) {
-      declData = toset;
-   }
-
-   srcPtrDataMap GetData() {
-      return data;
+   srcPtrData const * GetData() {
+      srcPtrData const * p = data;
+      return p;
    }
 
 protected:
    void *DataInner() const override {
-      return new srcPtrDataMap(data);
+      return data->Clone();
    }
 
 private:
@@ -48,7 +47,7 @@ private:
       modifierrhs = "";
    }
 
-   srcPtrDataMap data;
+   srcPtrData* data;
    srcPtrDeclPolicy::srcPtrDeclData declData;
 
    // For use in collecting assignments
@@ -92,7 +91,7 @@ private:
          bool rhsIsAddress = (((modifierrhs == "&") || (rhs.isPointer)) || (rhs.isReference));
 
          if ((lhsIsPointer && rhsIsAddress) && assignmentOperator) {
-            data.AddPointsToRelationship(lhs, rhs);
+            data->AddPointsToRelationship(lhs, rhs);
          }
          ResetVariables();
       };

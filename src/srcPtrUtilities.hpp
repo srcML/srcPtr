@@ -7,6 +7,7 @@
 #include <deque>
 #include <string>
 #include <utility>
+#include <vector>
 
 struct srcPtrVar {
    srcPtrVar() : linenumber{0}, isConst{false}, isReference{false}, isPointer{false}, isStatic{false} {
@@ -24,6 +25,7 @@ struct srcPtrVar {
    }
 
    bool operator==(const srcPtrVar &rhs) const {
+      //Compare each of the variables
       return ((this->nameoftype == rhs.nameoftype) && (this->nameofidentifier == rhs.nameofidentifier) && (this->namespaces == rhs.namespaces) && (this->linenumber == rhs.linenumber) && (this->isConst == rhs.isConst) && (this->isPointer == rhs.isPointer) && (this->isReference == rhs.isReference) &&
               (this->isStatic == rhs.isStatic));
    }
@@ -100,8 +102,8 @@ public:
       declared.pop_front();
    }
    srcPtrVar GetPreviousOccurence(std::string name) {
-      for(auto it = declared.begin(); it != declared.end(); ++it) {
-         if(it->ContainsName(name))
+      for (auto it = declared.begin(); it != declared.end(); ++it) {
+         if (it->ContainsName(name))
             return it->GetVar(name);
       }
       return srcPtrVar();

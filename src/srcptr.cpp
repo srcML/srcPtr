@@ -43,13 +43,14 @@ int main(int argc, char *argv[]) {
       control.parse(&handler);
 
       // Second Run
-      srcPtrPolicy* policy = new srcPtrPolicy();
-      policy->SetDeclData(declpolicy->GetData());
+      srcPtrPolicy* policy = new srcPtrPolicy(declpolicy->GetData(), new srcPtrDataMap());
       srcSAXController control2(srcmlstr);
       srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
       control2.parse(&handler2);
 
-      policy->GetData().Print();
+      srcPtrData const * data = policy->GetData();
+      data->Print();
+      delete data;
    }
    return 0;
 }
