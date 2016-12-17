@@ -3,8 +3,8 @@
 
 #include <DeclTypePolicy.hpp>
 
-#include <map>
 #include <deque>
+#include <map>
 #include <string>
 #include <utility>
 #include <vector>
@@ -25,7 +25,7 @@ struct srcPtrVar {
    }
 
    bool operator==(const srcPtrVar &rhs) const {
-      //Compare each of the variables
+      // Compare each of the variables
       return ((this->nameoftype == rhs.nameoftype) && (this->nameofidentifier == rhs.nameofidentifier) && (this->namespaces == rhs.namespaces) && (this->linenumber == rhs.linenumber) && (this->isConst == rhs.isConst) && (this->isPointer == rhs.isPointer) && (this->isReference == rhs.isReference) &&
               (this->isStatic == rhs.isStatic));
    }
@@ -72,7 +72,7 @@ std::ostream &operator<<(std::ostream &stream, const srcPtrVar &var) {
 
 class srcPtrDeclFrame {
 public:
-   srcPtrDeclFrame() {};
+   srcPtrDeclFrame(){};
    srcPtrDeclFrame(srcPtrVar var) {
       declarations.insert(std::pair<std::string, srcPtrVar>(var.SimpleIdentifier(), var));
    }
@@ -83,11 +83,12 @@ public:
       return declarations[name];
    }
    void AddVar(srcPtrVar var) {
-      if(!ContainsName(var.SimpleIdentifier()))
+      if (!ContainsName(var.SimpleIdentifier()))
          declarations.insert(std::pair<std::string, srcPtrVar>(var.SimpleIdentifier(), var));
    }
+
 private:
-   std::map<std::string, srcPtrVar> declarations; //Name to srcPtrVar
+   std::map<std::string, srcPtrVar> declarations; // Name to srcPtrVar
 };
 
 class srcPtrDeclStack {

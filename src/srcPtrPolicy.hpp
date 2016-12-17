@@ -19,7 +19,7 @@ public:
    ~srcPtrPolicy() {
       delete data;
    }
-   srcPtrPolicy(srcPtrDeclPolicy::srcPtrDeclData decldata, srcPtrData* outputtype, std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners) {
+   srcPtrPolicy(srcPtrDeclPolicy::srcPtrDeclData decldata, srcPtrData *outputtype, std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners) {
       declData = decldata;
       data = outputtype;
       InitializeEventHandlers();
@@ -28,8 +28,8 @@ public:
    void Notify(const PolicyDispatcher *policy, const srcSAXEventDispatch::srcSAXEventContext &ctx) override {
    }
 
-   srcPtrData const * GetData() {
-      srcPtrData const * p = data;
+   srcPtrData const *GetData() {
+      srcPtrData const *p = data;
       return p;
    }
 
@@ -47,7 +47,7 @@ private:
       modifierrhs = "";
    }
 
-   srcPtrData* data;
+   srcPtrData *data;
    srcPtrDeclPolicy::srcPtrDeclData declData;
 
    // For use in collecting assignments

@@ -16,7 +16,7 @@ public:
    virtual void AddPointsToRelationship(srcPtrVar, srcPtrVar) = 0;
    virtual void Print() const = 0;
    virtual std::vector<srcPtrVar> GetPointsTo(srcPtrVar) const = 0;
-   virtual srcPtrData* Clone() const = 0;
+   virtual srcPtrData *Clone() const = 0;
 };
 
 class srcPtrDataMap : public srcPtrData {
@@ -37,10 +37,10 @@ public:
    }
 
    std::vector<srcPtrVar> GetPointsTo(srcPtrVar ptr) const {
-      return data.at(ptr); //No const overload for operator[]
+      return data.at(ptr); // No const overload for operator[]
    }
 
-   virtual srcPtrDataMap* Clone() const {
+   virtual srcPtrDataMap *Clone() const {
       return (new srcPtrDataMap(*this));
    }
 

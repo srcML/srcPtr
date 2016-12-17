@@ -37,18 +37,18 @@ int main(int argc, char *argv[]) {
       std::string srcmlstr((std::istreambuf_iterator<char>(srcmlfile)), std::istreambuf_iterator<char>());
 
       // First Run
-      srcPtrDeclPolicy * declpolicy = new srcPtrDeclPolicy();
+      srcPtrDeclPolicy *declpolicy = new srcPtrDeclPolicy();
       srcSAXController control(srcmlstr);
       srcSAXEventDispatch::srcSAXEventDispatcher<> handler{declpolicy};
       control.parse(&handler);
 
       // Second Run
-      srcPtrPolicy* policy = new srcPtrPolicy(declpolicy->GetData(), new srcPtrDataMap());
+      srcPtrPolicy *policy = new srcPtrPolicy(declpolicy->GetData(), new srcPtrDataMap());
       srcSAXController control2(srcmlstr);
       srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
       control2.parse(&handler2);
 
-      srcPtrData const * data = policy->GetData();
+      srcPtrData const *data = policy->GetData();
       data->Print();
       delete data;
    }
