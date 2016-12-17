@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include <boost/pending/detail/disjoint_sets.hpp>
+
 class srcPtrData {
 public:
    virtual void AddPointsToRelationship(srcPtrVar, srcPtrVar) = 0;
@@ -22,7 +24,7 @@ public:
       if (std::find(data[lhs].begin(), data[lhs].end(), rhs) == data[lhs].end()) {
          data[lhs].push_back(rhs); // Adds reference only if lhs doesn't already point to rhs
       }
-   };
+   }
 
    void Print() {
       for (auto x : data) {
@@ -31,11 +33,11 @@ public:
             std::cout << y << " ";
          std::cout << std::endl;
       }
-   };
+   }
 
    std::vector<srcPtrVar> GetPointsTo(srcPtrVar ptr) {
       return data[ptr];
-   };
+   }
 
 private:
    std::map<srcPtrVar, std::vector<srcPtrVar>> data;

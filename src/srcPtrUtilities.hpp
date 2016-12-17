@@ -4,8 +4,9 @@
 #include <DeclTypePolicy.hpp>
 
 #include <map>
-#include <stack>
+#include <deque>
 #include <string>
+#include <utility>
 
 struct srcPtrVar {
    srcPtrVar() : linenumber{0}, isConst{false}, isReference{false}, isPointer{false}, isStatic{false} {
@@ -67,19 +68,47 @@ std::ostream &operator<<(std::ostream &stream, const srcPtrVar &var) {
    return stream;
 }
 
-/*
 class srcPtrDeclFrame {
 public:
-   bool ContainsName
+   srcPtrDeclFrame() {};
+   srcPtrDeclFrame(srcPtrVar var) {
+      declarations.insert(std::pair<std::string, srcPtrVar>(var.SimpleIdentifier(), var));
+   }
+   bool ContainsName(std::string name) {
+      return (declarations.find(name) != declarations.end());
+   }
+   srcPtrVar GetVar(std::string name) {
+      return declarations[name];
+   }
+   void AddVar(srcPtrVar var) {
+      if(!ContainsName(var.SimpleIdentifier()))
+         declarations.insert(std::pair<std::string, srcPtrVar>(var.SimpleIdentifier(), var));
+   }
 private:
    std::map<std::string, srcPtrVar> declarations; //Name to srcPtrVar
-}
+};
 
 class srcPtrDeclStack {
 public:
+   void CreateFrame() {
+      declared.push_front(srcPtrDeclFrame());
+   }
+   void CreateFrame(srcPtrVar var) {
+      declared.push_front(srcPtrDeclFrame(var));
+   }
+   void PopFrame() {
+      declared.pop_front();
+   }
+   srcPtrVar GetPreviousOccurence(std::string name) {
+      for(auto it = declared.begin(); it != declared.end(); ++it) {
+         if(it->ContainsName(name))
+            return it->GetVar(name);
+      }
+      return srcPtrVar();
+   }
 
 private:
-   std::stack<srcPtrDeclFrame> declared;
-}*/
+   std::deque<srcPtrDeclFrame> declared;
+};
 
 #endif
