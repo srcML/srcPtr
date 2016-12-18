@@ -2,6 +2,7 @@
 #define INCLUDED_SRC_PTR_UTILITIES
 
 #include <DeclTypePolicy.hpp>
+#include <ParamTypePolicy.hpp>
 
 #include <deque>
 #include <map>
@@ -14,6 +15,17 @@ struct srcPtrVar {
    }
 
    srcPtrVar(const DeclTypePolicy::DeclTypeData &data) {
+      nameoftype = data.nameoftype;
+      nameofidentifier = data.nameofidentifier;
+      namespaces = data.namespaces;
+      linenumber = data.linenumber;
+      isConst = data.isConst;
+      isReference = data.isReference;
+      isPointer = data.isPointer;
+      isStatic = data.isPointer;
+   }
+
+   srcPtrVar(const ParamTypePolicy::ParamData &data) {
       nameoftype = data.nameoftype;
       nameofidentifier = data.nameofidentifier;
       namespaces = data.namespaces;
