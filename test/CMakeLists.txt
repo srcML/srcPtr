@@ -18,3 +18,13 @@
 # You should have received a copy of the GNU General Public License
 # along with srcPtr.  If not, see <http://www.gnu.org/licenses/>.
 
+#enable_testing()
+#add_test( Testtest.cpp
+file( GLOB SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Test* )
+foreach( testsourcefile ${SOURCES} )
+    string( REPLACE ".cpp" "" testname ${testsourcefile} )
+    get_filename_component(file ${testsourcefile} NAME_WE)
+    add_executable( ${file} ${testsourcefile} )
+    target_link_libraries( ${file} srcsaxeventdispatch srcsax_static srcml ${LIBXML2_LIBRARIES} )
+endforeach( testsourcefile ${SOURCES} )
+
