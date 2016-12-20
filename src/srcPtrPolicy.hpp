@@ -33,6 +33,9 @@ public:
       if (typeid(DeclTypePolicy) == typeid(*policy)) {
          DeclTypePolicy::DeclTypeData declarationData = *policy->Data<DeclTypePolicy::DeclTypeData>();
          declared.AddVarToFrame(srcPtrVar(declarationData));
+
+         if(withinDeclAssignment)
+            data->AddPointsToRelationship(declarationData, lhs);
       }
    }
 
@@ -59,12 +62,15 @@ private:
    srcPtrVar rhs;
    bool assignmentOperator = false;
 
+   bool withinDeclAssignment = false;
+
    void ResetVariables() {
       lhs.Clear();
       rhs.Clear();
       assignmentOperator = false;
       modifierlhs = "";
       modifierrhs = "";
+      withinDeclAssignment = false;
    }
 
    void InitializeEventHandlers() {
@@ -81,6 +87,7 @@ private:
       //
 
       openEventMap[ParserState::exprstmt] = [this](srcSAXEventContext &ctx) { ResetVariables(); };
+      openEventMap[ParserState::declstmt] = [this](srcSAXEventContext &ctx) { ResetVariables(); };
 
       closeEventMap[ParserState::name] = [this](srcSAXEventContext &ctx) {
          if (ctx.IsOpen(ParserState::expr)) {
@@ -104,6 +111,10 @@ private:
             modifierlhs = ctx.currentToken;
          else if ((rhs.nameofidentifier == ""))
             modifierrhs = ctx.currentToken;
+      };
+
+      closeEventMap[ParserState::init] = [this](srcSAXEventContext &ctx) {
+         withinDeclAssignment = true;
       };
 
       closeEventMap[ParserState::exprstmt] = [this](srcSAXEventContext &ctx) {
