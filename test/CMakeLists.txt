@@ -29,6 +29,6 @@ macro(add_srcptr_test TEST_FILE)
     add_test(NAME ${TEST_NAME} COMMAND $<TARGET_FILE:${TEST_NAME}>)
     set_target_properties(${TEST_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-endmacro()
+  endmacro()
 
-add_srcptr_test(Testtests.cpp)
+add_srcptr_test(TestsrcPtrUtilities.cpp)
