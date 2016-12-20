@@ -34,7 +34,7 @@ public:
          DeclTypePolicy::DeclTypeData declarationData = *policy->Data<DeclTypePolicy::DeclTypeData>();
          declared.AddVarToFrame(srcPtrVar(declarationData));
 
-         if(withinDeclAssignment)
+         if((withinDeclAssignment) && (declarationData.isPointer))
             data->AddPointsToRelationship(declarationData, lhs);
       }
    }
