@@ -29,10 +29,10 @@ public:
 
    void Print() const {
       for (auto x : data) {
-         std::cout << x.first.linenumber << " : " << x.first.nameoftype << " " << x.first << " ";
+         std::cout << x.first.linenumber << " - " << x.first.nameoftype << "* " << x.first << std::endl;
          for (auto y : x.second)
-            std::cout << y << " ";
-         std::cout << std::endl;
+            std::cout << y.linenumber << " - " << y.nameoftype << " " << y << " ";
+         std::cout << std::endl << std::endl << std::endl;
       }
    }
 

@@ -1,11 +1,13 @@
 #ifndef INCLUDED_SRC_PTR_POLICY_HPP
 #define INCLUDED_SRC_PTR_POLICY_HPP
 
+#include <DeclTypePolicy.hpp>
+#include <srcSAXEventDispatcher.hpp>
+#include <srcSAXHandler.hpp>
+
 #include <srcPtrDeclPolicy.hpp>
 #include <srcPtrPolicyData.hpp>
 #include <srcPtrUtilities.hpp>
-#include <srcSAXEventDispatcher.hpp>
-#include <srcSAXHandler.hpp>
 
 #include <algorithm>
 #include <exception>
@@ -22,10 +24,16 @@ public:
    srcPtrPolicy(srcPtrDeclPolicy::srcPtrDeclData decldata, srcPtrData *outputtype, std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners) {
       declData = decldata;
       data = outputtype;
+      declared.CreateFrame();
+      declTypePolicy = new DeclTypePolicy{this};
       InitializeEventHandlers();
    }
 
    void Notify(const PolicyDispatcher *policy, const srcSAXEventDispatch::srcSAXEventContext &ctx) override {
+      if (typeid(DeclTypePolicy) == typeid(*policy)) {
+         DeclTypePolicy::DeclTypeData declarationData = *policy->Data<DeclTypePolicy::DeclTypeData>();
+         declared.AddVarToFrame(srcPtrVar(declarationData));
+      }
    }
 
    srcPtrData const *GetData() {
@@ -39,16 +47,10 @@ protected:
    }
 
 private:
-   void ResetVariables() {
-      lhs.Clear();
-      rhs.Clear();
-      assignmentOperator = false;
-      modifierlhs = "";
-      modifierrhs = "";
-   }
-
    srcPtrData *data;
    srcPtrDeclPolicy::srcPtrDeclData declData;
+   srcPtrDeclStack declared;
+   DeclTypePolicy *declTypePolicy;
 
    // For use in collecting assignments
    srcPtrVar lhs;
@@ -57,22 +59,40 @@ private:
    srcPtrVar rhs;
    bool assignmentOperator = false;
 
+   void ResetVariables() {
+      lhs.Clear();
+      rhs.Clear();
+      assignmentOperator = false;
+      modifierlhs = "";
+      modifierrhs = "";
+   }
+
    void InitializeEventHandlers() {
       using namespace srcSAXEventDispatch;
+
+      openEventMap[ParserState::function] = [this](srcSAXEventContext &ctx) { ctx.dispatcher->AddListenerDispatch(declTypePolicy); };
+
+      openEventMap[ParserState::block] = [this](srcSAXEventContext &ctx) { declared.CreateFrame(); };
+
+      closeEventMap[ParserState::block] = [this](srcSAXEventContext &ctx) { declared.PopFrame(); };
+
+      //
+      // Collecting pointer assignment data
+      //
 
       openEventMap[ParserState::exprstmt] = [this](srcSAXEventContext &ctx) { ResetVariables(); };
 
       closeEventMap[ParserState::name] = [this](srcSAXEventContext &ctx) {
          if (ctx.IsOpen(ParserState::expr)) {
             if (lhs.nameofidentifier == "") {
-               DeclTypePolicy::DeclTypeData *decl = declData.FindVarWithIdentifier(ctx.currentToken);
-               if (decl != nullptr) {
-                  lhs = *decl;
-               }
+               srcPtrVar decl = declared.GetPreviousOccurence(ctx.currentToken);
+               if (decl.nameofidentifier != "")
+                  lhs = decl;
+
             } else {
-               DeclTypePolicy::DeclTypeData *decl = declData.FindVarWithIdentifier(ctx.currentToken);
-               if (decl != nullptr)
-                  rhs = *decl;
+               srcPtrVar decl = declared.GetPreviousOccurence(ctx.currentToken);
+               if (decl.nameofidentifier != "")
+                  rhs = decl;
             }
          }
       };
@@ -80,9 +100,9 @@ private:
       closeEventMap[ParserState::op] = [this](srcSAXEventContext &ctx) {
          if ((ctx.currentToken == "=") && (lhs.nameofidentifier != ""))
             assignmentOperator = true;
-         else if ((lhs.nameofidentifier == "")) {
+         else if ((lhs.nameofidentifier == ""))
             modifierlhs = ctx.currentToken;
-         } else if ((rhs.nameofidentifier == ""))
+         else if ((rhs.nameofidentifier == ""))
             modifierrhs = ctx.currentToken;
       };
 

@@ -114,6 +114,9 @@ public:
    void PopFrame() {
       declared.pop_front();
    }
+   void AddVarToFrame(srcPtrVar var) {
+      declared.begin()->AddVar(var);
+   }
    srcPtrVar GetPreviousOccurence(std::string name) {
       for (auto it = declared.begin(); it != declared.end(); ++it) {
          if (it->ContainsName(name))
