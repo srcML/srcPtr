@@ -118,8 +118,8 @@ private:
       };
 
       closeEventMap[ParserState::exprstmt] = [this](srcSAXEventContext &ctx) {
-         bool lhsIsPointer = (modifierlhs != "*");
-         bool rhsIsAddress = (((modifierrhs == "&") || (rhs.isPointer)) || (rhs.isReference));
+         bool lhsIsPointer = ((lhs.isPointer && (modifierlhs != "*")) || lhs.isReference); 
+         bool rhsIsAddress = (((modifierrhs == "&") || (rhs.isPointer)));
 
          if ((lhsIsPointer && rhsIsAddress) && assignmentOperator) {
             data->AddPointsToRelationship(lhs, rhs);
