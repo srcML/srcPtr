@@ -16,6 +16,7 @@ public:
    virtual void AddPointsToRelationship(srcPtrVar, srcPtrVar) = 0;
    virtual void Print() const = 0;
    virtual std::vector<srcPtrVar> GetPointsTo(srcPtrVar) const = 0;
+	virtual std::vector<srcPtrVar> GetPointers() const = 0;
    virtual srcPtrData *Clone() const = 0;
 };
 
@@ -31,7 +32,7 @@ public:
       for (auto x : data) {
          std::cout << x.first.linenumber << " - " << x.first.nameoftype << (x.first.isPointer ? " * " : " & ") << x.first << std::endl;
          for (auto y : x.second)
-            std::cout << y.linenumber << " - " << y.nameoftype << " " << y << " ";
+			      std::cout << y.linenumber << " - " << y.nameoftype << " " << y << " ";
          std::cout << std::endl << std::endl << std::endl;
       }
    }
@@ -39,6 +40,13 @@ public:
    std::vector<srcPtrVar> GetPointsTo(srcPtrVar ptr) const {
       return data.at(ptr); // No const overload for operator[]
    }
+
+	std::vector<srcPtrVar> GetPointers() const {
+		std::vector<srcPtrVar> pointers;
+		for(auto x : data)
+			pointers.push_back(x.first);
+		return pointers;
+	}
 
    virtual srcPtrDataMap *Clone() const {
       return (new srcPtrDataMap(*this));
