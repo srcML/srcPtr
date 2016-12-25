@@ -66,6 +66,21 @@ void RunTests() {
 		assert(data->GetPointsTo(data->GetPointers()[0]).size() == 1);
 		assert(data->GetPointsTo(data->GetPointers()[0])[0].nameofidentifier == "x");
 	}
+	{
+		srcPtrData* data = Analyze("int main() {\nint x = 0;\nint& y;\ny = x;\ny = 12;\nint& y2 = x;\ny2 = 12;\nint* z;\nz = &x;\nint* z2 = &x;\n}");
+
+		assert(data->GetPointers().size() == 4);
+
+		assert(data->GetPointsTo(data->GetPointers()[0]).size() == 1);
+		assert(data->GetPointsTo(data->GetPointers()[1]).size() == 1);
+		assert(data->GetPointsTo(data->GetPointers()[2]).size() == 1);
+		assert(data->GetPointsTo(data->GetPointers()[3]).size() == 1);
+
+		assert(data->GetPointsTo(data->GetPointers()[0])[0].nameofidentifier == "x");
+		assert(data->GetPointsTo(data->GetPointers()[1])[0].nameofidentifier == "x");
+		assert(data->GetPointsTo(data->GetPointers()[2])[0].nameofidentifier == "x");
+		assert(data->GetPointsTo(data->GetPointers()[3])[0].nameofidentifier == "x");
+	}
 }
 
 int main() {
