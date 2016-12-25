@@ -93,13 +93,11 @@ private:
          if (ctx.IsOpen(ParserState::expr)) {
             if (lhs.nameofidentifier == "") {
                srcPtrVar decl = declared.GetPreviousOccurence(ctx.currentToken);
-               if (decl.nameofidentifier != "")
-                  lhs = decl;
+               lhs = decl;
 
             } else {
                srcPtrVar decl = declared.GetPreviousOccurence(ctx.currentToken);
-               if (decl.nameofidentifier != "")
-                  rhs = decl;
+               rhs = decl;
             }
          }
       };
@@ -121,7 +119,8 @@ private:
          bool lhsIsPointer = ((lhs.isPointer && (modifierlhs != "*")) || lhs.isReference);
 
          if (lhsIsPointer && assignmentOperator) {
-            data->AddPointsToRelationship(lhs, rhs);
+            if(!rhs.empty())
+               data->AddPointsToRelationship(lhs, rhs);
          }
          ResetVariables();
       };

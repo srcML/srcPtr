@@ -11,7 +11,7 @@
 #include <vector>
 
 struct srcPtrVar {
-   srcPtrVar() : linenumber{0}, isConst{false}, isReference{false}, isPointer{false}, isStatic{false} {
+   srcPtrVar() : linenumber{-1}, isConst{false}, isReference{false}, isPointer{false}, isStatic{false} {
    }
 
    srcPtrVar(const DeclTypePolicy::DeclTypeData &data) {
@@ -55,6 +55,11 @@ struct srcPtrVar {
       isReference = false;
       isPointer = false;
       isStatic = false;
+   }
+
+   bool empty() {
+      srcPtrVar empty;
+      return (*this == empty);
    }
 
    std::string UniqueIdentifier() {
