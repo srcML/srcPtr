@@ -38,10 +38,8 @@ std::string StringToSrcML(std::string str){
 	return std::string(ch);
 }
 
-int main() {
-	std::string codestr = "int main() {\nint x;\nint * y;\ny = &x;\n}";
+srcPtrData * Analyze(std::string codestr) {
 	std::string srcmlstr = StringToSrcML(codestr);
-	//std::cout<< srcmlstr;
 
 	// First Run
 	srcPtrDeclPolicy *declpolicy = new srcPtrDeclPolicy();
@@ -55,11 +53,22 @@ int main() {
 	srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
 	control2.parse(&handler2);
 
-	srcPtrData const *data = policy->GetData();
-	assert(data->GetPointers().size() == 1);
-	assert(data->GetPointsTo(data->GetPointers()[0]).size() == 1);
-	assert(data->GetPointsTo(data->GetPointers()[0])[0].nameofidentifier == "x");
-	 
+	srcPtrData *data = policy->GetData()->Clone();
+	
+	return data;
+}
 
+void RunTests() {
+	{
+		srcPtrData* data = Analyze("int main() {\nint x;\nint * y;\ny = &x;\n}");
+		
+		assert(data->GetPointers().size() == 1);
+		assert(data->GetPointsTo(data->GetPointers()[0]).size() == 1);
+		assert(data->GetPointsTo(data->GetPointers()[0])[0].nameofidentifier == "x");
+	}
+}
+
+int main() {
+	RunTests();
 	return 0;
 }
