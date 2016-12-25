@@ -58,7 +58,7 @@ int main() {
 	srcPtrData const *data = policy->GetData();
 	assert(data->GetPointers().size() == 1);
 	assert(data->GetPointsTo(data->GetPointers()[0]).size() == 1);
-	assert(data->GetPointsTo(data->GetPointers()[0])[0].nameofidentifier == "y");
+	assert(data->GetPointsTo(data->GetPointers()[0])[0].nameofidentifier == "x");
 	 
 
 	return 0;
