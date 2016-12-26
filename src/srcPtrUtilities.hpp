@@ -3,6 +3,7 @@
 
 #include <DeclTypePolicy.hpp>
 #include <ParamTypePolicy.hpp>
+#include <FunctionSignaturePolicy.hpp>
 
 #include <deque>
 #include <map>
@@ -133,5 +134,74 @@ public:
 private:
    std::deque<srcPtrDeclFrame> declared;
 };
+
+class srcPtrFunction {
+public:
+	srcPtrFunction():isConst{false}, constPointerReturn{false}, isMethod{false}, isStatic{false}, pointerToConstReturn{false}, hasAliasedReturn{false} {}
+
+	srcPtrFunction(const FunctionSignaturePolicy::SignatureData& rhs) {
+	   linenumber = rhs.linenumber;
+		returnType = rhs.returnType;
+		functionName = rhs.functionName;
+		returnTypeModifier = rhs.returnTypeModifier;
+		functionNamespaces = rhs.functionNamespaces;
+		returnTypeNamespaces = rhs.returnTypeNamespaces;
+		for(std::size_t i = 0; i < rhs.parameters.size(); ++i) //copy parameters
+			parameters.push_back(rhs.parameters[i]);
+		isConst = rhs.isConst;
+		isMethod = rhs.isMethod;
+		isStatic = rhs.isStatic;
+		pointerToConstReturn = rhs.pointerToConstReturn;
+		constPointerReturn = rhs.constPointerReturn;
+		hasAliasedReturn = rhs.hasAliasedReturn;
+	}
+	
+	void Clear(){
+		returnType.clear();
+		functionName.clear();
+		parameters.clear();
+		returnTypeModifier.clear();
+		isConst = false;
+		isMethod = false;
+		isStatic = false;
+		pointerToConstReturn = false;
+		constPointerReturn = false;
+		hasAliasedReturn = false;
+	}
+
+	bool operator==(const srcPtrFunction& rhs) const {
+		return ((linenumber == rhs.linenumber) && (returnType == rhs.returnType) && (functionName == rhs.functionName) && (returnTypeModifier == rhs.returnTypeModifier) &&
+				  (functionNamespaces == rhs.functionNamespaces) && (returnTypeNamespaces == rhs.returnTypeNamespaces) && (parameters == rhs.parameters) && (isConst == rhs.isConst) &&
+				  (isMethod == rhs.isMethod) && (isStatic == rhs.isStatic) && (pointerToConstReturn == rhs.pointerToConstReturn) && (constPointerReturn == rhs.constPointerReturn) &&
+				  (hasAliasedReturn == rhs.hasAliasedReturn));
+	}
+	
+	bool operator<(const srcPtrFunction &rhs) const { // Function required for STL datastructures
+		return (functionName < rhs.functionName);
+	}
+	
+	int linenumber;
+	std::string returnType;
+	std::string functionName;
+	std::string returnTypeModifier;
+	std::vector<std::string> functionNamespaces;
+	std::vector<std::string> returnTypeNamespaces;
+	std::vector<srcPtrVar> parameters;
+	bool isConst;
+	bool isMethod;
+	bool isStatic;
+	bool pointerToConstReturn;
+	bool constPointerReturn;
+	bool hasAliasedReturn;
+};
+
+/*
+class FunctionTracker {
+public:
+	
+private:
+	std::map<std::string, > functionNames;
+	
+	};*/
 
 #endif
