@@ -159,8 +159,10 @@ public:
 	void Clear(){
 		returnType.clear();
 		functionName.clear();
-		parameters.clear();
 		returnTypeModifier.clear();
+		parameters.clear();
+		functionNamespaces.clear();
+		returnTypeNamespaces.clear();
 		isConst = false;
 		isMethod = false;
 		isStatic = false;

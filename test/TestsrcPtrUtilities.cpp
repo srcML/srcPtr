@@ -1,5 +1,6 @@
 #include <DeclTypePolicy.hpp>
 #include <ParamTypePolicy.hpp>
+#include <FunctionSignaturePolicy.hpp>
 
 #include <srcPtrUtilities.hpp>
 
@@ -89,8 +90,26 @@ void TestDeclStack() {
    }
 }
 
+void TestsrcPtrFunction() {
+	{
+		FunctionSignaturePolicy::SignatureData sigData;
+		ParamTypePolicy::ParamData paramData;
+
+		paramData.nameofidentifier = "x";
+		paramData.nameoftype = "int";
+		
+		sigData.linenumber = 12;
+		sigData.returnType = "string";
+		sigData.parameters.push_back(paramData);
+
+		srcPtrFunction func = sigData;
+		assert(func == sigData);
+	}
+}
+
 int main() {
 	TestSrcPtrVar();
    TestDeclStack();
+	TestsrcPtrFunction();
    return 0;
 }
