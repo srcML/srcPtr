@@ -88,6 +88,8 @@ std::ostream &operator<<(std::ostream &stream, const srcPtrVar &var) {
    return stream;
 }
 
+
+
 class srcPtrDeclFrame {
 public:
    srcPtrDeclFrame(){};
@@ -134,6 +136,8 @@ public:
 private:
    std::deque<srcPtrDeclFrame> declared;
 };
+
+
 
 class srcPtrFunction {
 public:
@@ -198,13 +202,20 @@ public:
 	bool hasAliasedReturn;
 };
 
-/*
+
+
 class FunctionTracker {
 public:
-	
+	srcPtrFunction GetFunction(std::string name, int paramCount) {
+      return functionNames[(name + std::to_string(paramCount))];
+   }
+
+   void AddFunction(srcPtrFunction toAdd) {
+      std::string key = toAdd.functionName + std::to_string(toAdd.parameters.size()); //TODO: Take into account type of parameter
+      functionNames[key] = toAdd;
+   }
 private:
-	std::map<std::string, > functionNames;
-	
-	};*/
+	std::map<std::string, srcPtrFunction> functionNames; // (Name of function + param count) -> srcPtrFunction
+};
 
 #endif

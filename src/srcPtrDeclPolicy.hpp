@@ -7,6 +7,8 @@
 #include <srcSAXEventDispatcher.hpp>
 #include <srcSAXHandler.hpp>
 
+#include <srcPtrUtilities.hpp>
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -14,43 +16,29 @@
 class srcPtrDeclPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEventDispatch::PolicyDispatcher, public srcSAXEventDispatch::PolicyListener {
 public:
    struct srcPtrDeclData {
-      std::vector<DeclTypePolicy::DeclTypeData> variableDeclarations;
-      std::vector<FunctionSignaturePolicy::SignatureData> functionDeclarations;
-
-      DeclTypePolicy::DeclTypeData *FindVarWithIdentifier(std::string s) { // TODO: Implement as map to increase efficiency
-         for (auto &t : variableDeclarations) {
-            if (t.nameofidentifier == s)
-               return &t;
-         }
-         return nullptr;
-      }
+      FunctionTracker functionTracker;
    };
 
    ~srcPtrDeclPolicy() {
-      if (declTypePolicy)
-         delete declTypePolicy;
       if (functionSignaturePolicy)
          delete functionSignaturePolicy;
    }
 
    srcPtrDeclPolicy(std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners) {
-      declTypePolicy = new DeclTypePolicy{this};
       functionSignaturePolicy = new FunctionSignaturePolicy{this};
       InitializeEventHandlers();
    }
 
    void Notify(const PolicyDispatcher *policy, const srcSAXEventDispatch::srcSAXEventContext &ctx) override {
-      if (typeid(DeclTypePolicy) == typeid(*policy)) {
-         DeclTypePolicy::DeclTypeData declData = *policy->Data<DeclTypePolicy::DeclTypeData>();
-         data.variableDeclarations.push_back(declData);
-      } else if (typeid(FunctionSignaturePolicy) == typeid(*policy)) {
+      if (typeid(FunctionSignaturePolicy) == typeid(*policy)) {
          FunctionSignaturePolicy::SignatureData signatureData = *policy->Data<FunctionSignaturePolicy::SignatureData>();
-         data.functionDeclarations.push_back(signatureData);
+         data.functionTracker.AddFunction(signatureData);
       }
    }
    srcPtrDeclData GetData() {
       return data;
    }
+
    srcPtrDeclData data;
 
 protected:
@@ -59,14 +47,12 @@ protected:
    }
 
 private:
-   DeclTypePolicy *declTypePolicy = nullptr;
    FunctionSignaturePolicy *functionSignaturePolicy = nullptr;
 
    void InitializeEventHandlers() {
       using namespace srcSAXEventDispatch;
 
       openEventMap[ParserState::function] = [this](srcSAXEventContext &ctx) {
-         ctx.dispatcher->AddListenerDispatch(declTypePolicy);
          ctx.dispatcher->AddListenerDispatch(functionSignaturePolicy);
       };
       closeEventMap[ParserState::function] = [this](srcSAXEventContext &ctx) {
