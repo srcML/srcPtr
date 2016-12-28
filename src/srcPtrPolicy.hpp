@@ -2,6 +2,7 @@
 #define INCLUDED_SRC_PTR_POLICY_HPP
 
 #include <DeclTypePolicy.hpp>
+#include <FunctionCallPolicy.hpp>
 #include <srcSAXEventDispatcher.hpp>
 #include <srcSAXHandler.hpp>
 
@@ -20,12 +21,15 @@ class srcPtrPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEve
 public:
    ~srcPtrPolicy() {
       delete data;
+      delete declTypePolicy;
+      delete callPolicy;
    }
    srcPtrPolicy(srcPtrDeclPolicy::srcPtrDeclData decldata, srcPtrData *outputtype, std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners) {
       declData = decldata;
       data = outputtype;
       declared.CreateFrame();
       declTypePolicy = new DeclTypePolicy{this};
+      callPolicy = new CallPolicy{this};
       InitializeEventHandlers();
    }
 
@@ -34,8 +38,10 @@ public:
          DeclTypePolicy::DeclTypeData declarationData = *policy->Data<DeclTypePolicy::DeclTypeData>();
          declared.AddVarToFrame(srcPtrVar(declarationData));
 
-         if((withinDeclAssignment) && ((declarationData.isPointer || declarationData.isReference)))
+         if((withinDeclAssignment) && ((declarationData.isPointer || declarationData.isReference)))   //Pointer assignment on initialization
             data->AddPointsToRelationship(declarationData, lhs);
+      } else if (typeid(CallPolicy) == typeid(*callPolicy)) {
+         // CallPolicy returned
       }
    }
 
@@ -54,6 +60,7 @@ private:
    srcPtrDeclPolicy::srcPtrDeclData declData;
    srcPtrDeclStack declared;
    DeclTypePolicy *declTypePolicy;
+   CallPolicy *callPolicy;
 
    // For use in collecting assignments
    srcPtrVar lhs;
@@ -76,7 +83,10 @@ private:
    void InitializeEventHandlers() {
       using namespace srcSAXEventDispatch;
 
-      openEventMap[ParserState::function] = [this](srcSAXEventContext &ctx) { ctx.dispatcher->AddListenerDispatch(declTypePolicy); };
+      openEventMap[ParserState::unit] = [this](srcSAXEventContext &ctx) {
+         ctx.dispatcher->AddListenerDispatch(declTypePolicy);
+         ctx.dispatcher->AddListenerDispatch(callPolicy);
+      };
 
       openEventMap[ParserState::block] = [this](srcSAXEventContext &ctx) { declared.CreateFrame(); };
 
@@ -125,7 +135,7 @@ private:
          ResetVariables();
       };
 
-      closeEventMap[ParserState::function] = [this](srcSAXEventContext &ctx) { // End of Policy
+      closeEventMap[ParserState::unit] = [this](srcSAXEventContext &ctx) { // End of Policy
          NotifyAll(ctx);
          InitializeEventHandlers();
       };
