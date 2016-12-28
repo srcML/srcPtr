@@ -24,6 +24,7 @@ macro(add_srcptr_test TEST_FILE)
     string(FIND ${TEST_NAME_WITH_EXTENSION} "." EXTENSION_BEGIN)
     string(SUBSTRING ${TEST_NAME_WITH_EXTENSION} 0 ${EXTENSION_BEGIN} TEST_NAME)
 
+    add_definitions("-std=c++1y -g")
     add_executable(${TEST_NAME} ${TEST_FILE})
     target_link_libraries(${TEST_NAME} srcsaxeventdispatch srcsax_static srcml ${LIBXML2_LIBRARIES} ${ARGN})
     add_test(NAME ${TEST_NAME} COMMAND $<TARGET_FILE:${TEST_NAME}>)

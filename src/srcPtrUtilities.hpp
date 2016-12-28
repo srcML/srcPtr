@@ -140,7 +140,7 @@ public:
 	srcPtrFunction():isConst{false}, constPointerReturn{false}, isMethod{false}, isStatic{false}, pointerToConstReturn{false}, hasAliasedReturn{false} {}
 
 	srcPtrFunction(const FunctionSignaturePolicy::SignatureData& rhs) {
-	   linenumber = rhs.linenumber;
+		linenumber = rhs.linenumber;
 		returnType = rhs.returnType;
 		functionName = rhs.functionName;
 		returnTypeModifier = rhs.returnTypeModifier;
@@ -155,8 +155,9 @@ public:
 		constPointerReturn = rhs.constPointerReturn;
 		hasAliasedReturn = rhs.hasAliasedReturn;
 	}
-	
+
 	void Clear(){
+		linenumber = 0;
 		returnType.clear();
 		functionName.clear();
 		returnTypeModifier.clear();
@@ -177,11 +178,11 @@ public:
 				  (isMethod == rhs.isMethod) && (isStatic == rhs.isStatic) && (pointerToConstReturn == rhs.pointerToConstReturn) && (constPointerReturn == rhs.constPointerReturn) &&
 				  (hasAliasedReturn == rhs.hasAliasedReturn));
 	}
-	
+
 	bool operator<(const srcPtrFunction &rhs) const { // Function required for STL datastructures
 		return (functionName < rhs.functionName);
 	}
-	
+
 	int linenumber;
 	std::string returnType;
 	std::string functionName;

@@ -104,6 +104,9 @@ void TestsrcPtrFunction() {
 
 		srcPtrFunction func = sigData;
 		assert(func == sigData);
+		func.Clear();
+		srcPtrFunction empty;
+		assert(func == empty);
 	}
 }
 
