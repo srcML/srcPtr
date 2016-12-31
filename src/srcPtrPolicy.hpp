@@ -40,8 +40,33 @@ public:
 
          if((withinDeclAssignment) && ((declarationData.isPointer || declarationData.isReference)))   //Pointer assignment on initialization
             data->AddPointsToRelationship(declarationData, lhs);
-      } else if (typeid(CallPolicy) == typeid(*callPolicy)) {
-         // CallPolicy returned
+      } else if (typeid(CallPolicy) == typeid(*policy)) {
+         CallPolicy::CallData callData = *policy->Data<CallPolicy::CallData>();
+
+         std::string calledFuncName;
+         std::vector<std::string> params;
+         bool pickedUpFuncName = false;
+         for(auto it = callData.callargumentlist.begin(); it != callData.callargumentlist.end(); ++it) {
+            if((*it != "(") && (*it != ")")) {
+               if(!pickedUpFuncName) {
+                  pickedUpFuncName = true;
+                  calledFuncName = *it;
+               }
+               else
+                  params.push_back(*it);
+            }
+         }
+
+         srcPtrFunction called = declData.functionTracker.GetFunction(calledFuncName, params.size());
+
+         int i = 0;
+         for(auto it = params.begin(); it != params.end(); ++it) {
+            std::string name = *it;
+            srcPtrVar var1 = called.parameters[i];
+            srcPtrVar var2 = declared.GetPreviousOccurence(name);
+            data->AddPointsToRelationship(var1, var2);
+            ++i;
+         }
       }
    }
 
