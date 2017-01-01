@@ -3,6 +3,7 @@
 
 #include <DeclTypePolicy.hpp>
 #include <FunctionCallPolicy.hpp>
+#include <FunctionSignaturePolicy.hpp>
 #include <srcSAXEventDispatcher.hpp>
 #include <srcSAXHandler.hpp>
 
@@ -23,6 +24,7 @@ public:
       delete data;
       delete declTypePolicy;
       delete callPolicy;
+      delete funcSigPolicy;
    }
    srcPtrPolicy(srcPtrDeclPolicy::srcPtrDeclData decldata, srcPtrData *outputtype, std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners) {
       declData = decldata;
@@ -30,6 +32,7 @@ public:
       declared.CreateFrame();
       declTypePolicy = new DeclTypePolicy{this};
       callPolicy = new CallPolicy{this};
+      funcSigPolicy = new FunctionSignaturePolicy{this};
       InitializeEventHandlers();
    }
 
@@ -67,6 +70,12 @@ public:
             data->AddPointsToRelationship(var1, var2);
             ++i;
          }
+      } else if (typeid(FunctionSignaturePolicy) == typeid(*policy)) {
+         FunctionSignaturePolicy::SignatureData signatureData = *policy->Data<FunctionSignaturePolicy::SignatureData>();
+         srcPtrFunction funcSig = signatureData;
+         for(srcPtrVar var : funcSig.parameters) {
+            declared.AddVarToFrame(var);
+         }
       }
    }
 
@@ -86,6 +95,7 @@ private:
    srcPtrDeclStack declared;
    DeclTypePolicy *declTypePolicy;
    CallPolicy *callPolicy;
+   FunctionSignaturePolicy *funcSigPolicy;
 
    // For use in collecting assignments
    srcPtrVar lhs;
@@ -111,6 +121,7 @@ private:
       openEventMap[ParserState::unit] = [this](srcSAXEventContext &ctx) {
          ctx.dispatcher->AddListenerDispatch(declTypePolicy);
          ctx.dispatcher->AddListenerDispatch(callPolicy);
+         ctx.dispatcher->AddListenerDispatch(funcSigPolicy);
       };
 
       openEventMap[ParserState::block] = [this](srcSAXEventContext &ctx) { declared.CreateFrame(); };

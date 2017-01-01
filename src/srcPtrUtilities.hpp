@@ -13,6 +13,7 @@
 
 struct srcPtrVar {
    srcPtrVar() : linenumber{-1}, isConst{false}, isReference{false}, isPointer{false}, isStatic{false} {
+      
    }
 
    srcPtrVar(const DeclTypePolicy::DeclTypeData &data) {
