@@ -70,7 +70,7 @@ struct srcPtrVar {
       return nameofidentifier;
    }
 
-   friend std::ostream &operator<<(std::ostream &stream, const srcPtrVar &var);
+   friend std::ostream &operator<<(std::ostream &sout, const srcPtrVar &var);
 
    std::string nameoftype;
    std::string nameofidentifier;
@@ -83,9 +83,9 @@ struct srcPtrVar {
    bool isStatic;
 };
 
-std::ostream &operator<<(std::ostream &stream, const srcPtrVar &var) {
-   stream << var.nameofidentifier;
-   return stream;
+std::ostream &operator<<(std::ostream &sout, const srcPtrVar &var) {
+   sout << var.nameofidentifier;
+   return sout;
 }
 
 
