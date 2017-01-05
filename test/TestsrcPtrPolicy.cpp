@@ -86,6 +86,10 @@ void RunTests() {
 
 		assert(data->GetPointers().size() == 3);
 
+		assert(data->GetPointers()[0].nameofidentifier == "a");
+		assert(data->GetPointers()[1].nameofidentifier == "x");
+		assert(data->GetPointers()[2].nameofidentifier == "y");
+
 		assert(data->GetPointsTo(data->GetPointers()[0]).size() == 1);
 		assert(data->GetPointsTo(data->GetPointers()[1]).size() == 1);
 		assert(data->GetPointsTo(data->GetPointers()[2]).size() == 1);
