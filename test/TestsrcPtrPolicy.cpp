@@ -34,7 +34,7 @@ std::string StringToSrcML(std::string str){
 	srcml_unit_free(unit);
 	srcml_archive_close(archive);
 	srcml_archive_free(archive);
-	
+
 	return std::string(ch);
 }
 
@@ -54,14 +54,14 @@ srcPtrData * Analyze(std::string codestr) {
 	control2.parse(&handler2);
 
 	srcPtrData *data = policy->GetData()->Clone();
-	
+
 	return data;
 }
 
 void RunTests() {
 	{
 		srcPtrData* data = Analyze("int main() {\nint x;\nint * y;\ny = &x;\n}");
-		
+
 		assert(data->GetPointers().size() == 1);
 		assert(data->GetPointsTo(data->GetPointers()[0]).size() == 1);
 		assert(data->GetPointsTo(data->GetPointers()[0])[0].nameofidentifier == "x");
@@ -80,6 +80,19 @@ void RunTests() {
 		assert(data->GetPointsTo(data->GetPointers()[1])[0].nameofidentifier == "x");
 		assert(data->GetPointsTo(data->GetPointers()[2])[0].nameofidentifier == "x");
 		assert(data->GetPointsTo(data->GetPointers()[3])[0].nameofidentifier == "x");
+	}
+	{
+		srcPtrData* data = Analyze("void func(int *x) {\n   *x = 12;\nint *a = x;\n}\n\nint main() {\nint *y;\nint z;\ny = &z;\nfunc(y);\n}");
+
+		assert(data->GetPointers().size() == 3);
+
+		assert(data->GetPointsTo(data->GetPointers()[0]).size() == 1);
+		assert(data->GetPointsTo(data->GetPointers()[1]).size() == 1);
+		assert(data->GetPointsTo(data->GetPointers()[2]).size() == 1);
+
+		assert(data->GetPointsTo(data->GetPointers()[0])[0].nameofidentifier == "x");
+		assert(data->GetPointsTo(data->GetPointers()[1])[0].nameofidentifier == "y");
+		assert(data->GetPointsTo(data->GetPointers()[2])[0].nameofidentifier == "z");
 	}
 }
 
