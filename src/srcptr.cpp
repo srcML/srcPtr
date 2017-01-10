@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with srcPtr.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 #include <srcSAXEventDispatcher.hpp>
 #include <srcSAXHandler.hpp>
 #include <srcSAXHandler.hpp>
@@ -32,7 +32,15 @@
 #include <string>
 
 int main(int argc, char *argv[]) {
-   if (argc == 2) {
+   bool graphViz = false;
+
+   if (argc > 2) {
+
+      for (size_t i = 1; i < argc; i++) {
+         if (std::string(argv[i]) == "--graphviz")
+            graphViz = true;
+      }
+
       std::ifstream srcmlfile(argv[1]);
       std::string srcmlstr((std::istreambuf_iterator<char>(srcmlfile)), std::istreambuf_iterator<char>());
 
@@ -49,7 +57,10 @@ int main(int argc, char *argv[]) {
       control2.parse(&handler2);
 
       srcPtrData const *data = policy->GetData();
-      data->Print();
+      if(!graphViz)
+         data->Print();
+      else
+         data->PrintGraphViz();
       delete data;
    }
    return 0;

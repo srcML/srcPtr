@@ -15,6 +15,7 @@ class srcPtrData {
 public:
    virtual void AddPointsToRelationship(srcPtrVar, srcPtrVar) = 0;
    virtual void Print() const = 0;
+   virtual void PrintGraphViz() const = 0;
    virtual std::vector<srcPtrVar> GetPointsTo(srcPtrVar) const = 0;
 	virtual std::vector<srcPtrVar> GetPointers() const = 0;
    virtual srcPtrData *Clone() const = 0;
@@ -24,7 +25,7 @@ class srcPtrDataMap : public srcPtrData {
 public:
    void AddPointsToRelationship(srcPtrVar lhs, srcPtrVar rhs) {
       if (std::find(data[lhs].begin(), data[lhs].end(), rhs) == data[lhs].end()) {
-         data[lhs].push_back(rhs); // Adds reference only if lhs doesn't already point to rhs
+         data[lhs].push_back(rhs);// Adds reference only if lhs doesn't already point to rhs
       }
    }
 
@@ -35,6 +36,17 @@ public:
 			      std::cout << y.linenumber << " - " << y.nameoftype << " " << y << " ";
          std::cout << std::endl << std::endl << std::endl;
       }
+   }
+
+   void PrintGraphViz() const {
+      std::cout << "digraph pointers {\n";
+
+      for (auto x : data) {
+         for (auto y : x.second)
+            std::cout << "   " << x.first << " -> " << y << "\n";
+      }
+
+      std::cout << "}";
    }
 
    std::vector<srcPtrVar> GetPointsTo(srcPtrVar ptr) const {
