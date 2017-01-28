@@ -31,17 +31,33 @@
 #include <iostream>
 #include <string>
 
+#include <boost/program_options.hpp>
+
 int main(int argc, char *argv[]) {
-   bool graphViz = false;
 
-   if (argc > 2) {
+   namespace po = boost::program_options;
+   
+   po::options_description desc("Options");
+   desc.add_options()
+      ("help", "produce help message")
+      ("graphviz", "generate graphViz output")
+      ("input",po::value<std::vector<std::string>>(), "name of srcML file to analyze")
+   ;
 
-      for (size_t i = 1; i < argc; i++) {
-         if (std::string(argv[i]) == "--graphviz")
-            graphViz = true;
-      }
+   po::positional_options_description p;
+   p.add("input", -1);
 
-      std::ifstream srcmlfile(argv[1]);
+   po::variables_map vm;
+   po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm); 
+
+
+   if(vm.count("help")) {
+      std::cout << desc << std::endl;
+      return 0;
+   }
+
+   if(vm.count("input")) {
+      std::ifstream srcmlfile(vm["input"].as< std::vector<std::string> >()[0]);
       std::string srcmlstr((std::istreambuf_iterator<char>(srcmlfile)), std::istreambuf_iterator<char>());
 
       // First Run
@@ -55,13 +71,14 @@ int main(int argc, char *argv[]) {
       srcSAXController control2(srcmlstr);
       srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
       control2.parse(&handler2);
-
       srcPtrData const *data = policy->GetData();
-      if(!graphViz)
+
+      if(!vm.count("graphviz"))
          data->Print();
       else
          data->PrintGraphViz();
       delete data;
    }
+
    return 0;
 }

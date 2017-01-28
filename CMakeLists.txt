@@ -25,10 +25,14 @@ enable_testing()
 
 # find needed libraries
 find_package(LibXml2 REQUIRED)
+find_package(Boost COMPONENTS program_options REQUIRED)
 
 # include needed includes
 include_directories(${LIBXML2_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIRS})
 add_definitions("-std=c++1y")
+
+
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

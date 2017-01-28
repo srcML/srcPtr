@@ -22,4 +22,4 @@ file(GLOB SOURCE *.cpp)
 file(GLOB HEADER *.hpp)
 
 add_executable(srcptr  ${HEADERS} ${SOURCE})
-target_link_libraries(srcptr srcsaxeventdispatch srcsax_static ${LIBXML2_LIBRARIES} )
+target_link_libraries(srcptr srcsaxeventdispatch srcsax_static ${LIBXML2_LIBRARIES} ${Boost_LIBRARIES})
