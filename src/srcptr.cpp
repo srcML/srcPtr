@@ -30,6 +30,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <chrono>
 
 #include <boost/program_options.hpp>
 
@@ -41,7 +42,8 @@ int main(int argc, char *argv[]) {
    desc.add_options()
       ("help", "produce help message")
       ("graphviz", "generate graphViz output")
-      ("input",po::value<std::vector<std::string>>(), "name of srcML file to analyze")
+      ("timer,t", "measure time it takes srcPtr to execute")
+      ("input",po::value<std::vector<std::string>>()->required(), "name of srcML file to analyze")
    ;
 
    po::positional_options_description p;
@@ -57,6 +59,8 @@ int main(int argc, char *argv[]) {
    }
 
    if(vm.count("input")) {
+      auto start = std::chrono::high_resolution_clock::now();
+
       std::ifstream srcmlfile(vm["input"].as< std::vector<std::string> >()[0]);
       std::string srcmlstr((std::istreambuf_iterator<char>(srcmlfile)), std::istreambuf_iterator<char>());
 
@@ -73,11 +77,16 @@ int main(int argc, char *argv[]) {
       control2.parse(&handler2);
       srcPtrData const *data = policy->GetData();
 
-      if(!vm.count("graphviz"))
-         data->Print();
-      else
+      if(vm.count("graphviz"))
          data->PrintGraphViz();
+      else
+         data->Print();
       delete data;
+
+      if(vm.count("timer")) {
+         auto end = std::chrono::high_resolution_clock::now();
+         std::cout << "\n\n" << std::chrono::duration<double, std::milli>(end-start).count() << "ms passed from program start." << std::endl;
+      }
    }
 
    return 0;
