@@ -64,11 +64,13 @@ public:
 
          int i = 0;
          for(auto it = params.begin(); it != params.end(); ++it) {
-            std::string name = *it;
-            srcPtrVar var1 = called.parameters[i];
-            srcPtrVar var2 = declared.GetPreviousOccurence(name);
-            data->AddPointsToRelationship(var1, var2);
-            ++i;
+            if(called.parameters.size() < i) {
+               std::string name = *it;
+               srcPtrVar var1 = called.parameters[i];
+               srcPtrVar var2 = declared.GetPreviousOccurence(name);
+               data->AddPointsToRelationship(var1, var2);
+               ++i;
+            }
          }
       } else if (typeid(FunctionSignaturePolicy) == typeid(*policy)) {
          FunctionSignaturePolicy::SignatureData signatureData = *policy->Data<FunctionSignaturePolicy::SignatureData>();

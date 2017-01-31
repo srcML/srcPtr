@@ -42,8 +42,10 @@ public:
       std::cout << "digraph pointers {\n";
 
       for (auto x : data) {
-         for (auto y : x.second)
-            std::cout << "   " << x.first << " -> " << y << "\n";
+         for (auto y : x.second) {
+            if(y.nameofidentifier != "")
+               std::cout << "   " << x.first << " -> " << y << "\n";
+         }
       }
 
       std::cout << "}";
