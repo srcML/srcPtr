@@ -13,6 +13,8 @@
 
 class srcPtrData {
 public:
+   virtual ~srcPtrData() {};
+
    virtual void AddPointsToRelationship(srcPtrVar, srcPtrVar) = 0;
    virtual void Print() const = 0;
    virtual void PrintGraphViz() const = 0;
@@ -23,6 +25,8 @@ public:
 
 class srcPtrDataMap : public srcPtrData {
 public:
+   ~srcPtrDataMap() { }; 
+
    void AddPointsToRelationship(srcPtrVar lhs, srcPtrVar rhs) {
       if (std::find(data[lhs].begin(), data[lhs].end(), rhs) == data[lhs].end()) {
          data[lhs].push_back(rhs);// Adds reference only if lhs doesn't already point to rhs
