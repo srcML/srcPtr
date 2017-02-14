@@ -120,7 +120,7 @@ private:
    void InitializeEventHandlers() {
       using namespace srcSAXEventDispatch;
 
-      openEventMap[ParserState::unit] = [this](srcSAXEventContext &ctx) {
+      openEventMap[ParserState::archive] = [this](srcSAXEventContext &ctx) {
          ctx.dispatcher->AddListenerDispatch(declTypePolicy);
          ctx.dispatcher->AddListenerDispatch(callPolicy);
          ctx.dispatcher->AddListenerDispatch(funcSigPolicy);
@@ -173,9 +173,11 @@ private:
          ResetVariables();
       };
 
-      closeEventMap[ParserState::unit] = [this](srcSAXEventContext &ctx) { // End of Policy
+      closeEventMap[ParserState::archive] = [this](srcSAXEventContext &ctx) { // End of Policy
+         ctx.dispatcher->RemoveListenerDispatch(declTypePolicy);
+         ctx.dispatcher->RemoveListenerDispatch(callPolicy);
+         ctx.dispatcher->RemoveListenerDispatch(funcSigPolicy);
          NotifyAll(ctx);
-         InitializeEventHandlers();
       };
    }
 };

@@ -52,10 +52,11 @@ private:
    void InitializeEventHandlers() {
       using namespace srcSAXEventDispatch;
 
-      openEventMap[ParserState::unit] = [this](srcSAXEventContext &ctx) {
+      openEventMap[ParserState::archive] = [this](srcSAXEventContext &ctx) {
          ctx.dispatcher->AddListenerDispatch(functionSignaturePolicy);
       };
-      closeEventMap[ParserState::unit] = [this](srcSAXEventContext &ctx) {
+      closeEventMap[ParserState::archive] = [this](srcSAXEventContext &ctx) {
+         ctx.dispatcher->RemoveListenerDispatch(functionSignaturePolicy);
          NotifyAll(ctx);
          InitializeEventHandlers();
       };

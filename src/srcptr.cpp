@@ -58,21 +58,26 @@ int main(int argc, char *argv[]) {
       return 0;
    }
 
+   bool timing = vm.count("timer");
+
    if(vm.count("input")) {
       auto start = std::chrono::high_resolution_clock::now();
 
-      std::ifstream srcmlfile(vm["input"].as< std::vector<std::string> >()[0]);
-      std::string srcmlstr((std::istreambuf_iterator<char>(srcmlfile)), std::istreambuf_iterator<char>());
-
       // First Run
       srcPtrDeclPolicy *declpolicy = new srcPtrDeclPolicy();
-      srcSAXController control(srcmlstr);
+      srcSAXController control(vm["input"].as<std::vector<std::string>>()[0].c_str());
       srcSAXEventDispatch::srcSAXEventDispatcher<> handler{declpolicy};
       control.parse(&handler);
 
+      if(timing) {
+         auto end = std::chrono::high_resolution_clock::now();
+         std::cerr << "\n\n" << std::chrono::duration<double, std::milli>(end-start).count() << "ms passed from first policy's execution." << std::endl;
+         start = std::chrono::high_resolution_clock::now();
+      }
+
       // Second Run
       srcPtrPolicy *policy = new srcPtrPolicy(declpolicy->GetData(), new srcPtrDataMap());
-      srcSAXController control2(srcmlstr);
+      srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
       srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
       control2.parse(&handler2);
       srcPtrData const *data = policy->GetData();
@@ -83,9 +88,9 @@ int main(int argc, char *argv[]) {
          data->Print();
       delete data;
 
-      if(vm.count("timer")) {
+      if(timing) {
          auto end = std::chrono::high_resolution_clock::now();
-         std::cout << "\n\n" << std::chrono::duration<double, std::milli>(end-start).count() << "ms passed from program start." << std::endl;
+         std::cerr << "\n\n" << std::chrono::duration<double, std::milli>(end-start).count() << "ms passed from first policy's execution." << std::endl;
       }
    }
 
