@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
 
       if(timing) {
          auto end = std::chrono::high_resolution_clock::now();
-         std::cerr << "\n\n" << std::chrono::duration<double, std::milli>(end-start).count() << "ms passed from first policy's execution." << std::endl;
+         std::cerr << "\n\n" << std::chrono::duration<double, std::milli>(end-start).count() << "ms passed from the first policy's execution." << std::endl;
          start = std::chrono::high_resolution_clock::now();
       }
 
@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
 
       if(timing) {
          auto end = std::chrono::high_resolution_clock::now();
-         std::cerr << "\n\n" << std::chrono::duration<double, std::milli>(end-start).count() << "ms passed from first policy's execution." << std::endl;
+         std::cerr << "\n\n" << std::chrono::duration<double, std::milli>(end-start).count() << "ms passed from the second policy's execution." << std::endl;
       }
    }
 
