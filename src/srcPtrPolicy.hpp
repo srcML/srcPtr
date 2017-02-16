@@ -30,9 +30,9 @@ public:
       declData = decldata;
       data = outputtype;
       declared.CreateFrame();
-      declTypePolicy = new DeclTypePolicy{this};
-      callPolicy = new CallPolicy{this};
-      funcSigPolicy = new FunctionSignaturePolicy{this};
+      declTypePolicy = new DeclTypePolicy({this});
+      callPolicy = new CallPolicy({this});
+      funcSigPolicy = new FunctionSignaturePolicy({this});
       InitializeEventHandlers();
    }
 
@@ -81,8 +81,8 @@ public:
       }
    }
 
-   srcPtrData const *GetData() {
-      srcPtrData const *p = data;
+   srcPtrData *GetData() {
+      srcPtrData *p = data;
       return p;
    }
 

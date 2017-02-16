@@ -25,7 +25,7 @@ public:
    }
 
    srcPtrDeclPolicy(std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners) {
-      functionSignaturePolicy = new FunctionSignaturePolicy{this};
+      functionSignaturePolicy = new FunctionSignaturePolicy({this});
       InitializeEventHandlers();
    }
 
@@ -58,7 +58,6 @@ private:
       closeEventMap[ParserState::archive] = [this](srcSAXEventContext &ctx) {
          ctx.dispatcher->RemoveListenerDispatch(functionSignaturePolicy);
          NotifyAll(ctx);
-         InitializeEventHandlers();
       };
    }
 };

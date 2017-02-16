@@ -43,8 +43,7 @@ int main(int argc, char *argv[]) {
       ("help", "produce help message")
       ("graphviz", "generate graphViz output")
       ("timer,t", "measure time it takes srcPtr to execute")
-      ("input",po::value<std::vector<std::string>>()->required(), "name of srcML file to analyze")
-   ;
+      ("input",po::value<std::vector<std::string>>()->required(), "name of srcML file to analyze");
 
    po::positional_options_description p;
    p.add("input", -1);
@@ -62,26 +61,32 @@ int main(int argc, char *argv[]) {
 
    if(vm.count("input")) {
       auto start = std::chrono::high_resolution_clock::now();
-
-      // First Run
       srcPtrDeclPolicy *declpolicy = new srcPtrDeclPolicy();
-      srcSAXController control(vm["input"].as<std::vector<std::string>>()[0].c_str());
-      srcSAXEventDispatch::srcSAXEventDispatcher<> handler{declpolicy};
-      control.parse(&handler);
+      try{
+         // First Run
+         srcSAXController control(vm["input"].as<std::vector<std::string>>()[0].c_str());
+         srcSAXEventDispatch::srcSAXEventDispatcher<> handler{declpolicy};
+         control.parse(&handler);
+      }catch(SAXError e){
+         std::cerr<<e.message;
+      }
 
       if(timing) {
          auto end = std::chrono::high_resolution_clock::now();
          std::cerr << "\n\n" << std::chrono::duration<double, std::milli>(end-start).count() << "ms passed from the first policy's execution." << std::endl;
          start = std::chrono::high_resolution_clock::now();
       }
-
-      // Second Run
+      srcPtrData *data;
       srcPtrPolicy *policy = new srcPtrPolicy(declpolicy->GetData(), new srcPtrDataMap());
-      srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
-      srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
-      control2.parse(&handler2);
-      srcPtrData const *data = policy->GetData();
-
+      try{
+         // Second Run
+         srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
+         srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
+         control2.parse(&handler2);
+      }catch(SAXError e){
+         std::cerr<<e.message;
+      }
+      data = policy->GetData();
       if(vm.count("graphviz"))
          data->PrintGraphViz();
       else
