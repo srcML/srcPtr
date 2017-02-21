@@ -37,7 +37,7 @@ public:
       for (auto x : data) {
          std::cout << x.first.linenumber << " - " << x.first.nameoftype << (x.first.isPointer ? " * " : " & ") << x.first << std::endl;
          for (auto y : x.second)
-			      std::cout << y.linenumber << " - " << y.nameoftype << " " << y << " ";
+			      std::cout << y.linenumber << " - " << y.nameoftype << " " << y << " " << std::endl;
          std::cout << std::endl << std::endl << std::endl;
       }
    }
