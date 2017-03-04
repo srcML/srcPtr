@@ -39,9 +39,11 @@ public:
    srcPtrPolicy(srcPtrDeclPolicy::srcPtrDeclData decldata, std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners) {
       declData = decldata;
       declared.CreateFrame();
+
       declTypePolicy = new DeclTypePolicy({this});
       callPolicy = new CallPolicy({this});
       funcSigPolicy = new FunctionSignaturePolicy({this});
+
       InitializeEventHandlers();
    }
 
@@ -102,8 +104,12 @@ protected:
 
 private:
    T data;
+
+   // Code information
    srcPtrDeclPolicy::srcPtrDeclData declData;
    srcPtrDeclStack declared;
+
+   // Policies
    DeclTypePolicy *declTypePolicy;
    CallPolicy *callPolicy;
    FunctionSignaturePolicy *funcSigPolicy;
@@ -111,10 +117,10 @@ private:
    // For use in collecting assignments
    srcPtrVar lhs;
    std::string modifierlhs;
-   std::string modifierrhs;
    srcPtrVar rhs;
-   bool assignmentOperator = false;
+   std::string modifierrhs;
 
+   bool assignmentOperator = false;
    bool withinDeclAssignment = false;
 
    void ResetVariables() {
