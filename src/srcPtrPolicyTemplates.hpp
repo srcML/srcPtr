@@ -1,5 +1,5 @@
-#ifndef INCLUDED_SRC_PTR_POLICY_DATA_HPP
-#define INCLUDED_SRC_PTR_POLICY_DATA_HPP
+#ifndef INCLUDED_SRC_PTR_POLICY_TEMPLATES_HPP
+#define INCLUDED_SRC_PTR_POLICY_TEMPLATES_HPP
 
 #include <DeclTypePolicy.hpp>
 #include <srcPtrUtilities.hpp>
@@ -11,19 +11,7 @@
 
 #include <boost/pending/detail/disjoint_sets.hpp>
 
-class srcPtrData {
-public:
-   virtual ~srcPtrData() {};
-
-   virtual void AddPointsToRelationship(srcPtrVar, srcPtrVar) = 0;
-   virtual void Print() const = 0;
-   virtual void PrintGraphViz() const = 0;
-   virtual std::vector<srcPtrVar> GetPointsTo(srcPtrVar) const = 0;
-	virtual std::vector<srcPtrVar> GetPointers() const = 0;
-   virtual srcPtrData *Clone() const = 0;
-};
-
-class srcPtrDataMap : public srcPtrData {
+class srcPtrDataMap {
 public:
    ~srcPtrDataMap() { }; 
 
@@ -75,10 +63,10 @@ private:
 };
 
 /*
-class srcPtrDataSteensgaard : srcPtrData {
+class srcPtrDataSteensgaard {
 public:
    void AddPointsToRelationship(srcPtrVar lhs, srcPtrVar rhs) {
-
+		
    }
 
    void Print() {
@@ -89,7 +77,9 @@ public:
 
    }
 private:
-   disjoint_sets<
+	std::vector<int>  rank (100);
+	std::vector<int>  parent (100);
+   disjoint_sets<int*, int*> ds(&rank[0], &parent[0]);
 };*/
 
 #endif

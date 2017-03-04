@@ -25,7 +25,7 @@
 
 #include <srcPtrDeclPolicy.hpp>
 #include <srcPtrPolicy.hpp>
-#include <srcPtrPolicyData.hpp>
+#include <srcPtrPolicyTemplates.hpp>
 
 #include <fstream>
 #include <iostream>
@@ -76,8 +76,8 @@ int main(int argc, char *argv[]) {
          std::cerr << "\n\n" << std::chrono::duration<double, std::milli>(end-start).count() << "ms passed from the first policy's execution." << std::endl;
          start = std::chrono::high_resolution_clock::now();
       }
-      srcPtrData *data;
-      srcPtrPolicy *policy = new srcPtrPolicy(declpolicy->GetData(), new srcPtrDataMap());
+      srcPtrDataMap *data;
+      srcPtrPolicy<srcPtrDataMap> *policy = new srcPtrPolicy<srcPtrDataMap>(declpolicy->GetData());
       try{
          // Second Run
          srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
@@ -91,7 +91,6 @@ int main(int argc, char *argv[]) {
          data->PrintGraphViz();
       else
          data->Print();
-      delete data;
 
       if(timing) {
          auto end = std::chrono::high_resolution_clock::now();

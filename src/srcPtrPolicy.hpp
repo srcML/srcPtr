@@ -8,7 +8,6 @@
 #include <srcSAXHandler.hpp>
 
 #include <srcPtrDeclPolicy.hpp>
-#include <srcPtrPolicyData.hpp>
 #include <srcPtrUtilities.hpp>
 
 #include <algorithm>
@@ -18,6 +17,17 @@
 #include <string>
 #include <vector>
 
+/*
+Template must implement:
+   virtual void AddPointsToRelationship(srcPtrVar, srcPtrVar) = 0;
+   virtual void Print() const = 0;
+   virtual void PrintGraphViz() const = 0;
+   virtual std::vector<srcPtrVar> GetPointsTo(srcPtrVar) const = 0;
+   virtual std::vector<srcPtrVar> GetPointers() const = 0;
+   virtual srcPtrData *Clone() const = 0;
+*/
+
+template <class T>
 class srcPtrPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEventDispatch::PolicyDispatcher, public srcSAXEventDispatch::PolicyListener {
 public:
    ~srcPtrPolicy() {
@@ -26,9 +36,8 @@ public:
       delete callPolicy;
       delete funcSigPolicy;
    }
-   srcPtrPolicy(srcPtrDeclPolicy::srcPtrDeclData decldata, srcPtrData *outputtype, std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners) {
+   srcPtrPolicy(srcPtrDeclPolicy::srcPtrDeclData decldata, std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners) {
       declData = decldata;
-      data = outputtype;
       declared.CreateFrame();
       declTypePolicy = new DeclTypePolicy({this});
       callPolicy = new CallPolicy({this});
@@ -42,7 +51,7 @@ public:
          declared.AddVarToFrame(srcPtrVar(declarationData));
 
          if((withinDeclAssignment) && ((declarationData.isPointer || declarationData.isReference)))   //Pointer assignment on initialization
-            data->AddPointsToRelationship(declarationData, lhs);
+            data.AddPointsToRelationship(declarationData, lhs);
       } else if (typeid(CallPolicy) == typeid(*policy)) {
          CallPolicy::CallData callData = *policy->Data<CallPolicy::CallData>();
 
@@ -68,7 +77,7 @@ public:
                std::string name = *it;
                srcPtrVar var1 = called.parameters[i];
                srcPtrVar var2 = declared.GetPreviousOccurence(name);
-               data->AddPointsToRelationship(var1, var2);
+               data.AddPointsToRelationship(var1, var2);
                ++i;
             }
          }
@@ -81,18 +90,18 @@ public:
       }
    }
 
-   srcPtrData *GetData() {
-      srcPtrData *p = data;
+   T *GetData() {
+      T *p = &data;
       return p;
    }
 
 protected:
    void *DataInner() const override {
-      return data->Clone();
+      return data.Clone();
    }
 
 private:
-   srcPtrData *data;
+   T data;
    srcPtrDeclPolicy::srcPtrDeclData declData;
    srcPtrDeclStack declared;
    DeclTypePolicy *declTypePolicy;
@@ -168,7 +177,7 @@ private:
 
          if (lhsIsPointer && assignmentOperator) {
             if(!rhs.empty())
-               data->AddPointsToRelationship(lhs, rhs);
+               data.AddPointsToRelationship(lhs, rhs);
          }
          ResetVariables();
       };
