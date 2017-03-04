@@ -61,13 +61,14 @@ int main(int argc, char *argv[]) {
 
    if(vm.count("input")) {
       auto start = std::chrono::high_resolution_clock::now();
+
       srcPtrDeclPolicy *declpolicy = new srcPtrDeclPolicy();
-      try{
+      try {
          // First Run
          srcSAXController control(vm["input"].as<std::vector<std::string>>()[0].c_str());
          srcSAXEventDispatch::srcSAXEventDispatcher<> handler{declpolicy};
          control.parse(&handler);
-      }catch(SAXError e){
+      } catch(SAXError e) {
          std::cerr<<e.message;
       }
 
@@ -76,16 +77,18 @@ int main(int argc, char *argv[]) {
          std::cerr << "\n\n" << std::chrono::duration<double, std::milli>(end-start).count() << "ms passed from the first policy's execution." << std::endl;
          start = std::chrono::high_resolution_clock::now();
       }
+
       srcPtrDataMap *data;
       srcPtrPolicy<srcPtrDataMap> *policy = new srcPtrPolicy<srcPtrDataMap>(declpolicy->GetData());
-      try{
+      try {
          // Second Run
          srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
          srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
          control2.parse(&handler2);
-      }catch(SAXError e){
+      } catch(SAXError e) {
          std::cerr<<e.message;
       }
+
       data = policy->GetData();
       if(vm.count("graphviz"))
          data->PrintGraphViz();
