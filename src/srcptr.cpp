@@ -51,7 +51,6 @@ int main(int argc, char *argv[]) {
    po::variables_map vm;
    po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm); 
 
-
    if(vm.count("help")) {
       std::cout << desc << std::endl;
       return 0;
@@ -69,7 +68,7 @@ int main(int argc, char *argv[]) {
          srcSAXEventDispatch::srcSAXEventDispatcher<> handler{declpolicy};
          control.parse(&handler);
       } catch(SAXError e) {
-         std::cerr<<e.message;
+         std::cerr << e.message;
       }
 
       if(timing) {
@@ -86,7 +85,7 @@ int main(int argc, char *argv[]) {
          srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
          control2.parse(&handler2);
       } catch(SAXError e) {
-         std::cerr<<e.message;
+         std::cerr << e.message;
       }
 
       data = policy->GetData();
