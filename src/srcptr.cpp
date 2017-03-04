@@ -41,9 +41,9 @@ int main(int argc, char *argv[]) {
    po::options_description desc("Options");
    desc.add_options()
       ("help", "produce help message")
-      ("graphviz", "generate graphViz output")
+      ("graphviz,g", "generate graphViz output")
       ("timer,t", "measure time it takes srcPtr to execute")
-      ("input",po::value<std::vector<std::string>>()->required(), "name of srcML file to analyze");
+      ("input", po::value<std::vector<std::string>>()->required(), "name of srcML file to analyze");
 
    po::positional_options_description p;
    p.add("input", -1);
