@@ -38,12 +38,19 @@ int main(int argc, char *argv[]) {
 
    namespace po = boost::program_options;
    
-   po::options_description desc("Options");
-   desc.add_options()
+   po::options_description generic("Options");
+   generic.add_options()
       ("help", "produce help message")
       ("graphviz,g", "generate graphViz output")
       ("timer,t", "measure time it takes srcPtr to execute")
       ("input", po::value<std::vector<std::string>>()->required(), "name of srcML file to analyze");
+
+   po::options_description algorithms("Pointer Analysis Algorithms");
+   algorithms.add_options()
+      ("map,m", "use a simple map algorithm");
+
+   po::options_description desc;
+   desc.add(generic).add(algorithms);
 
    po::positional_options_description p;
    p.add("input", -1);
@@ -77,22 +84,24 @@ int main(int argc, char *argv[]) {
          start = std::chrono::high_resolution_clock::now();
       }
 
-      srcPtrDataMap *data;
-      srcPtrPolicy<srcPtrDataMap> *policy = new srcPtrPolicy<srcPtrDataMap>(declpolicy->GetData());
-      try {
-         // Second Run
-         srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
-         srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
-         control2.parse(&handler2);
-      } catch(SAXError e) {
-         std::cerr << e.message;
-      }
+      if(vm.count("map")) {
+         srcPtrDataMap *data;
+         srcPtrPolicy<srcPtrDataMap> *policy = new srcPtrPolicy<srcPtrDataMap>(declpolicy->GetData());
+         try {
+            // Second Run
+            srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
+            srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
+            control2.parse(&handler2);
+         } catch(SAXError e) {
+            std::cerr << e.message;
+         }
 
-      data = policy->GetData();
-      if(vm.count("graphviz"))
-         data->PrintGraphViz();
-      else
-         data->Print();
+         data = policy->GetData();
+         if(vm.count("graphviz"))
+           data->PrintGraphViz();
+         else
+            data->Print();
+      }
 
       if(timing) {
          auto end = std::chrono::high_resolution_clock::now();
