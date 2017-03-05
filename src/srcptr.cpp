@@ -63,8 +63,6 @@ int main(int argc, char *argv[]) {
       return 0;
    }
 
-   bool timing = vm.count("timer");
-
    if(vm.count("input")) {
       auto start = std::chrono::high_resolution_clock::now();
 
@@ -78,7 +76,7 @@ int main(int argc, char *argv[]) {
          std::cerr << e.message;
       }
 
-      if(timing) {
+      if(vm.count("timer")) {
          auto end = std::chrono::high_resolution_clock::now();
          std::cerr << "\n\n" << std::chrono::duration<double, std::milli>(end-start).count() << "ms passed from the first policy's execution." << std::endl;
          start = std::chrono::high_resolution_clock::now();
@@ -103,7 +101,7 @@ int main(int argc, char *argv[]) {
             data->Print();
       }
 
-      if(timing) {
+      if(vm.count("timer")) {
          auto end = std::chrono::high_resolution_clock::now();
          std::cerr << "\n\n" << std::chrono::duration<double, std::milli>(end-start).count() << "ms passed from the second policy's execution." << std::endl;
       }
