@@ -19,12 +19,13 @@
 
 /*
 Template must implement:
-   virtual void AddPointsToRelationship(srcPtrVar, srcPtrVar) = 0;
-   virtual void Print() const = 0;
-   virtual void PrintGraphViz() const = 0;
-   virtual std::vector<srcPtrVar> GetPointsTo(srcPtrVar) const = 0;
-   virtual std::vector<srcPtrVar> GetPointers() const = 0;
-   virtual srcPtrData *Clone() const = 0;
+   virtual void AddPointsToRelationship(srcPtrVar, srcPtrVar);
+   virtual void AddAssignmentRelationship(srcPtrVar, srcPtrVar);
+   virtual void Print() const;
+   virtual void PrintGraphViz() const;
+   virtual std::vector<srcPtrVar> GetPointsTo(srcPtrVar) const;
+   virtual std::vector<srcPtrVar> GetPointers() const;
+   virtual srcPtrData *Clone() const;
 */
 
 template <class T>
@@ -52,8 +53,8 @@ public:
          DeclTypePolicy::DeclTypeData declarationData = *policy->Data<DeclTypePolicy::DeclTypeData>();
          declared.AddVarToFrame(srcPtrVar(declarationData));
 
-         if((withinDeclAssignment) && ((declarationData.isPointer || declarationData.isReference)))   //Pointer assignment on initialization
-            data.AddPointsToRelationship(declarationData, lhs);
+         if(withinDeclAssignment)   //Pointer assignment on initialization
+            ResolveAssignment(declarationData, "", lhs, "");   //TODO: take into account modifiers
       } else if (typeid(CallPolicy) == typeid(*policy)) {
          CallPolicy::CallData callData = *policy->Data<CallPolicy::CallData>();
 
@@ -79,7 +80,8 @@ public:
                std::string name = *it;
                srcPtrVar var1 = called.parameters[i];
                srcPtrVar var2 = declared.GetPreviousOccurence(name);
-               data.AddPointsToRelationship(var1, var2);
+
+               ResolveAssignment(var1, "", var2, ""); //TODO: take into account modifiers
                ++i;
             }
          }
@@ -132,6 +134,20 @@ private:
       withinDeclAssignment = false;
    }
 
+   void ResolveAssignment(srcPtrVar left, std::string modifierleft, srcPtrVar right, std::string modifierright) {
+      if(!rhs.empty()) {
+         if(left.isPointer && (modifierleft != "*")) {
+            if(modifierright == "&")
+               data.AddPointsToRelationship(left, right);
+            else
+               data.AddAssignmentRelationship(left, right);
+         }
+         else if (left.isReference) {
+            data.AddPointsToRelationship(left, right);
+         }
+      }
+   }
+
    void InitializeEventHandlers() {
       using namespace srcSAXEventDispatch;
 
@@ -179,12 +195,8 @@ private:
       };
 
       closeEventMap[ParserState::exprstmt] = [this](srcSAXEventContext &ctx) {
-         bool lhsIsPointer = ((lhs.isPointer && (modifierlhs != "*")) || lhs.isReference);
-
-         if (lhsIsPointer && assignmentOperator) {
-            if(!rhs.empty())
-               data.AddPointsToRelationship(lhs, rhs);
-         }
+         if(assignmentOperator)
+            ResolveAssignment(lhs, modifierlhs, rhs, modifierrhs);
          ResetVariables();
       };
 

@@ -21,6 +21,12 @@ public:
       }
    }
 
+   void AddAssignmentRelationship(srcPtrVar lhs, srcPtrVar rhs) { //Same as function above, for this implementation.
+      if (std::find(data[lhs].begin(), data[lhs].end(), rhs) == data[lhs].end()) {
+         data[lhs].push_back(rhs);
+      }
+   }
+
    void Print() const {
       for (auto x : data) {
          std::cout << x.first.linenumber << " - " << x.first.nameoftype << (x.first.isPointer ? " * " : " & ") << x.first << std::endl;
