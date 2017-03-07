@@ -47,7 +47,8 @@ int main(int argc, char *argv[]) {
 
    po::options_description algorithms("Pointer Analysis Algorithms");
    algorithms.add_options()
-      ("map,m", "use a simple map algorithm");
+      ("map,m", "use a simple map algorithm")
+      ("anderson,a", "use anderson's pointer analysis algorithm.");
 
    po::options_description desc;
    desc.add(generic).add(algorithms);
@@ -85,6 +86,23 @@ int main(int argc, char *argv[]) {
       if(vm.count("map")) {
          srcPtrDataMap *data;
          srcPtrPolicy<srcPtrDataMap> *policy = new srcPtrPolicy<srcPtrDataMap>(declpolicy->GetData());
+         try {
+            // Second Run
+            srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
+            srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
+            control2.parse(&handler2);
+         } catch(SAXError e) {
+            std::cerr << e.message;
+         }
+
+         data = policy->GetData();
+         if(vm.count("graphviz"))
+           data->PrintGraphViz();
+         else
+            data->Print();
+      } else if(vm.count("anderson")) {
+         srcPtrAnderson *data;
+         srcPtrPolicy<srcPtrAnderson> *policy = new srcPtrPolicy<srcPtrAnderson>(declpolicy->GetData());
          try {
             // Second Run
             srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());

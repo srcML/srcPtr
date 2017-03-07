@@ -21,11 +21,11 @@
 Template must implement:
    virtual void AddPointsToRelationship(srcPtrVar, srcPtrVar);
    virtual void AddAssignmentRelationship(srcPtrVar, srcPtrVar);
-   virtual void Print() const;
-   virtual void PrintGraphViz() const;
-   virtual std::vector<srcPtrVar> GetPointsTo(srcPtrVar) const;
-   virtual std::vector<srcPtrVar> GetPointers() const;
-   virtual srcPtrData *Clone() const;
+   virtual void Print();
+   virtual void PrintGraphViz();
+   virtual std::vector<srcPtrVar> GetPointsTo(srcPtrVar);
+   virtual std::vector<srcPtrVar> GetPointers();
+   virtual srcPtrData *Clone();
 */
 
 template <class T>
