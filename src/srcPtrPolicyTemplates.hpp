@@ -127,15 +127,30 @@ public:
 
 private:
 
+   //Resolves dependencies of each pointer
    void Finalize() {
-      for(auto x : pointerqueue) {
-         //x.first is pointer; x.second is vector of pointer assignments.
-         for(auto ptr : x.second) {
-            for(auto element : pointsto[ptr])
-               pointsto[x.first].push_back(element); 
+      for(auto var : pointsto) {
+         FinalizeVar(var.first);
+      }
+      for(auto var : pointerqueue) {
+         FinalizeVar(var.first);
+      }
+   }
+
+   //Resolves dependencies of pointer
+   // TODO: an infinite loop is possible with cyclic dependencies of two pointers. (x = y; y = x;)
+   void FinalizeVar(srcPtrVar ptr) {
+      for (auto var : pointerqueue[ptr]) {
+         if(pointerqueue[var].size() == 0) {
+            for (auto element : pointsto[var])
+               pointsto[ptr].push_back(element);
+         } else {
+            FinalizeVar(var);
+            for (auto element : pointsto[var])
+               pointsto[ptr].push_back(element);
          }
       }
-      pointerqueue.clear();
+      pointerqueue[ptr].clear();
    }
 
    std::map<srcPtrVar, std::vector<srcPtrVar>> pointsto;
