@@ -11,6 +11,25 @@
 
 #include <boost/pending/detail/disjoint_sets.hpp>
 
+class srcPtrEmptyAlgorithm {
+public:
+   ~srcPtrEmptyAlgorithm() { }; 
+
+   void AddPointsToRelationship(srcPtrVar lhs, srcPtrVar rhs) { }
+
+   void AddAssignmentRelationship(srcPtrVar lhs, srcPtrVar rhs) { }
+
+   void Print() { }
+
+   void PrintGraphViz() { }
+
+   std::vector<srcPtrVar> GetPointsTo(srcPtrVar ptr) { return std::vector<srcPtrVar>(); }
+
+   std::vector<srcPtrVar> GetPointers() { return std::vector<srcPtrVar>(); }
+
+   srcPtrEmptyAlgorithm *Clone() const { return (new srcPtrEmptyAlgorithm(*this)); }
+};
+
 class srcPtrDataMap {
 public:
    ~srcPtrDataMap() { }; 
