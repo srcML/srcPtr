@@ -117,6 +117,19 @@ int main(int argc, char *argv[]) {
            data->PrintGraphViz();
          else
             data->Print();
+      } else {
+	      srcPtrEmptyAlgorithm *data;
+         srcPtrPolicy<srcPtrEmptyAlgorithm> *policy = new srcPtrPolicy<srcPtrEmptyAlgorithm>(declpolicy->GetData());
+         try {
+            // Second Run
+            srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
+            srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
+            control2.parse(&handler2);
+         } catch(SAXError e) {
+            std::cerr << e.message;
+         }
+
+         std::cout << "You specified no algorithm so no pointer data was collected. Please specify an algorithm as defined in --help." << std::endl;
       }
 
       if(vm.count("timer")) {
