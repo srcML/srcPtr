@@ -91,10 +91,10 @@ std::ostream &operator<<(std::ostream &sout, const Variable &var) {
 
 
 
-class srcPtrDeclFrame {
+class DeclFrame {
 public:
-   srcPtrDeclFrame(){};
-   srcPtrDeclFrame(Variable var) {
+   DeclFrame(){};
+   DeclFrame(Variable var) {
       declarations.insert(std::pair<std::string, Variable>(var.SimpleIdentifier(), var));
    }
    bool ContainsName(std::string name) {
@@ -115,10 +115,10 @@ private:
 class srcPtrDeclStack {
 public:
    void CreateFrame() {
-      declared.push_front(srcPtrDeclFrame());
+      declared.push_front(DeclFrame());
    }
    void CreateFrame(Variable var) {
-      declared.push_front(srcPtrDeclFrame(var));
+      declared.push_front(DeclFrame(var));
    }
    void PopFrame() {
       declared.pop_front();
@@ -135,7 +135,7 @@ public:
    }
 
 private:
-   std::deque<srcPtrDeclFrame> declared;
+   std::deque<DeclFrame> declared;
 };
 
 
