@@ -43,7 +43,7 @@ void TestDeclStack() {
       var3.nameofidentifier = "var3";
       var3.linenumber = 3;
 
-      srcPtrDeclStack stack;
+      DeclStack stack;
       stack.CreateFrame();
       stack.AddVarToFrame(var1);
       stack.AddVarToFrame(var2);
@@ -66,7 +66,7 @@ void TestDeclStack() {
       var3.nameofidentifier = "var";
       var3.linenumber = 3;
 
-      srcPtrDeclStack stack;
+      DeclStack stack;
       stack.CreateFrame(var1);
       stack.CreateFrame(var2);
       stack.CreateFrame(var3);

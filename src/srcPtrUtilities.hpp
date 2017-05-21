@@ -112,7 +112,7 @@ private:
    std::map<std::string, Variable> declarations; // Name to Variable
 };
 
-class srcPtrDeclStack {
+class DeclStack {
 public:
    void CreateFrame() {
       declared.push_front(DeclFrame());

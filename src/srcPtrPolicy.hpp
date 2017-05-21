@@ -109,7 +109,7 @@ private:
 
    // Code information
    srcPtrDeclPolicy::srcPtrDeclData declData;
-   srcPtrDeclStack declared;
+   DeclStack declared;
 
    // Policies
    DeclTypePolicy *declTypePolicy;
