@@ -19,22 +19,22 @@ class srcPtrTestAlgorithm {
 public:
 	~srcPtrTestAlgorithm() { }; 
 
-	void AddPointsToRelationship(srcPtrVar lhs, srcPtrVar rhs) { pointsToRelationships.push_back(std::pair<srcPtrVar, srcPtrVar>(lhs, rhs)); }
+	void AddPointsToRelationship(Variable lhs, Variable rhs) { pointsToRelationships.push_back(std::pair<Variable, Variable>(lhs, rhs)); }
 
-	void AddAssignmentRelationship(srcPtrVar lhs, srcPtrVar rhs) { assignmentRelationships.push_back(std::pair<srcPtrVar, srcPtrVar>(lhs, rhs)); }
+	void AddAssignmentRelationship(Variable lhs, Variable rhs) { assignmentRelationships.push_back(std::pair<Variable, Variable>(lhs, rhs)); }
 
 	void Print() { }
 
 	void PrintGraphViz() { }
 
-	std::vector<srcPtrVar> GetPointsTo(srcPtrVar ptr) { return std::vector<srcPtrVar>(); }
+	std::vector<Variable> GetPointsTo(Variable ptr) { return std::vector<Variable>(); }
 
-	std::vector<srcPtrVar> GetPointers() { return std::vector<srcPtrVar>(); }
+	std::vector<Variable> GetPointers() { return std::vector<Variable>(); }
 
 	srcPtrTestAlgorithm *Clone() const { return (new srcPtrTestAlgorithm(*this)); }
 
-	std::vector<std::pair<srcPtrVar, srcPtrVar>> pointsToRelationships;
-	std::vector<std::pair<srcPtrVar, srcPtrVar>> assignmentRelationships;
+	std::vector<std::pair<Variable, Variable>> pointsToRelationships;
+	std::vector<std::pair<Variable, Variable>> assignmentRelationships;
 
 };
 

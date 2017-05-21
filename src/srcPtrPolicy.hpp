@@ -19,12 +19,12 @@
 
 /*
 Template must implement:
-   virtual void AddPointsToRelationship(srcPtrVar, srcPtrVar);
-   virtual void AddAssignmentRelationship(srcPtrVar, srcPtrVar);
+   virtual void AddPointsToRelationship(Variable, Variable);
+   virtual void AddAssignmentRelationship(Variable, Variable);
    virtual void Print();
    virtual void PrintGraphViz();
-   virtual std::vector<srcPtrVar> GetPointsTo(srcPtrVar);
-   virtual std::vector<srcPtrVar> GetPointers();
+   virtual std::vector<Variable> GetPointsTo(Variable);
+   virtual std::vector<Variable> GetPointers();
    virtual srcPtrData *Clone();
 */
 
@@ -51,7 +51,7 @@ public:
    void Notify(const PolicyDispatcher *policy, const srcSAXEventDispatch::srcSAXEventContext &ctx) override {
       if (typeid(DeclTypePolicy) == typeid(*policy)) {
          DeclTypePolicy::DeclTypeData declarationData = *policy->Data<DeclTypePolicy::DeclTypeData>();
-         declared.AddVarToFrame(srcPtrVar(declarationData));
+         declared.AddVarToFrame(Variable(declarationData));
 
          if(withinDeclAssignment)   //Pointer assignment on initialization
             ResolveAssignment(declarationData, "", lhs, "");   //TODO: take into account modifiers
@@ -78,8 +78,8 @@ public:
          for(auto it = params.begin(); it != params.end(); ++it) {
             if(called.parameters.size() < i) {
                std::string name = *it;
-               srcPtrVar var1 = called.parameters[i];
-               srcPtrVar var2 = declared.GetPreviousOccurence(name);
+               Variable var1 = called.parameters[i];
+               Variable var2 = declared.GetPreviousOccurence(name);
 
                ResolveAssignment(var1, "", var2, ""); //TODO: take into account modifiers
                ++i;
@@ -88,7 +88,7 @@ public:
       } else if (typeid(FunctionSignaturePolicy) == typeid(*policy)) {
          FunctionSignaturePolicy::SignatureData signatureData = *policy->Data<FunctionSignaturePolicy::SignatureData>();
          srcPtrFunction funcSig = signatureData;
-         for(srcPtrVar var : funcSig.parameters) {
+         for(Variable var : funcSig.parameters) {
             declared.AddVarToFrame(var);
          }
       }
@@ -117,9 +117,9 @@ private:
    FunctionSignaturePolicy *funcSigPolicy;
 
    // For use in collecting assignments
-   srcPtrVar lhs;
+   Variable lhs;
    std::string modifierlhs;
-   srcPtrVar rhs;
+   Variable rhs;
    std::string modifierrhs;
 
    bool assignmentOperator = false;
@@ -134,7 +134,7 @@ private:
       withinDeclAssignment = false;
    }
 
-   void ResolveAssignment(srcPtrVar left, std::string modifierleft, srcPtrVar right, std::string modifierright) {
+   void ResolveAssignment(Variable left, std::string modifierleft, Variable right, std::string modifierright) {
       if(!rhs.empty()) {
          if(left.isPointer && (modifierleft != "*")) {
             if(modifierright == "&")
@@ -171,11 +171,11 @@ private:
       closeEventMap[ParserState::name] = [this](srcSAXEventContext &ctx) {
          if (ctx.IsOpen(ParserState::expr)) {
             if (lhs.nameofidentifier == "") {
-               srcPtrVar decl = declared.GetPreviousOccurence(ctx.currentToken);
+               Variable decl = declared.GetPreviousOccurence(ctx.currentToken);
                lhs = decl;
 
             } else {
-               srcPtrVar decl = declared.GetPreviousOccurence(ctx.currentToken);
+               Variable decl = declared.GetPreviousOccurence(ctx.currentToken);
                rhs = decl;
             }
          }

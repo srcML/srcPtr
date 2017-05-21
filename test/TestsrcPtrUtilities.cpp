@@ -8,7 +8,7 @@
 #include <vector>
 #include <string>
 
-void TestSrcPtrVar() {
+void TestVariable() {
 	{
 		std::vector<std::string> s;
 		s.push_back("std");
@@ -23,7 +23,7 @@ void TestSrcPtrVar() {
 		data.isPointer = true;
 		data.isStatic = false;
 
-		srcPtrVar x(data);
+		Variable x(data);
 
 		assert(x == data);
 	}
@@ -31,15 +31,15 @@ void TestSrcPtrVar() {
 
 void TestDeclStack() {
    {
-      srcPtrVar var1;
+      Variable var1;
       var1.nameofidentifier = "var1";
       var1.linenumber = 1;
 
-      srcPtrVar var2;
+      Variable var2;
       var2.nameofidentifier = "var2";
       var2.linenumber = 2;
 
-      srcPtrVar var3;
+      Variable var3;
       var3.nameofidentifier = "var3";
       var3.linenumber = 3;
 
@@ -54,15 +54,15 @@ void TestDeclStack() {
       assert(stack.GetPreviousOccurence("var3") == var3);
    }
    {
-      srcPtrVar var1;
+      Variable var1;
       var1.nameofidentifier = "var";
       var1.linenumber = 1;
 
-      srcPtrVar var2;
+      Variable var2;
       var2.nameofidentifier = "var";
       var2.linenumber = 2;
 
-      srcPtrVar var3;
+      Variable var3;
       var3.nameofidentifier = "var";
       var3.linenumber = 3;
 
@@ -75,7 +75,7 @@ void TestDeclStack() {
       assert(stack.GetPreviousOccurence("var") == var3);
       stack.PopFrame();
 
-      srcPtrVar var4;
+      Variable var4;
       var4.nameofidentifier = "var4";
       var4.linenumber = 10;
 
@@ -111,7 +111,7 @@ void TestsrcPtrFunction() {
 }
 
 int main() {
-	TestSrcPtrVar();
+	TestVariable();
    TestDeclStack();
 	TestsrcPtrFunction();
    return 0;

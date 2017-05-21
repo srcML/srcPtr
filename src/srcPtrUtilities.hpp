@@ -11,12 +11,12 @@
 #include <utility>
 #include <vector>
 
-struct srcPtrVar {
-   srcPtrVar() : linenumber{-1}, isConst{false}, isReference{false}, isPointer{false}, isStatic{false} {
+struct Variable {
+   Variable() : linenumber{-1}, isConst{false}, isReference{false}, isPointer{false}, isStatic{false} {
       
    }
 
-   srcPtrVar(const DeclTypePolicy::DeclTypeData &data) {
+   Variable(const DeclTypePolicy::DeclTypeData &data) {
       nameoftype = data.nameoftype;
       nameofidentifier = data.nameofidentifier;
       namespaces = data.namespaces;
@@ -27,7 +27,7 @@ struct srcPtrVar {
       isStatic = data.isPointer;
    }
 
-   srcPtrVar(const ParamTypePolicy::ParamData &data) {
+   Variable(const ParamTypePolicy::ParamData &data) {
       nameoftype = data.nameoftype;
       nameofidentifier = data.nameofidentifier;
       namespaces = data.namespaces;
@@ -38,13 +38,13 @@ struct srcPtrVar {
       isStatic = data.isPointer;
    }
 
-   bool operator==(const srcPtrVar &rhs) const {
+   bool operator==(const Variable &rhs) const {
       // Compare each of the variables
       return ((this->nameoftype == rhs.nameoftype) && (this->nameofidentifier == rhs.nameofidentifier) && (this->namespaces == rhs.namespaces) && (this->linenumber == rhs.linenumber) && (this->isConst == rhs.isConst) && (this->isPointer == rhs.isPointer) && (this->isReference == rhs.isReference) &&
               (this->isStatic == rhs.isStatic));
    }
 
-   bool operator<(const srcPtrVar &rhs) const { // Function required for STL datastructures
+   bool operator<(const Variable &rhs) const { // Function required for STL datastructures
       return (this->nameofidentifier < rhs.nameofidentifier);
    }
 
@@ -60,7 +60,7 @@ struct srcPtrVar {
    }
 
    bool empty() {
-      srcPtrVar empty;
+      Variable empty;
       return (*this == empty);
    }
 
@@ -71,7 +71,7 @@ struct srcPtrVar {
       return nameofidentifier;
    }
 
-   friend std::ostream &operator<<(std::ostream &sout, const srcPtrVar &var);
+   friend std::ostream &operator<<(std::ostream &sout, const Variable &var);
 
    std::string nameoftype;
    std::string nameofidentifier;
@@ -84,7 +84,7 @@ struct srcPtrVar {
    bool isStatic;
 };
 
-std::ostream &operator<<(std::ostream &sout, const srcPtrVar &var) {
+std::ostream &operator<<(std::ostream &sout, const Variable &var) {
    sout << var.nameofidentifier;
    return sout;
 }
@@ -94,22 +94,22 @@ std::ostream &operator<<(std::ostream &sout, const srcPtrVar &var) {
 class srcPtrDeclFrame {
 public:
    srcPtrDeclFrame(){};
-   srcPtrDeclFrame(srcPtrVar var) {
-      declarations.insert(std::pair<std::string, srcPtrVar>(var.SimpleIdentifier(), var));
+   srcPtrDeclFrame(Variable var) {
+      declarations.insert(std::pair<std::string, Variable>(var.SimpleIdentifier(), var));
    }
    bool ContainsName(std::string name) {
       return (declarations.find(name) != declarations.end());
    }
-   srcPtrVar GetVar(std::string name) {
+   Variable GetVar(std::string name) {
       return declarations[name];
    }
-   void AddVar(srcPtrVar var) {
+   void AddVar(Variable var) {
       if (!ContainsName(var.SimpleIdentifier()))
-         declarations.insert(std::pair<std::string, srcPtrVar>(var.SimpleIdentifier(), var));
+         declarations.insert(std::pair<std::string, Variable>(var.SimpleIdentifier(), var));
    }
 
 private:
-   std::map<std::string, srcPtrVar> declarations; // Name to srcPtrVar
+   std::map<std::string, Variable> declarations; // Name to Variable
 };
 
 class srcPtrDeclStack {
@@ -117,21 +117,21 @@ public:
    void CreateFrame() {
       declared.push_front(srcPtrDeclFrame());
    }
-   void CreateFrame(srcPtrVar var) {
+   void CreateFrame(Variable var) {
       declared.push_front(srcPtrDeclFrame(var));
    }
    void PopFrame() {
       declared.pop_front();
    }
-   void AddVarToFrame(srcPtrVar var) {
+   void AddVarToFrame(Variable var) {
       declared.begin()->AddVar(var);
    }
-   srcPtrVar GetPreviousOccurence(std::string name) {
+   Variable GetPreviousOccurence(std::string name) {
       for (auto it = declared.begin(); it != declared.end(); ++it) {
          if (it->ContainsName(name))
             return it->GetVar(name);
       }
-      return srcPtrVar();
+      return Variable();
    }
 
 private:
@@ -194,7 +194,7 @@ public:
 	std::string returnTypeModifier;
 	std::vector<std::string> functionNamespaces;
 	std::vector<std::string> returnTypeNamespaces;
-	std::vector<srcPtrVar> parameters;
+	std::vector<Variable> parameters;
 	bool isConst;
 	bool isMethod;
 	bool isStatic;
