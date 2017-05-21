@@ -72,7 +72,7 @@ public:
             }
          }
 
-         srcPtrFunction called = declData.functionTracker.GetFunction(calledFuncName, params.size());
+         Function called = declData.functionTracker.GetFunction(calledFuncName, params.size());
 
          int i = 0;
          for(auto it = params.begin(); it != params.end(); ++it) {
@@ -87,7 +87,7 @@ public:
          }
       } else if (typeid(FunctionSignaturePolicy) == typeid(*policy)) {
          FunctionSignaturePolicy::SignatureData signatureData = *policy->Data<FunctionSignaturePolicy::SignatureData>();
-         srcPtrFunction funcSig = signatureData;
+         Function funcSig = signatureData;
          for(Variable var : funcSig.parameters) {
             declared.AddVarToFrame(var);
          }

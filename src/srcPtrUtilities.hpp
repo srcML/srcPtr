@@ -140,11 +140,11 @@ private:
 
 
 
-class srcPtrFunction {
+class Function {
 public:
-	srcPtrFunction():isConst{false}, constPointerReturn{false}, isMethod{false}, isStatic{false}, pointerToConstReturn{false}, hasAliasedReturn{false} {}
+	Function():isConst{false}, constPointerReturn{false}, isMethod{false}, isStatic{false}, pointerToConstReturn{false}, hasAliasedReturn{false} {}
 
-	srcPtrFunction(const FunctionSignaturePolicy::SignatureData& rhs) {
+	Function(const FunctionSignaturePolicy::SignatureData& rhs) {
 		linenumber = rhs.linenumber;
 		returnType = rhs.returnType;
 		functionName = rhs.functionName;
@@ -177,14 +177,14 @@ public:
 		hasAliasedReturn = false;
 	}
 
-	bool operator==(const srcPtrFunction& rhs) const {
+	bool operator==(const Function& rhs) const {
 		return ((linenumber == rhs.linenumber) && (returnType == rhs.returnType) && (functionName == rhs.functionName) && (returnTypeModifier == rhs.returnTypeModifier) &&
 				  (functionNamespaces == rhs.functionNamespaces) && (returnTypeNamespaces == rhs.returnTypeNamespaces) && (parameters == rhs.parameters) && (isConst == rhs.isConst) &&
 				  (isMethod == rhs.isMethod) && (isStatic == rhs.isStatic) && (pointerToConstReturn == rhs.pointerToConstReturn) && (constPointerReturn == rhs.constPointerReturn) &&
 				  (hasAliasedReturn == rhs.hasAliasedReturn));
 	}
 
-	bool operator<(const srcPtrFunction &rhs) const { // Function required for STL datastructures
+	bool operator<(const Function &rhs) const { // Function required for STL datastructures
 		return (functionName < rhs.functionName);
 	}
 
@@ -207,16 +207,16 @@ public:
 
 class FunctionTracker {
 public:
-	srcPtrFunction GetFunction(std::string name, int paramCount) {
+	Function GetFunction(std::string name, int paramCount) {
       return functionNames[(name + std::to_string(paramCount))];
    }
 
-   void AddFunction(srcPtrFunction toAdd) {
+   void AddFunction(Function toAdd) {
       std::string key = toAdd.functionName + std::to_string(toAdd.parameters.size()); //TODO: Take into account type of parameter
       functionNames[key] = toAdd;
    }
 private:
-	std::map<std::string, srcPtrFunction> functionNames; // (Name of function + param count) -> srcPtrFunction
+	std::map<std::string, Function> functionNames; // (Name of function + param count) -> Function
 };
 
 #endif

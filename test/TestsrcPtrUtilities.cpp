@@ -90,7 +90,7 @@ void TestDeclStack() {
    }
 }
 
-void TestsrcPtrFunction() {
+void TestFunction() {
 	{
 		FunctionSignaturePolicy::SignatureData sigData;
 		ParamTypePolicy::ParamData paramData;
@@ -102,10 +102,10 @@ void TestsrcPtrFunction() {
 		sigData.returnType = "string";
 		sigData.parameters.push_back(paramData);
 
-		srcPtrFunction func = sigData;
+		Function func = sigData;
 		assert(func == sigData);
 		func.Clear();
-		srcPtrFunction empty;
+		Function empty;
 		assert(func == empty);
 	}
 }
@@ -113,6 +113,6 @@ void TestsrcPtrFunction() {
 int main() {
 	TestVariable();
    TestDeclStack();
-	TestsrcPtrFunction();
+	TestFunction();
    return 0;
 }
