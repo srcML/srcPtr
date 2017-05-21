@@ -4,7 +4,7 @@
 
 #include <srcPtrDeclPolicy.hpp>
 #include <srcPtrPolicy.hpp>
-#include <srcPtrPolicyData.hpp>
+#include <srcPtrPolicyTemplates.hpp>
 
 #include <fstream>
 #include <iostream>
@@ -54,6 +54,7 @@ void RunTests() {
 		srcPtrDeclPolicy::srcPtrDeclData data = Analyze("int main() {\nint x;\nint * y;\ny = &x;\n}");
 		assert(data.functionTracker.GetFunction("main", 0).functionName == "main");
 	}
+	std::cout << std::endl << "Finished Testing srcPtrDeclPolicy" << std::endl;
 }
 
 int main() {

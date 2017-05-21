@@ -4,14 +4,39 @@
 
 #include <srcPtrDeclPolicy.hpp>
 #include <srcPtrPolicy.hpp>
-#include <srcPtrPolicyData.hpp>
+#include <srcPtrPolicyTemplates.hpp>
 
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <cassert>
+#include <vector>
+#include <utility> 
 
 #include <srcml.h>
+
+class srcPtrTestAlgorithm {
+public:
+	~srcPtrTestAlgorithm() { }; 
+
+	void AddPointsToRelationship(srcPtrVar lhs, srcPtrVar rhs) { pointsToRelationships.push_back(std::pair<srcPtrVar, srcPtrVar>(lhs, rhs)); }
+
+	void AddAssignmentRelationship(srcPtrVar lhs, srcPtrVar rhs) { assignmentRelationships.push_back(std::pair<srcPtrVar, srcPtrVar>(lhs, rhs)); }
+
+	void Print() { }
+
+	void PrintGraphViz() { }
+
+	std::vector<srcPtrVar> GetPointsTo(srcPtrVar ptr) { return std::vector<srcPtrVar>(); }
+
+	std::vector<srcPtrVar> GetPointers() { return std::vector<srcPtrVar>(); }
+
+	srcPtrTestAlgorithm *Clone() const { return (new srcPtrTestAlgorithm(*this)); }
+
+	std::vector<std::pair<srcPtrVar, srcPtrVar>> pointsToRelationships;
+	std::vector<std::pair<srcPtrVar, srcPtrVar>> assignmentRelationships;
+
+};
 
 std::string StringToSrcML(std::string str){
 	struct srcml_archive* archive;
@@ -38,66 +63,40 @@ std::string StringToSrcML(std::string str){
 	return std::string(ch);
 }
 
-srcPtrData * Analyze(std::string codestr) {
-	std::string srcmlstr = StringToSrcML(codestr);
+srcPtrTestAlgorithm * Analyze(std::string codestr) {
+	try {
+		std::string srcmlstr = StringToSrcML(codestr);
 
-	// First Run
-	srcPtrDeclPolicy *declpolicy = new srcPtrDeclPolicy();
-	srcSAXController control(srcmlstr);
-	srcSAXEventDispatch::srcSAXEventDispatcher<> handler{declpolicy};
-	control.parse(&handler);
+		// First Run
+		srcPtrDeclPolicy *declpolicy = new srcPtrDeclPolicy();
+		srcSAXController control(srcmlstr);
+		srcSAXEventDispatch::srcSAXEventDispatcher<> handler{declpolicy};
+		control.parse(&handler);
 
-	// Second Run
-	srcPtrPolicy *policy = new srcPtrPolicy(declpolicy->GetData(), new srcPtrDataMap());
-	srcSAXController control2(srcmlstr);
-	srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
-	control2.parse(&handler2);
+		// Second Run
+		srcPtrTestAlgorithm* algorithm;
+		srcPtrPolicy<srcPtrTestAlgorithm> *policy = new srcPtrPolicy<srcPtrTestAlgorithm>(declpolicy->GetData());
+		srcSAXController control2(srcmlstr);
+		srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
+		control2.parse(&handler2);
+ 
+		srcPtrTestAlgorithm *data = policy->GetData()->Clone();
 
-	srcPtrData *data = policy->GetData()->Clone();
-
-	return data;
+		return data;
+	} catch(SAXError e) {
+		std::cerr << e.message;
+	}
 }
 
 void RunTests() {
 	{
-		srcPtrData* data = Analyze("int main() {\nint x;\nint * y;\ny = &x;\n}");
+		srcPtrTestAlgorithm* data = Analyze("int main() {\nint x;\nint * y;\ny = &x;\n}");
 
-		assert(data->GetPointers().size() == 1);
-		assert(data->GetPointsTo(data->GetPointers()[0]).size() == 1);
-		assert(data->GetPointsTo(data->GetPointers()[0])[0].nameofidentifier == "x");
+		assert(data->assignmentRelationships.size() == 0);
+		assert(data->pointsToRelationships[0].first.nameofidentifier == "y");
+		assert(data->pointsToRelationships[0].second.nameofidentifier == "x");
 	}
-	{
-		srcPtrData* data = Analyze("int main() {\nint x = 0;\nint& y;\ny = x;\ny = 12;\nint& y2 = x;\ny2 = 12;\nint* z;\nz = &x;\nint* z2 = &x;\n}");
-
-		assert(data->GetPointers().size() == 4);
-
-		assert(data->GetPointsTo(data->GetPointers()[0]).size() == 1);
-		assert(data->GetPointsTo(data->GetPointers()[1]).size() == 1);
-		assert(data->GetPointsTo(data->GetPointers()[2]).size() == 1);
-		assert(data->GetPointsTo(data->GetPointers()[3]).size() == 1);
-
-		assert(data->GetPointsTo(data->GetPointers()[0])[0].nameofidentifier == "x");
-		assert(data->GetPointsTo(data->GetPointers()[1])[0].nameofidentifier == "x");
-		assert(data->GetPointsTo(data->GetPointers()[2])[0].nameofidentifier == "x");
-		assert(data->GetPointsTo(data->GetPointers()[3])[0].nameofidentifier == "x");
-	}
-	{
-		srcPtrData* data = Analyze("void func(int *x) {\n   *x = 12;\nint *a = x;\n}\n\nint main() {\nint *y;\nint z;\ny = &z;\nfunc(y);\n}");
-
-		assert(data->GetPointers().size() == 3);
-
-		assert(data->GetPointers()[0].nameofidentifier == "a");
-		assert(data->GetPointers()[1].nameofidentifier == "x");
-		assert(data->GetPointers()[2].nameofidentifier == "y");
-
-		assert(data->GetPointsTo(data->GetPointers()[0]).size() == 1);
-		assert(data->GetPointsTo(data->GetPointers()[1]).size() == 1);
-		assert(data->GetPointsTo(data->GetPointers()[2]).size() == 1);
-
-		assert(data->GetPointsTo(data->GetPointers()[0])[0].nameofidentifier == "x");
-		assert(data->GetPointsTo(data->GetPointers()[1])[0].nameofidentifier == "y");
-		assert(data->GetPointsTo(data->GetPointers()[2])[0].nameofidentifier == "z");
-	}
+	std::cout << std::endl << "Finished testing srcPtrPolicy" << std::endl;
 }
 
 int main() {
