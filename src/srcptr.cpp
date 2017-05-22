@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
    po::options_description algorithms("Pointer Analysis Algorithms");
    algorithms.add_options()
       ("map,m", "use a simple map algorithm")
-      ("anderson,a", "use anderson's pointer analysis algorithm.");
+      ("andersen,a", "use Andersen's pointer analysis algorithm.");
 
    po::options_description desc;
    desc.add(generic).add(algorithms);
@@ -100,9 +100,9 @@ int main(int argc, char *argv[]) {
            data->PrintGraphViz();
          else
             data->Print();
-      } else if(vm.count("anderson")) {
-         srcPtrAnderson *data;
-         srcPtrPolicy<srcPtrAnderson> *policy = new srcPtrPolicy<srcPtrAnderson>(declpolicy->GetData());
+      } else if(vm.count("andersen")) {
+         srcPtrAndersen *data;
+         srcPtrPolicy<srcPtrAndersen> *policy = new srcPtrPolicy<srcPtrAndersen>(declpolicy->GetData());
          try {
             // Second Run
             srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());

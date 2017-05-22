@@ -87,9 +87,9 @@ private:
    std::map<Variable, std::vector<Variable>> data;
 };
 
-class srcPtrAnderson {
+class srcPtrAndersen {
 public:
-   ~srcPtrAnderson() { }; 
+   ~srcPtrAndersen() { }; 
 
    void AddPointsToRelationship(Variable lhs, Variable rhs) {
       if (std::find(pointsto[lhs].begin(), pointsto[lhs].end(), rhs) == pointsto[lhs].end()) {
@@ -140,8 +140,8 @@ public:
       return pointers;
    }
 
-   srcPtrAnderson *Clone() const {
-      return (new srcPtrAnderson(*this));
+   srcPtrAndersen *Clone() const {
+      return (new srcPtrAndersen(*this));
    }
 
 private:
