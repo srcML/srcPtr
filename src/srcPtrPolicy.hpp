@@ -18,7 +18,7 @@
 #include <vector>
 
 /*
-Template must implement:
+class T must implement:
    virtual void AddPointsToRelationship(Variable, Variable);
    virtual void AddAssignmentRelationship(Variable, Variable);
    virtual void Print();
@@ -74,7 +74,7 @@ public:
 
          Function called = declData.functionTracker.GetFunction(calledFuncName, params.size());
 
-         int i = 0;
+         unsigned int i = 0;
          for(auto it = params.begin(); it != params.end(); ++it) {
             if(called.parameters.size() < i) {
                std::string name = *it;
@@ -135,7 +135,7 @@ private:
    }
 
    void ResolveAssignment(Variable left, std::string modifierleft, Variable right, std::string modifierright) {
-      if(!rhs.empty()) {
+      if(!right.empty()) {
          if(left.isPointer && (modifierleft != "*")) {
             if(modifierright == "&")
                data.AddPointsToRelationship(left, right);
