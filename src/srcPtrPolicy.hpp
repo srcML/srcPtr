@@ -54,7 +54,7 @@ public:
          declared.AddVarToFrame(Variable(declarationData));
 
          if(withinDeclAssignment)   //Pointer assignment on initialization
-            ResolveAssignment(declarationData, "", lhs, "");   //TODO: take into account modifiers
+            ResolveAssignment(declarationData, "", lhs, modifierlhs);
       } else if (typeid(CallPolicy) == typeid(*policy)) {
          CallPolicy::CallData callData = *policy->Data<CallPolicy::CallData>();
 
