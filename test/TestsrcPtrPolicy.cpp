@@ -132,6 +132,13 @@ void TestAssignments() {
 		assert(data->assignmentRelationships[0].first.nameofidentifier == "y");
 		assert(data->assignmentRelationships[0].second.nameofidentifier == "x");
 	}
+	{
+		srcPtrTestAlgorithm* data = Analyze("int main(){int var;int x; int* y=&x;}");
+		
+		assert(data->assignmentRelationships.size() == 0);
+		assert(data->pointsToRelationships[0].first.nameofidentifier == "y");
+		assert(data->pointsToRelationships[0].second.nameofidentifier == "x");
+	}
 
 	std::cout << std::endl << "Finished testing srcPtrPolicy" << std::endl;
 }
