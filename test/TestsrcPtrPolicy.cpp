@@ -90,7 +90,7 @@ srcPtrTestAlgorithm * Analyze(std::string codestr) {
 
 void TestAssignments() {
 	{
-		srcPtrTestAlgorithm* data = Analyze("int main() {\nint x;\nint * y;\ny = &x;\n}");
+		srcPtrTestAlgorithm* data = Analyze("int main() { int x; int * y; y = &x; }");
 
 		assert(data->assignmentRelationships.size() == 0);
 		assert(data->pointsToRelationships[0].first.nameofidentifier == "y");
@@ -108,7 +108,7 @@ void TestAssignments() {
 		assert(data->pointsToRelationships[1].second.nameofidentifier == "ptr1");
 	}
 	{
-		srcPtrTestAlgorithm* data = Analyze("int main() {   int var ; int                *    ptr1;   int          ** ptr2; ptr1 =    &    var; ptr2   =   &   ptr1; }");
+		srcPtrTestAlgorithm* data = Analyze("int main() {   int var ; int            *    ptr1;   int          ** ptr2; ptr1 =    &    var; ptr2   =   &   ptr1; }");
 
 		assert(data->assignmentRelationships.size() == 0);
 
@@ -124,6 +124,13 @@ void TestAssignments() {
 		assert(data->pointsToRelationships.size() == 0);
 		assert(data->assignmentRelationships[0].first.nameofidentifier == "y");
 		assert(data->assignmentRelationships[0].second.nameofidentifier == "x");	
+	}
+	{
+		srcPtrTestAlgorithm* data = Analyze("int main(){int* x; int* y = x;}");
+		
+		assert(data->pointsToRelationships.size() == 0);
+		assert(data->assignmentRelationships[0].first.nameofidentifier == "y");
+		assert(data->assignmentRelationships[0].second.nameofidentifier == "x");
 	}
 
 	std::cout << std::endl << "Finished testing srcPtrPolicy" << std::endl;
