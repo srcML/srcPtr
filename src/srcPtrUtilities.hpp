@@ -142,7 +142,15 @@ private:
 
 class Function {
 public:
-	Function():isConst{false}, constPointerReturn{false}, isMethod{false}, isStatic{false}, pointerToConstReturn{false}, hasAliasedReturn{false} {}
+	Function() {
+      linenumber = 0;
+      isConst = false;
+      isMethod = false;
+      isStatic = false;
+      pointerToConstReturn = false;
+      constPointerReturn = false;
+      hasAliasedReturn = false;
+   }
 
 	Function(const FunctionSignaturePolicy::SignatureData& rhs) {
 		linenumber = rhs.linenumber;
