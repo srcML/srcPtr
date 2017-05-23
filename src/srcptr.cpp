@@ -118,7 +118,6 @@ int main(int argc, char *argv[]) {
          else
             data->Print();
       } else {
-	      srcPtrEmptyAlgorithm *data;
          srcPtrPolicy<srcPtrEmptyAlgorithm> *policy = new srcPtrPolicy<srcPtrEmptyAlgorithm>(declpolicy->GetData());
          try {
             // Second Run
