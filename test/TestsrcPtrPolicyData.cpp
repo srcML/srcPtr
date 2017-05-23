@@ -40,7 +40,7 @@ void TestsrcPtrDataMap() {
 
 		std::vector<Variable> v2 = map.GetPointsTo(var4);
 		assert(v2.size() == 1);
-		assert(std::find(v2.begin(), v2.end(), var1) != v.end());
+		assert(std::find(v2.begin(), v2.end(), var1) != v2.end());
 	}
 }
 
