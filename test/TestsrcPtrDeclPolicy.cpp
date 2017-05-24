@@ -54,6 +54,12 @@ void RunTests() {
 		srcPtrDeclPolicy::srcPtrDeclData data = Analyze("int main() {\nint x;\nint * y;\ny = &x;\n}");
 		assert(data.functionTracker.GetFunction("main", 0).functionName == "main");
 	}
+	{
+		srcPtrDeclPolicy::srcPtrDeclData data = Analyze("int f(int * x) { return 0; } int main() {return 0;}");
+		assert(data.functionTracker.GetFunction("f", 1).functionName == "f");
+		assert(data.functionTracker.GetFunction("f", 1).parameters[0].nameofidentifier == "x");
+		assert(data.functionTracker.GetFunction("f", 1).parameters[0].isPointer == true);
+	}
 	std::cout << std::endl << "Finished Testing srcPtrDeclPolicy" << std::endl;
 }
 
