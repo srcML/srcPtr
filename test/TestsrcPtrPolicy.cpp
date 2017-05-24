@@ -95,6 +95,8 @@ void TestAssignments() {
 		assert(data->assignmentRelationships.size() == 0);
 		assert(data->pointsToRelationships[0].first.nameofidentifier == "y");
 		assert(data->pointsToRelationships[0].second.nameofidentifier == "x");
+
+		delete data;
 	}
 	{
 		srcPtrTestAlgorithm* data = Analyze("int main() {int var; int * ptr1; int ** ptr2; ptr1 = &var; ptr2 = &ptr1; }");
@@ -106,6 +108,8 @@ void TestAssignments() {
 
 		assert(data->pointsToRelationships[1].first.nameofidentifier == "ptr2");
 		assert(data->pointsToRelationships[1].second.nameofidentifier == "ptr1");
+
+		delete data;
 	}
 	{
 		srcPtrTestAlgorithm* data = Analyze("int main() {   int var ; int            *    ptr1;   int          ** ptr2; ptr1 =    &    var; ptr2   =   &   ptr1; }");
@@ -117,13 +121,17 @@ void TestAssignments() {
 
 		assert(data->pointsToRelationships[1].first.nameofidentifier == "ptr2");
 		assert(data->pointsToRelationships[1].second.nameofidentifier == "ptr1");
+
+		delete data;
 	}
 	{
 		srcPtrTestAlgorithm* data = Analyze("int main() {\nint * x;\nint * y;\ny = x;\n}");
 
 		assert(data->pointsToRelationships.size() == 0);
 		assert(data->assignmentRelationships[0].first.nameofidentifier == "y");
-		assert(data->assignmentRelationships[0].second.nameofidentifier == "x");	
+		assert(data->assignmentRelationships[0].second.nameofidentifier == "x");
+
+		delete data;
 	}
 	{
 		srcPtrTestAlgorithm* data = Analyze("int main(){int* x; int* y = x;}");
@@ -131,6 +139,8 @@ void TestAssignments() {
 		assert(data->pointsToRelationships.size() == 0);
 		assert(data->assignmentRelationships[0].first.nameofidentifier == "y");
 		assert(data->assignmentRelationships[0].second.nameofidentifier == "x");
+
+		delete data;
 	}
 	{
 		srcPtrTestAlgorithm* data = Analyze("int main(){int var;int x; int* y=&x;}");
@@ -138,12 +148,24 @@ void TestAssignments() {
 		assert(data->assignmentRelationships.size() == 0);
 		assert(data->pointsToRelationships[0].first.nameofidentifier == "y");
 		assert(data->pointsToRelationships[0].second.nameofidentifier == "x");
-	}
 
-	std::cout << std::endl << "Finished testing srcPtrPolicy" << std::endl;
+		delete data;
+	}
+}
+
+void TestFunctions () {
+	{
+		srcPtrTestAlgorithm* data = Analyze("void f(int* x) {int y; x = &y;}\n int main() {int*ptr; f(ptr); }");
+
+		assert(data->pointsToRelationships[0].first.nameofidentifier == "x");
+		assert(data->pointsToRelationships[0].first.nameoftype == "int");
+		assert(data->pointsToRelationships[0].second.nameofidentifier == "y");
+	}
 }
 
 int main() {
 	TestAssignments();
+	TestFunctions();
+	std::cout << std::endl << "Finished testing srcPtrPolicy" << std::endl;
 	return 0;
 }
