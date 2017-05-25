@@ -134,7 +134,7 @@ void TestAssignments() {
 		delete data;
 	}
 	{
-		srcPtrTestAlgorithm* data = Analyze("int main(){int* x; int* y = x;}");
+		srcPtrTestAlgorithm* data = Analyze("int f() { return 2; } int main(){int* x; int* y=x;}");
 		
 		assert(data->pointsToRelationships.size() == 0);
 		assert(data->assignmentRelationships[0].first.nameofidentifier == "y");
@@ -160,6 +160,9 @@ void TestFunctions () {
 		assert(data->pointsToRelationships[0].first.nameofidentifier == "x");
 		assert(data->pointsToRelationships[0].first.nameoftype == "int");
 		assert(data->pointsToRelationships[0].second.nameofidentifier == "y");
+
+		assert(data->assignmentRelationships[0].first.nameofidentifier == "x");
+		assert(data->assignmentRelationships[0].second.nameofidentifier == "ptr");
 	}
 }
 
