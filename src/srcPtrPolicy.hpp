@@ -76,14 +76,12 @@ public:
 
          unsigned int i = 0;
          for(auto it = params.begin(); it != params.end(); ++it) {
-            if(called.parameters.size() < i) {
-               std::string name = *it;
-               Variable var1 = called.parameters[i];
-               Variable var2 = declared.GetPreviousOccurence(name);
+            std::string name = *it;
+            Variable var1 = called.parameters[i];
+            Variable var2 = declared.GetPreviousOccurence(name);
 
-               ResolveAssignment(var1, "", var2, ""); //TODO: take into account modifiers
-               ++i;
-            }
+            ResolveAssignment(var1, "", var2, ""); //TODO: take into account modifiers
+            ++i;
          }
       } else if (typeid(FunctionSignaturePolicy) == typeid(*policy)) {
          FunctionSignaturePolicy::SignatureData signatureData = *policy->Data<FunctionSignaturePolicy::SignatureData>();
