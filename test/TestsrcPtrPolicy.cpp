@@ -155,7 +155,7 @@ void TestAssignments() {
 
 void TestFunctions () {
 	{
-		srcPtrTestAlgorithm* data = Analyze("void f(int* x) {int y; x = &y;}\n int main() {int*ptr; f(ptr); }");
+		srcPtrTestAlgorithm* data = Analyze("void f(std::string a, int* x, int z) {int y; x = &y;}\n int main() {int*ptr; f(\"yo\", ptr, 12); }");
 
 		assert(data->pointsToRelationships[0].first.nameofidentifier == "x");
 		assert(data->pointsToRelationships[0].first.nameoftype == "int");
