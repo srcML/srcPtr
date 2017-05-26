@@ -2,7 +2,7 @@
 #define INCLUDED_SRC_PTR_POLICY_HPP
 
 #include <DeclTypePolicy.hpp>
-#include <FunctionCallPolicy.hpp>
+#include <CallPolicy.hpp>
 #include <FunctionSignaturePolicy.hpp>
 #include <srcSAXEventDispatcher.hpp>
 #include <srcSAXHandler.hpp>
@@ -58,6 +58,9 @@ public:
       } else if (typeid(CallPolicy) == typeid(*policy)) {
          CallPolicy::CallData callData = *policy->Data<CallPolicy::CallData>();
 
+         for (auto v : callData.callargumentlist)
+            std::cout << v << "\n";
+
          std::string calledFuncName;
          std::vector<std::string> params;
          bool pickedUpFuncName = false;
@@ -77,10 +80,12 @@ public:
          unsigned int i = 0;
          for(auto it = params.begin(); it != params.end(); ++it) {
             std::string name = *it;
-            Variable var1 = called.parameters[i];
-            Variable var2 = declared.GetPreviousOccurence(name);
+            if(name != "*LITERAL*") {
+               Variable var1 = called.parameters[i];
+               Variable var2 = declared.GetPreviousOccurence(name);
 
-            ResolveAssignment(var1, "", var2, ""); //TODO: take into account modifiers
+               ResolveAssignment(var1, "", var2, ""); //TODO: take into account modifiers
+            }
             ++i;
          }
       } else if (typeid(FunctionSignaturePolicy) == typeid(*policy)) {
@@ -156,7 +161,6 @@ private:
       };
 
       openEventMap[ParserState::block] = [this](srcSAXEventContext &ctx) { declared.CreateFrame(); };
-
       closeEventMap[ParserState::block] = [this](srcSAXEventContext &ctx) { declared.PopFrame(); };
 
       //
