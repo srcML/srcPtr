@@ -131,7 +131,8 @@ public:
          if (it->ContainsName(name))
             return it->GetVar(name);
       }
-      return Variable();
+      Variable var; 
+      return var;
    }
 
 private:
@@ -211,7 +212,12 @@ public:
 	bool hasAliasedReturn;
 };
 
-
+class Class {
+public: 
+   std::string className;
+   std::vector<Function> methods;
+   std::vector<Variable> members;
+};
 
 class FunctionTracker {
 public:
