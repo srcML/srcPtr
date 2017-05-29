@@ -11,6 +11,7 @@
 
 class ClassPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEventDispatch::PolicyDispatcher, public srcSAXEventDispatch::PolicyListener {
     public:
+
         ~ClassPolicy() {
             delete funcSigPolicy;
             delete declTypePolicy;
@@ -23,9 +24,24 @@ class ClassPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEven
             InitializeEventHandlers();
         }
 
-        void Notify(const PolicyDispatcher * policy, const srcSAXEventDispatch::srcSAXEventContext & ctx) override {}
+        void Notify(const PolicyDispatcher * policy, const srcSAXEventDispatch::srcSAXEventContext & ctx) override {
+            if (typeid(FunctionSignaturePolicy) == typeid(*policy)) {
+                FunctionSignaturePolicy::SignatureData signatureData = *policy->Data<FunctionSignaturePolicy::SignatureData>();
+                Function funcSig = signatureData;
+                data.methods.push_back(funcSig);
+            }
+
+            else if (typeid(DeclTypePolicy) == typeid(*policy)) {
+                if(!ctx.IsOpen(ParserState::function)) {
+                    DeclTypePolicy::DeclTypeData declarationData = *policy->Data<DeclTypePolicy::DeclTypeData>();
+                    Variable declVar = declarationData;
+                    data.members.push_back(declVar);
+                }
+            }
+        }
 
     protected:
+
         void * DataInner() const override {
             return new Class(data);
         }
@@ -44,13 +60,15 @@ class ClassPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEven
             using namespace srcSAXEventDispatch;
 
             openEventMap[ParserState::classn] {
-                ctx.dispatcher->AddListenerDispatch(funcPolicy);
+                ctx.dispatcher->AddListenerDispatch(funcSigPolicy);
+                ctx.dispatcher->AddListenerDispatch(declTypePolicy);
 
                 inClassDef = true;
             }
 
             closeEventMap[ParserState::classn] {
                 ctx.dispatcher->RemoveListenerDispatch(funcSigPolicy);
+                ctx.dispatcher->RemoveListenerDispatch(declTypePolicy);
 
                 inClassDef = false;
 
