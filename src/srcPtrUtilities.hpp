@@ -213,7 +213,13 @@ public:
 };
 
 class Class {
-public: 
+public:
+   void Clear() {
+      className = "";
+      methods.clear();
+      members.clear();
+   }
+
    std::string className;
    std::vector<Function> methods;
    std::vector<Variable> members;
