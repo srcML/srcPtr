@@ -32,7 +32,7 @@ class ClassPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEven
             }
 
             else if (typeid(DeclTypePolicy) == typeid(*policy)) {
-                if(!ctx.IsOpen(ParserState::function)) {
+                if(!(ctx.IsOpen(srcSAXEventDispatch::ParserState::function))) {
                     DeclTypePolicy::DeclTypeData declarationData = *policy->Data<DeclTypePolicy::DeclTypeData>();
                     Variable declVar = declarationData;
                     data.members.push_back(declVar);
@@ -59,14 +59,14 @@ class ClassPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEven
         void InitializeEventHandlers() {
             using namespace srcSAXEventDispatch;
 
-            openEventMap[ParserState::classn] {
+            openEventMap[ParserState::classn] = [this](srcSAXEventContext &ctx) {
                 ctx.dispatcher->AddListenerDispatch(funcSigPolicy);
                 ctx.dispatcher->AddListenerDispatch(declTypePolicy);
 
                 inClassDef = true;
-            }
+            };
 
-            closeEventMap[ParserState::classn] {
+            closeEventMap[ParserState::classn] = [this](srcSAXEventContext &ctx) {
                 ctx.dispatcher->RemoveListenerDispatch(funcSigPolicy);
                 ctx.dispatcher->RemoveListenerDispatch(declTypePolicy);
 
@@ -74,7 +74,7 @@ class ClassPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEven
 
                 NotifyAll(ctx);
                 data.Clear();
-            }
+            };
 
             closeEventMap[ParserState::name] = [this](srcSAXEventContext& ctx){
                 if((ctx.IsOpen(ParserState::classn) && inClassDef) && (data.className == "")) {
