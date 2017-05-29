@@ -212,19 +212,6 @@ public:
 	bool hasAliasedReturn;
 };
 
-class Class {
-public:
-   void Clear() {
-      className = "";
-      methods.clear();
-      members.clear();
-   }
-
-   std::string className;
-   std::vector<Function> methods;
-   std::vector<Variable> members;
-};
-
 class FunctionTracker {
 public:
 	Function GetFunction(std::string name, int paramCount) {
@@ -237,6 +224,19 @@ public:
    }
 private:
 	std::map<std::string, Function> functionNames; // (Name of function + param count) -> Function
+};
+
+class Class {
+public:
+   void Clear() {
+      className = "";
+      methods.clear();
+      members.clear();
+   }
+
+   std::string className;
+   std::vector<Function> methods;
+   std::vector<Variable> members;
 };
 
 #endif
