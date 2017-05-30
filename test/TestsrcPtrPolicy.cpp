@@ -43,7 +43,7 @@ std::string StringToSrcML(std::string str){
 	struct srcml_unit* unit;
 	size_t size = 0;
 
-	char *ch = new char[str.size()];
+	char * ch;
 
 	archive = srcml_archive_create();
 	srcml_archive_enable_option(archive, SRCML_OPTION_POSITION);
@@ -60,7 +60,10 @@ std::string StringToSrcML(std::string str){
 	srcml_archive_close(archive);
 	srcml_archive_free(archive);
 
-	return std::string(ch);
+	std::string srcml;
+	srcml.append(ch, size);
+
+	return srcml;
 }
 
 srcPtrTestAlgorithm * Analyze(std::string codestr) {
@@ -85,6 +88,7 @@ srcPtrTestAlgorithm * Analyze(std::string codestr) {
 		return data;
 	} catch(SAXError e) {
 		std::cerr << e.message;
+		return nullptr;
 	}
 }
 
@@ -134,8 +138,8 @@ void TestAssignments() {
 		delete data;
 	}
 	{
-		srcPtrTestAlgorithm* data = Analyze("int f() { return 2; } int main(){int* x; int* y=x;}");
-		
+		srcPtrTestAlgorithm* data = Analyze("int main(){int* x; int* y=x;}");
+
 		assert(data->pointsToRelationships.size() == 0);
 		assert(data->assignmentRelationships[0].first.nameofidentifier == "y");
 		assert(data->assignmentRelationships[0].second.nameofidentifier == "x");
