@@ -11,7 +11,7 @@ std::string StringToSrcML(std::string str){
 	struct srcml_unit* unit;
 	size_t size = 0;
 
-	char *ch = new char[str.size()];
+	char * ch;
 
 	archive = srcml_archive_create();
 	srcml_archive_enable_option(archive, SRCML_OPTION_POSITION);
@@ -19,16 +19,19 @@ std::string StringToSrcML(std::string str){
 
 	unit = srcml_unit_create(archive);
 	srcml_unit_set_language(unit, SRCML_LANGUAGE_CXX);
-	srcml_unit_set_filename(unit, "testClassPolicy.cpp");
+	srcml_unit_set_filename(unit, "testsrcType.cpp");
 
 	srcml_unit_parse_memory(unit, str.c_str(), str.size());
 	srcml_archive_write_unit(archive, unit);
-	
+
 	srcml_unit_free(unit);
 	srcml_archive_close(archive);
 	srcml_archive_free(archive);
-	//TrimFromEnd(ch, size);
-	return std::string(ch);
+
+	std::string srcml;
+	srcml.append(ch, size);
+
+	return srcml;
 }
 
 class TestClassPolicy : public srcSAXEventDispatch::PolicyDispatcher, public srcSAXEventDispatch::PolicyListener{
