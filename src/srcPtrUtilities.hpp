@@ -90,60 +90,9 @@ std::ostream &operator<<(std::ostream &sout, const Variable &var) {
 }
 
 
-
-class DeclFrame {
-public:
-   DeclFrame(){};
-   DeclFrame(Variable var) {
-      declarations.insert(std::pair<std::string, Variable>(var.SimpleIdentifier(), var));
-   }
-   bool ContainsName(std::string name) {
-      return (declarations.find(name) != declarations.end());
-   }
-   Variable GetVar(std::string name) {
-      return declarations[name];
-   }
-   void AddVar(Variable var) {
-      if (!ContainsName(var.SimpleIdentifier()))
-         declarations.insert(std::pair<std::string, Variable>(var.SimpleIdentifier(), var));
-   }
-
-private:
-   std::map<std::string, Variable> declarations; // Name to Variable
-};
-
-class DeclStack {
-public:
-   void CreateFrame() {
-      declared.push_front(DeclFrame());
-   }
-   void CreateFrame(Variable var) {
-      declared.push_front(DeclFrame(var));
-   }
-   void PopFrame() {
-      declared.pop_front();
-   }
-   void AddVarToFrame(Variable var) {
-      declared.begin()->AddVar(var);
-   }
-   Variable GetPreviousOccurence(std::string name) {
-      for (auto it = declared.begin(); it != declared.end(); ++it) {
-         if (it->ContainsName(name))
-            return it->GetVar(name);
-      }
-      Variable var; 
-      return var;
-   }
-
-private:
-   std::deque<DeclFrame> declared;
-};
-
-
-
 class Function {
 public:
-	Function() {
+   Function() {
       linenumber = 0;
       isConst = false;
       isMethod = false;
@@ -153,64 +102,153 @@ public:
       hasAliasedReturn = false;
    }
 
-	Function(const FunctionSignaturePolicy::SignatureData& rhs) {
-		linenumber = rhs.linenumber;
-		returnType = rhs.returnType;
-		functionName = rhs.functionName;
-		returnTypeModifier = rhs.returnTypeModifier;
-		functionNamespaces = rhs.functionNamespaces;
-		returnTypeNamespaces = rhs.returnTypeNamespaces;
-		for(std::size_t i = 0; i < rhs.parameters.size(); ++i) //copy parameters
-			parameters.push_back(rhs.parameters[i]);
-		isConst = rhs.isConst;
-		isMethod = rhs.isMethod;
-		isStatic = rhs.isStatic;
-		pointerToConstReturn = rhs.pointerToConstReturn;
-		constPointerReturn = rhs.constPointerReturn;
-		hasAliasedReturn = rhs.hasAliasedReturn;
-	}
+   Function(const FunctionSignaturePolicy::SignatureData& rhs) {
+      linenumber = rhs.linenumber;
+      returnType = rhs.returnType;
+      functionName = rhs.functionName;
+      returnTypeModifier = rhs.returnTypeModifier;
+      functionNamespaces = rhs.functionNamespaces;
+      returnTypeNamespaces = rhs.returnTypeNamespaces;
+      for(std::size_t i = 0; i < rhs.parameters.size(); ++i) //copy parameters
+         parameters.push_back(rhs.parameters[i]);
+      isConst = rhs.isConst;
+      isMethod = rhs.isMethod;
+      isStatic = rhs.isStatic;
+      pointerToConstReturn = rhs.pointerToConstReturn;
+      constPointerReturn = rhs.constPointerReturn;
+      hasAliasedReturn = rhs.hasAliasedReturn;
+   }
 
-	void Clear(){
-		linenumber = 0;
-		returnType.clear();
-		functionName.clear();
-		returnTypeModifier.clear();
-		parameters.clear();
-		functionNamespaces.clear();
-		returnTypeNamespaces.clear();
-		isConst = false;
-		isMethod = false;
-		isStatic = false;
-		pointerToConstReturn = false;
-		constPointerReturn = false;
-		hasAliasedReturn = false;
-	}
+   void Clear(){
+      linenumber = 0;
+      returnType.clear();
+      functionName.clear();
+      returnTypeModifier.clear();
+      parameters.clear();
+      functionNamespaces.clear();
+      returnTypeNamespaces.clear();
+      isConst = false;
+      isMethod = false;
+      isStatic = false;
+      pointerToConstReturn = false;
+      constPointerReturn = false;
+      hasAliasedReturn = false;
+   }
 
-	bool operator==(const Function& rhs) const {
-		return ((linenumber == rhs.linenumber) && (returnType == rhs.returnType) && (functionName == rhs.functionName) && (returnTypeModifier == rhs.returnTypeModifier) &&
-				  (functionNamespaces == rhs.functionNamespaces) && (returnTypeNamespaces == rhs.returnTypeNamespaces) && (parameters == rhs.parameters) && (isConst == rhs.isConst) &&
-				  (isMethod == rhs.isMethod) && (isStatic == rhs.isStatic) && (pointerToConstReturn == rhs.pointerToConstReturn) && (constPointerReturn == rhs.constPointerReturn) &&
-				  (hasAliasedReturn == rhs.hasAliasedReturn));
-	}
+   bool operator==(const Function& rhs) const {
+      return ((linenumber == rhs.linenumber) && (returnType == rhs.returnType) && (functionName == rhs.functionName) && (returnTypeModifier == rhs.returnTypeModifier) &&
+              (functionNamespaces == rhs.functionNamespaces) && (returnTypeNamespaces == rhs.returnTypeNamespaces) && (parameters == rhs.parameters) && (isConst == rhs.isConst) &&
+              (isMethod == rhs.isMethod) && (isStatic == rhs.isStatic) && (pointerToConstReturn == rhs.pointerToConstReturn) && (constPointerReturn == rhs.constPointerReturn) &&
+              (hasAliasedReturn == rhs.hasAliasedReturn));
+   }
 
-	bool operator<(const Function &rhs) const { // Function required for STL datastructures
-		return (functionName < rhs.functionName);
-	}
+   bool operator<(const Function &rhs) const { // Function required for STL datastructures
+      return (functionName < rhs.functionName);
+   }
 
-	int linenumber;
-	std::string returnType;
-	std::string functionName;
-	std::string returnTypeModifier;
-	std::vector<std::string> functionNamespaces;
-	std::vector<std::string> returnTypeNamespaces;
-	std::vector<Variable> parameters;
-	bool isConst;
-	bool isMethod;
-	bool isStatic;
-	bool pointerToConstReturn;
-	bool constPointerReturn;
-	bool hasAliasedReturn;
+   int linenumber;
+   std::string returnType;
+   std::string functionName;
+   std::string returnTypeModifier;
+   std::vector<std::string> functionNamespaces;
+   std::vector<std::string> returnTypeNamespaces;
+   std::vector<Variable> parameters;
+   bool isConst;
+   bool isMethod;
+   bool isStatic;
+   bool pointerToConstReturn;
+   bool constPointerReturn;
+   bool hasAliasedReturn;
 };
+
+
+class DeclFrame {
+public:
+   DeclFrame() { };
+
+   DeclFrame(Variable var) {
+      variables.insert(std::pair<std::string, Variable>(var.SimpleIdentifier(), var));
+   }
+
+   bool ContainsVariableName(std::string name) {
+      return (variables.find(name) != variables.end());
+   }
+
+   Variable GetVar(std::string name) {
+      return variables[name];
+   }
+
+   void AddVar(Variable var) {
+      if (!ContainsVariableName(var.SimpleIdentifier()))
+         variables.insert(std::pair<std::string, Variable>(var.SimpleIdentifier(), var));
+   }
+
+   bool ContainsFunctionName(std::string name, int paramCount) {
+      return ( functions.find( name + std::to_string(paramCount) ) != functions.end() );
+   }
+
+   Function GetFunc(std::string name, int paramCount) {
+      return functions[(name + std::to_string(paramCount))];
+   }
+
+   void AddFunc(Function toAdd) {
+      std::string key = toAdd.functionName + std::to_string(toAdd.parameters.size()); //TODO: Take into account type of parameter
+      
+      functions.insert(std::pair<std::string, Function>(key, toAdd));
+   }
+
+private:
+   std::map<std::string, Variable> variables; // Name to Variable
+   std::map<std::string, Function> functions; // (Name of function + param count) -> Function
+};
+
+class DeclStack {
+public:
+
+   void CreateFrame() {
+      declared.push_front(DeclFrame());
+   }
+
+   void CreateFrame(Variable var) {
+      declared.push_front(DeclFrame(var));
+   }
+
+   void PopFrame() {
+      declared.pop_front();
+   }
+
+   void AddVarToFrame(Variable var) {
+      declared.begin()->AddVar(var);
+   }
+
+   Variable GetPreviousVarOccurence(std::string name) {
+      for (auto it = declared.begin(); it != declared.end(); ++it) {
+         if (it->ContainsVariableName(name))
+            return it->GetVar(name);
+      }
+
+      Variable var; 
+      return var;
+   }
+
+   void AddFuncToFrame(Function func) {
+      declared.begin()->AddFunc(func);
+   }
+
+   Function GetPreviousFuncOccurence(std::string name, int paramCount) {
+      for (auto it = declared.begin(); it != declared.end(); ++it) {
+         if (it->ContainsFunctionName(name, paramCount))
+            return it->GetFunc(name, paramCount);
+      }
+
+      Function func; 
+      return func;
+   }
+
+private:
+   std::deque<DeclFrame> declared;
+};
+
 
 class FunctionTracker {
 public:

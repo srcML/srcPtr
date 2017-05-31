@@ -49,9 +49,9 @@ void TestDeclStack() {
       stack.AddVarToFrame(var2);
       stack.AddVarToFrame(var3);
 
-      assert(stack.GetPreviousOccurence("var1") == var1);
-      assert(stack.GetPreviousOccurence("var2") == var2);
-      assert(stack.GetPreviousOccurence("var3") == var3);
+      assert(stack.GetPreviousVarOccurence("var1") == var1);
+      assert(stack.GetPreviousVarOccurence("var2") == var2);
+      assert(stack.GetPreviousVarOccurence("var3") == var3);
    }
    {
       Variable var1;
@@ -72,7 +72,7 @@ void TestDeclStack() {
       stack.CreateFrame(var3);
       stack.AddVarToFrame(var3);
 
-      assert(stack.GetPreviousOccurence("var") == var3);
+      assert(stack.GetPreviousVarOccurence("var") == var3);
       stack.PopFrame();
 
       Variable var4;
@@ -83,10 +83,10 @@ void TestDeclStack() {
       stack.CreateFrame();
       stack.PopFrame();
 
-      assert(stack.GetPreviousOccurence("var") == var2);
-      assert(stack.GetPreviousOccurence("var4") == var4);
+      assert(stack.GetPreviousVarOccurence("var") == var2);
+      assert(stack.GetPreviousVarOccurence("var4") == var4);
       stack.PopFrame();
-      assert(stack.GetPreviousOccurence("var") == var1);
+      assert(stack.GetPreviousVarOccurence("var") == var1);
    }
 }
 

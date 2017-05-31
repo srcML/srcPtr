@@ -55,7 +55,9 @@ public:
 
          if(withinDeclAssignment)   //Pointer assignment on initialization
             ResolveAssignment(declarationData, "", lhs, modifierlhs);
-      } else if (typeid(CallPolicy) == typeid(*policy)) {
+      } 
+
+      else if (typeid(CallPolicy) == typeid(*policy)) {
          CallPolicy::CallData callData = *policy->Data<CallPolicy::CallData>();
 
          for (auto v : callData.callargumentlist)
@@ -82,13 +84,15 @@ public:
             std::string name = *it;
             if(name != "*LITERAL*") {
                Variable var1 = called.parameters[i];
-               Variable var2 = declared.GetPreviousOccurence(name);
+               Variable var2 = declared.GetPreviousVarOccurence(name);
 
                ResolveAssignment(var1, "", var2, ""); //TODO: take into account modifiers
             }
             ++i;
          }
-      } else if (typeid(FunctionSignaturePolicy) == typeid(*policy)) {
+      } 
+
+      else if (typeid(FunctionSignaturePolicy) == typeid(*policy)) {
          FunctionSignaturePolicy::SignatureData signatureData = *policy->Data<FunctionSignaturePolicy::SignatureData>();
          Function funcSig = signatureData;
          for(Variable var : funcSig.parameters) {
@@ -173,11 +177,11 @@ private:
       closeEventMap[ParserState::name] = [this](srcSAXEventContext &ctx) {
          if (ctx.IsOpen(ParserState::expr)) {
             if (lhs.nameofidentifier == "") {
-               Variable decl = declared.GetPreviousOccurence(ctx.currentToken);
+               Variable decl = declared.GetPreviousVarOccurence(ctx.currentToken);
                lhs = decl;
 
             } else {
-               Variable decl = declared.GetPreviousOccurence(ctx.currentToken);
+               Variable decl = declared.GetPreviousVarOccurence(ctx.currentToken);
                rhs = decl;
             }
          }
