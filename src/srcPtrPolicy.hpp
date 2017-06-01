@@ -31,12 +31,14 @@ class T must implement:
 template <class T>
 class srcPtrPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEventDispatch::PolicyDispatcher, public srcSAXEventDispatch::PolicyListener {
 public:
+   
    ~srcPtrPolicy() {
       delete data;
       delete declTypePolicy;
       delete callPolicy;
       delete funcSigPolicy;
    }
+
    srcPtrPolicy(srcPtrDeclPolicy::srcPtrDeclData decldata, std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners) {
       declData = decldata;
       declared.CreateFrame();
@@ -59,9 +61,6 @@ public:
 
       else if (typeid(CallPolicy) == typeid(*policy)) {
          CallPolicy::CallData callData = *policy->Data<CallPolicy::CallData>();
-
-         for (auto v : callData.callargumentlist)
-            std::cout << v << "\n";
 
          std::string calledFuncName;
          std::vector<std::string> params;
