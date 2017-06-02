@@ -18,8 +18,8 @@ class CallPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEvent
         }
     */
     public:
-        struct CallData{
-            void clear(){
+        struct CallData {
+            void clear() {
                 fnName.clear();
                 callargumentlist.clear();
             }
@@ -48,10 +48,13 @@ class CallPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEvent
             using namespace srcSAXEventDispatch;
             closeEventMap[ParserState::call] = [this](srcSAXEventContext& ctx){
                 if(ctx.triggerField[ParserState::call] == 1) { //TODO: Fix
-                    std::cout << std::endl <<  data.fnName << std::endl << std::endl;
-                    for(auto it = data.callargumentlist.begin(); it != data.callargumentlist.end(); ++it) {
-                        std::cout << *it;
+
+                    if(finishedCollectingName == false) {
+                        data.fnName = fullFuncName;
+                        data.callargumentlist.push_back("(");
+                        data.callargumentlist.push_back(fullFuncName);
                     }
+
                     data.callargumentlist.push_back(")");
                     NotifyAll(ctx);
                     data.clear();
@@ -70,12 +73,7 @@ class CallPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEvent
 
             closeEventMap[ParserState::tokenstring] = [this](srcSAXEventContext& ctx){
                 if(ctx.IsOpen(ParserState::name) && ctx.IsGreaterThan(ParserState::call, ParserState::argumentlist) && ctx.IsClosed(ParserState::genericargumentlist)){
-                    if(fullFuncName == "")
-                        fullFuncName = ctx.currentToken;
-                    else {
-                        fullFuncName += ".";
-                        fullFuncName += ctx.currentToken;
-                    }
+                    fullFuncName += ctx.currentToken;
                 }
                 
                 if(ctx.And({ParserState::name, ParserState::argument, ParserState::argumentlist}) && ctx.IsEqualTo(ParserState::call,ParserState::argumentlist) && ctx.IsClosed(ParserState::genericargumentlist)){
