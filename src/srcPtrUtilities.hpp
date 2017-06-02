@@ -277,4 +277,17 @@ public:
    std::vector<Variable> members;
 };
 
+class ClassTracker {
+public:
+   Class GetClass(std::string name) {
+      return classes[name]; 
+   }
+
+   void AddClass(Class toAdd) {
+      classes[toAdd.className] = toAdd;
+   }
+private:
+   std::map<std::string, Class> classes;
+};
+
 #endif
