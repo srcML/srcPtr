@@ -70,6 +70,8 @@ srcPtrTestAlgorithm * Analyze(std::string codestr) {
 	try {
 		std::string srcmlstr = StringToSrcML(codestr);
 
+		std::cout << srcmlstr << std::endl << std::endl;
+
 		// First Run
 		srcPtrDeclPolicy *declpolicy = new srcPtrDeclPolicy();
 		srcSAXController control(srcmlstr);
@@ -180,6 +182,12 @@ void TestClasses () {
 
 		assert(data->assignmentRelationships[0].first.nameofidentifier == "x");
 		assert(data->assignmentRelationships[0].second.nameofidentifier == "ptr");
+	}
+	{
+		srcPtrTestAlgorithm* data = Analyze("class foo { \n public: \n int * number; \n }; \n int main() { foo x; int y; x.number = &y;};");
+
+		assert(data->pointsToRelationships[0].first.nameofidentifier == "x.number");
+		assert(data->pointsToRelationships[0].second.nameofidentifier == "y");
 	}
 }
 
