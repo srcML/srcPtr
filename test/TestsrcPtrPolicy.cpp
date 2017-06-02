@@ -170,9 +170,23 @@ void TestFunctions () {
 	}
 }
 
+void TestClasses () {
+	{
+		srcPtrTestAlgorithm* data = Analyze("class foo { \n public: \n void f(int* x) { int y; x = &y; } \n }; \n int main() {int* ptr; foo x; x.f(ptr);};");
+
+		assert(data->pointsToRelationships[0].first.nameofidentifier == "x");
+		assert(data->pointsToRelationships[0].first.nameoftype == "int");
+		assert(data->pointsToRelationships[0].second.nameofidentifier == "y");
+
+		assert(data->assignmentRelationships[0].first.nameofidentifier == "x");
+		assert(data->assignmentRelationships[0].second.nameofidentifier == "ptr");
+	}
+}
+
 int main() {
 	TestAssignments();
 	TestFunctions();
+	TestClasses();
 	std::cout << std::endl << "Finished testing srcPtrPolicy" << std::endl;
 	return 0;
 }
