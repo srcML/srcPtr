@@ -55,16 +55,27 @@ public:
          DeclTypePolicy::DeclTypeData declarationData = *policy->Data<DeclTypePolicy::DeclTypeData>();
          declared.AddVarToFrame(Variable(declarationData));
 
+         //If variable is an object, keep track of it's methods and members
          if(declData.classTracker.ContainsKey(declarationData.nameoftype)) {
             Class classType = declData.classTracker.GetClass(declarationData.nameoftype);
 
             for(int i = 0; i < classType.methods.size(); ++i) {
                declared.AddFuncToFrame(declarationData.nameofidentifier + "." + classType.methods[i].functionName, classType.methods[i]);
             }
+
+            for(int i = 0; i < classType.members.size(); ++i) {
+               Variable v = classType.members[i];
+               std::string newName = declarationData.nameofidentifier + "." + v.nameofidentifier;
+               v.nameofidentifier = newName;
+               declared.AddVarToFrame(v);
+            }
          }
 
-         if(withinDeclAssignment)   //Pointer assignment on initialization
+         //Pointer assignment on initialization
+         if(withinDeclAssignment) {
             ResolveAssignment(declarationData, "", lhs, modifierlhs);
+            ResetVariables();
+         }
       } 
 
       else if (typeid(CallPolicy) == typeid(*policy)) {
@@ -94,9 +105,8 @@ public:
             std::string name = *it;
             if(name != "*LITERAL*") {
                Variable var1 = called.parameters[i];
-               Variable var2 = declared.GetPreviousVarOccurence(name);
 
-               ResolveAssignment(var1, "", var2, ""); //TODO: take into account modifiers
+               ResolveAssignment(var1, "", name, ""); //TODO: take into account modifiers
             }
             ++i;
          }
@@ -134,36 +144,59 @@ private:
    FunctionSignaturePolicy *funcSigPolicy;
 
    // For use in collecting assignments
-   Variable lhs;
+   std::string lhs;
    std::string modifierlhs;
-   Variable rhs;
+   std::string rhs;
    std::string modifierrhs;
 
    bool assignmentOperator = false;
    bool withinDeclAssignment = false;
 
    void ResetVariables() {
-      lhs.Clear();
-      rhs.Clear();
+      lhs = "";
+      rhs = "";
       assignmentOperator = false;
       modifierlhs = "";
       modifierrhs = "";
       withinDeclAssignment = false;
    }
 
-   void ResolveAssignment(Variable left, std::string modifierleft, Variable right, std::string modifierright) {
-      if(!right.empty()) {
-         if(left.isPointer && (modifierleft != "*")) {
+
+   void ResolveAssignment(std::string left, std::string modifierleft, std::string right, std::string modifierright) {
+      Variable leftVar = declared.GetPreviousVarOccurence(left);
+      Variable rightVar = declared.GetPreviousVarOccurence(right);
+
+      std::cout << modifierleft << left << " = " << modifierright << right << std::endl; 
+      if(!rightVar.empty()) {
+         if(leftVar.isPointer && (modifierleft != "*")) {
             if(modifierright == "&")
-               data.AddPointsToRelationship(left, right);
+               data.AddPointsToRelationship(leftVar, rightVar);
             else
-               data.AddAssignmentRelationship(left, right);
+               data.AddAssignmentRelationship(leftVar, rightVar);
          }
-         else if (left.isReference) {
-            data.AddPointsToRelationship(left, right);
+         else if (leftVar.isReference) {
+            data.AddPointsToRelationship(leftVar, rightVar);
          }
       }
    }
+
+   void ResolveAssignment(Variable leftVar, std::string modifierleft, std::string right, std::string modifierright) {
+      Variable rightVar = declared.GetPreviousVarOccurence(right);
+
+      std::cout << modifierleft << leftVar.nameofidentifier << " = " << modifierright << right << std::endl; 
+      if(!rightVar.empty()) {
+         if(leftVar.isPointer && (modifierleft != "*")) {
+            if(modifierright == "&")
+               data.AddPointsToRelationship(leftVar, rightVar);
+            else
+               data.AddAssignmentRelationship(leftVar, rightVar);
+         }
+         else if (leftVar.isReference) {
+            data.AddPointsToRelationship(leftVar, rightVar);
+         }
+      }
+   }
+
 
    void InitializeEventHandlers() {
       using namespace srcSAXEventDispatch;
@@ -184,25 +217,22 @@ private:
       openEventMap[ParserState::exprstmt] = [this](srcSAXEventContext &ctx) { ResetVariables(); };
       openEventMap[ParserState::declstmt] = [this](srcSAXEventContext &ctx) { ResetVariables(); };
 
-      closeEventMap[ParserState::name] = [this](srcSAXEventContext &ctx) {
-         if (ctx.IsOpen(ParserState::expr)) {
-            if (lhs.nameofidentifier == "") {
-               Variable decl = declared.GetPreviousVarOccurence(ctx.currentToken);
-               lhs = decl;
-
+      closeEventMap[ParserState::tokenstring] = [this](srcSAXEventContext &ctx) {
+         if (ctx.IsOpen(ParserState::expr) && ctx.IsOpen(ParserState::name)) {
+            if (!assignmentOperator) {
+               lhs += ctx.currentToken;
             } else {
-               Variable decl = declared.GetPreviousVarOccurence(ctx.currentToken);
-               rhs = decl;
+               rhs += ctx.currentToken;
             }
          }
       };
 
       closeEventMap[ParserState::op] = [this](srcSAXEventContext &ctx) {
-         if ((ctx.currentToken == "=") && (lhs.nameofidentifier != ""))
+         if ((ctx.currentToken == "=") && (lhs != ""))
             assignmentOperator = true;
-         else if ((lhs.nameofidentifier == ""))
+         else if ((lhs == ""))
             modifierlhs = ctx.currentToken;
-         else if ((rhs.nameofidentifier == ""))
+         else if (rhs == "")
             modifierrhs = ctx.currentToken;
       };
 
