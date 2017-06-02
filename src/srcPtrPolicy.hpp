@@ -55,6 +55,14 @@ public:
          DeclTypePolicy::DeclTypeData declarationData = *policy->Data<DeclTypePolicy::DeclTypeData>();
          declared.AddVarToFrame(Variable(declarationData));
 
+         if(declData.classTracker.ContainsKey(declarationData.nameoftype)) {
+            Class classType = declData.classTracker.GetClass(declarationData.nameoftype);
+
+            for(int i = 0; i < classType.methods.size(); ++i) {
+               declared.AddFuncToFrame(declarationData.nameofidentifier + "." + classType.methods[i].functionName, classType.methods[i]);
+            }
+         }
+
          if(withinDeclAssignment)   //Pointer assignment on initialization
             ResolveAssignment(declarationData, "", lhs, modifierlhs);
       } 
@@ -76,7 +84,10 @@ public:
             }
          }
 
-         Function called = declData.functionTracker.GetFunction(calledFuncName, params.size());
+         Function called = declared.GetPreviousFuncOccurence(callData.fnName, params.size());
+
+         if(called.functionName == "") // function isn't a method
+            called = declData.functionTracker.GetFunction(calledFuncName, params.size());
 
          unsigned int i = 0;
          for(auto it = params.begin(); it != params.end(); ++it) {

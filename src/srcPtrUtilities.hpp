@@ -197,6 +197,12 @@ public:
       functions.insert(std::pair<std::string, Function>(key, toAdd));
    }
 
+   void AddFunc(std::string name, Function toAdd) {
+      std::string key = name + std::to_string(toAdd.parameters.size()); //TODO: Take into account type of parameter
+      
+      functions.insert(std::pair<std::string, Function>(key, toAdd));
+   }
+
 private:
    std::map<std::string, Variable> variables; // Name to Variable
    std::map<std::string, Function> functions; // (Name of function + param count) -> Function
@@ -233,6 +239,10 @@ public:
 
    void AddFuncToFrame(Function func) {
       declared.begin()->AddFunc(func);
+   }
+
+   void AddFuncToFrame(std::string name, Function func) {
+      declared.begin()->AddFunc(name, func);
    }
 
    Function GetPreviousFuncOccurence(std::string name, int paramCount) {
@@ -285,6 +295,10 @@ public:
 
    void AddClass(Class toAdd) {
       classes[toAdd.className] = toAdd;
+   }
+
+   bool ContainsKey(std::string name) {
+      return (classes.find(name) != classes.end());
    }
 private:
    std::map<std::string, Class> classes;
