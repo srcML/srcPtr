@@ -166,7 +166,6 @@ private:
       Variable leftVar = declared.GetPreviousVarOccurence(left);
       Variable rightVar = declared.GetPreviousVarOccurence(right);
 
-      std::cout << modifierleft << left << " = " << modifierright << right << std::endl; 
       if(!rightVar.empty()) {
          if(leftVar.isPointer && (modifierleft != "*")) {
             if(modifierright == "&")
@@ -183,7 +182,6 @@ private:
    void ResolveAssignment(Variable leftVar, std::string modifierleft, std::string right, std::string modifierright) {
       Variable rightVar = declared.GetPreviousVarOccurence(right);
 
-      std::cout << modifierleft << leftVar.nameofidentifier << " = " << modifierright << right << std::endl; 
       if(!rightVar.empty()) {
          if(leftVar.isPointer && (modifierleft != "*")) {
             if(modifierright == "&")
