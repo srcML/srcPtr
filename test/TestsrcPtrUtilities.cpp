@@ -108,11 +108,28 @@ void TestFunction() {
 		Function empty;
 		assert(func == empty);
 	}
+
+}
+
+void TestClassTracker() {
+   {
+      ClassTracker classTracker1;
+      ClassTracker classTracker2;
+      {
+         Class c;
+         c.className = "string";
+
+         classTracker1.AddClass(c);
+      }
+      classTracker2 = classTracker1;
+      assert(classTracker2.GetClass("string").className == "string");
+   }
 }
 
 int main() {
 	TestVariable();
    TestDeclStack();
 	TestFunction();
+   TestClassTracker();
    return 0;
 }
