@@ -2,7 +2,7 @@
 #include <srcSAXHandler.hpp>
 #include <srcSAXHandler.hpp>
 #include <srcPtrUtilities.hpp>
-#include <ClassPolicy.hpp>
+#include <CallPolicy.hpp>
 #include <cassert>
 #include <srcml.h>
 
@@ -34,23 +34,22 @@ std::string StringToSrcML(std::string str){
 	return srcml;
 }
 
-class TestClassPolicy : public srcSAXEventDispatch::PolicyDispatcher, public srcSAXEventDispatch::PolicyListener{
+class TestCallPolicy : public srcSAXEventDispatch::PolicyDispatcher, public srcSAXEventDispatch::PolicyListener{
     public:
 
-        ~TestClassPolicy() { }
+        ~TestCallPolicy() { }
 
-        TestClassPolicy(std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners) { }
+        TestCallPolicy(std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners) { }
 
         void Notify(const PolicyDispatcher * policy, const srcSAXEventDispatch::srcSAXEventContext & ctx) override {
-            classdata = *policy->Data<Class>();
-            datatotest.push_back(classdata);
+            calldata = *policy->Data<CallPolicy::CallData>();
+            datatotest.push_back(calldata);
         }
 
 		void RunTest(){
-			assert(datatotest[0].className == "foo");
-			assert(datatotest[0].members[0].nameofidentifier == "x");
-			assert(datatotest[0].methods[0].functionName == "f");
+			assert(datatotest[0].fnName == "bar.f");
 		}
+
     protected:
 
         void * DataInner() const override {
@@ -59,22 +58,22 @@ class TestClassPolicy : public srcSAXEventDispatch::PolicyDispatcher, public src
 
     private:
 
-        ClassPolicy classpolicy;
-        Class classdata;
-        std::vector<Class> datatotest;
+        CallPolicy callpolicy;
+        CallPolicy::CallData calldata;
+        std::vector<CallPolicy::CallData> datatotest;
 
 };
 
 int main(int argc, char** filename){
-	std::string codestr = "class foo { \n public: \n void f() { int y; } \n int x;};";
+	std::string codestr = "class foo { \n public: \n void f() { int y; } \n int x;}; \n int main() \n { \n foo bar; \n bar.f();}";
 	std::string srcmlstr = StringToSrcML(codestr);
 	
 	try {
-    	TestClassPolicy classdata;
+    	TestCallPolicy calldata;
     	srcSAXController control(srcmlstr);
-    	srcSAXEventDispatch::srcSAXEventDispatcher<ClassPolicy> handler { &classdata };
+    	srcSAXEventDispatch::srcSAXEventDispatcher<CallPolicy> handler { &calldata };
     	control.parse(&handler); //Start parsing
-    	classdata.RunTest();
+    	calldata.RunTest();
     } catch(SAXError e) {
 		std::cerr << e.message;
 	}

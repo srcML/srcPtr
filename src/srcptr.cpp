@@ -86,6 +86,7 @@ int main(int argc, char *argv[]) {
       if(vm.count("map")) {
          srcPtrDataMap *data;
          srcPtrPolicy<srcPtrDataMap> *policy = new srcPtrPolicy<srcPtrDataMap>(declpolicy->GetData());
+
          try {
             // Second Run
             srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
@@ -103,6 +104,7 @@ int main(int argc, char *argv[]) {
       } else if(vm.count("andersen")) {
          srcPtrAndersen *data;
          srcPtrPolicy<srcPtrAndersen> *policy = new srcPtrPolicy<srcPtrAndersen>(declpolicy->GetData());
+
          try {
             // Second Run
             srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
@@ -119,6 +121,7 @@ int main(int argc, char *argv[]) {
             data->Print();
       } else {
          srcPtrPolicy<srcPtrEmptyAlgorithm> *policy = new srcPtrPolicy<srcPtrEmptyAlgorithm>(declpolicy->GetData());
+
          try {
             // Second Run
             srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());

@@ -70,6 +70,8 @@ srcPtrTestAlgorithm * Analyze(std::string codestr) {
 	try {
 		std::string srcmlstr = StringToSrcML(codestr);
 
+		std::cout << srcmlstr << std::endl << std::endl;
+
 		// First Run
 		srcPtrDeclPolicy *declpolicy = new srcPtrDeclPolicy();
 		srcSAXController control(srcmlstr);
@@ -170,9 +172,29 @@ void TestFunctions () {
 	}
 }
 
+void TestClasses () {
+	{
+		srcPtrTestAlgorithm* data = Analyze("class foo { \n public: \n void f(int* x) { int y; x = &y; } \n }; \n int main() {int* ptr; foo x; x.f(ptr);};");
+
+		assert(data->pointsToRelationships[0].first.nameofidentifier == "x");
+		assert(data->pointsToRelationships[0].first.nameoftype == "int");
+		assert(data->pointsToRelationships[0].second.nameofidentifier == "y");
+
+		assert(data->assignmentRelationships[0].first.nameofidentifier == "x");
+		assert(data->assignmentRelationships[0].second.nameofidentifier == "ptr");
+	}
+	{
+		srcPtrTestAlgorithm* data = Analyze("class foo { \n public: \n int * number; \n }; \n int main() { foo x; int y; x.number = &y;};");
+
+		assert(data->pointsToRelationships[0].first.nameofidentifier == "x.number");
+		assert(data->pointsToRelationships[0].second.nameofidentifier == "y");
+	}
+}
+
 int main() {
 	TestAssignments();
 	TestFunctions();
+	TestClasses();
 	std::cout << std::endl << "Finished testing srcPtrPolicy" << std::endl;
 	return 0;
 }
