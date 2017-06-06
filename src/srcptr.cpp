@@ -68,14 +68,11 @@ int main(int argc, char *argv[]) {
       auto start = std::chrono::high_resolution_clock::now();
 
       srcPtrDeclPolicy *declpolicy = new srcPtrDeclPolicy();
-      try {
-         // First Run
-         srcSAXController control(vm["input"].as<std::vector<std::string>>()[0].c_str());
-         srcSAXEventDispatch::srcSAXEventDispatcher<> handler{declpolicy};
-         control.parse(&handler);
-      } catch(SAXError e) {
-         std::cerr << e.message;
-      }
+      
+      // First Run
+      srcSAXController control(vm["input"].as<std::vector<std::string>>()[0].c_str());
+      srcSAXEventDispatch::srcSAXEventDispatcher<> handler{declpolicy}; //TODO: correct policy usage
+      control.parse(&handler);
 
       if(vm.count("timer")) {
          auto end = std::chrono::high_resolution_clock::now();
@@ -87,32 +84,27 @@ int main(int argc, char *argv[]) {
          srcPtrDataMap *data;
          srcPtrPolicy<srcPtrDataMap> *policy = new srcPtrPolicy<srcPtrDataMap>(declpolicy->GetData());
 
-         try {
-            // Second Run
-            srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
-            srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
-            control2.parse(&handler2);
-         } catch(SAXError e) {
-            std::cerr << e.message;
-         }
+         // Second Run
+         srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
+         srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
+         control2.parse(&handler2);
 
          data = policy->GetData();
          if(vm.count("graphviz"))
            data->PrintGraphViz();
          else
             data->Print();
-      } else if(vm.count("andersen")) {
-         srcPtrAndersen *data;
-         srcPtrPolicy<srcPtrAndersen> *policy = new srcPtrPolicy<srcPtrAndersen>(declpolicy->GetData());
 
-         try {
-            // Second Run
-            srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
-            srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
-            control2.parse(&handler2);
-         } catch(SAXError e) {
-            std::cerr << e.message;
-         }
+      } else if(vm.count("andersen")) {
+         srcPtrDeclPolicy::srcPtrDeclData declData = declpolicy->GetData();
+
+         srcPtrAndersen *data;
+         srcPtrPolicy<srcPtrAndersen> *policy = new srcPtrPolicy<srcPtrAndersen>(declData);
+
+         // Second Run
+         srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
+         srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
+         control2.parse(&handler2);
 
          data = policy->GetData();
          if(vm.count("graphviz"))
@@ -122,15 +114,12 @@ int main(int argc, char *argv[]) {
       } else {
          srcPtrPolicy<srcPtrEmptyAlgorithm> *policy = new srcPtrPolicy<srcPtrEmptyAlgorithm>(declpolicy->GetData());
 
-         try {
-            // Second Run
-            srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
-            srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
-            control2.parse(&handler2);
-         } catch(SAXError e) {
-            std::cerr << e.message;
-         }
-
+         
+         // Second Run
+         srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
+         srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
+         control2.parse(&handler2);
+         
          std::cout << "You specified no algorithm so no pointer data was collected. Please specify an algorithm as defined in --help." << std::endl;
       }
 
