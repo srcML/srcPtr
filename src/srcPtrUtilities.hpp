@@ -100,6 +100,9 @@ public:
       pointerToConstReturn = false;
       constPointerReturn = false;
       hasAliasedReturn = false;
+      returnType = "";
+      functionName = "";
+      returnTypeModifier = "";
    }
 
    Function(const FunctionSignaturePolicy::SignatureData& rhs) {
@@ -270,6 +273,7 @@ public:
       std::string key = toAdd.functionName + std::to_string(toAdd.parameters.size()); //TODO: Take into account type of parameter
       functionNames[key] = toAdd;
    }
+
 private:
 	std::map<std::string, Function> functionNames; // (Name of function + param count) -> Function
 };
@@ -297,9 +301,10 @@ public:
       classes[toAdd.className] = toAdd;
    }
 
-   bool ContainsKey(std::string name) {
+   bool ContainsKey(std::string name) { 
       return (classes.find(name) != classes.end());
    }
+
 private:
    std::map<std::string, Class> classes;
 };

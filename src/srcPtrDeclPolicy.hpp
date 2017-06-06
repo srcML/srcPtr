@@ -17,8 +17,8 @@
 class srcPtrDeclPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEventDispatch::PolicyDispatcher, public srcSAXEventDispatch::PolicyListener {
 public:
    struct srcPtrDeclData {
-      FunctionTracker functionTracker;
       ClassTracker classTracker;
+      FunctionTracker functionTracker;
    };
 
    ~srcPtrDeclPolicy() {
