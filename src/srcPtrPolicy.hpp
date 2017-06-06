@@ -81,6 +81,7 @@ public:
       else if (typeid(CallPolicy) == typeid(*policy)) {
          CallPolicy::CallData callData = *policy->Data<CallPolicy::CallData>();
 
+         //Find list of parameters
          std::string calledFuncName;
          std::vector<std::string> params;
          bool pickedUpFuncName = false;
@@ -95,11 +96,13 @@ public:
             }
          }
 
+         //Identify function that was called
          Function called = declared.GetPreviousFuncOccurence(callData.fnName, params.size());
 
-         if(called.functionName == "") // function isn't a method
+         if(called.functionName == "")
             called = declData.functionTracker.GetFunction(calledFuncName, params.size());
 
+         //Link parameters passed with the function's parameters
          unsigned int i = 0;
          for(auto it = params.begin(); it != params.end(); ++it) {
             std::string name = *it;
