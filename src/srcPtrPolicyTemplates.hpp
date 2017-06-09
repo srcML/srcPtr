@@ -146,8 +146,6 @@ public:
       return (new srcPtrAndersen(*this));
    }
 
-private:
-
    //Resolves dependencies of each pointer
    void Finalize() {
       for(auto var : pointsto) {
@@ -157,6 +155,8 @@ private:
          FinalizeVar(var.first, 0);
       }
    }
+
+private:
 
    //Resolves dependencies of pointer
    void FinalizeVar(Variable ptr, int depth) {
