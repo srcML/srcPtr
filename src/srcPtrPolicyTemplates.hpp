@@ -89,6 +89,8 @@ private:
 
 class srcPtrAndersen {
 public:
+   const int MAX_DEPTH = 200; //Max recursion depth for computing the transitive closure. Used to prevent infinite loops with cyclic dependencies of pointers. 
+
    ~srcPtrAndersen() { }; 
 
    void AddPointsToRelationship(Variable lhs, Variable rhs) {
@@ -149,27 +151,28 @@ private:
    //Resolves dependencies of each pointer
    void Finalize() {
       for(auto var : pointsto) {
-         FinalizeVar(var.first);
+         FinalizeVar(var.first, 0);
       }
       for(auto var : pointerqueue) {
-         FinalizeVar(var.first);
+         FinalizeVar(var.first, 0);
       }
    }
 
    //Resolves dependencies of pointer
-   // TODO: an infinite loop is possible with cyclic dependencies of two pointers. (x = y; y = x;)
-   void FinalizeVar(Variable ptr) {
-      for (auto var : pointerqueue[ptr]) {
-         if(pointerqueue[var].size() == 0) {
-            for (auto element : pointsto[var])
-               pointsto[ptr].push_back(element);
-         } else {
-            FinalizeVar(var);
-            for (auto element : pointsto[var])
-               pointsto[ptr].push_back(element);
+   void FinalizeVar(Variable ptr, int depth) {
+      if(depth > MAX_DEPTH) {
+         for (auto var : pointerqueue[ptr]) {
+            if(pointerqueue[var].size() == 0) {
+               for (auto element : pointsto[var])
+                  pointsto[ptr].push_back(element);
+            } else {
+               FinalizeVar(var, ++depth);
+               for (auto element : pointsto[var])
+                  pointsto[ptr].push_back(element);
+            }
          }
+         pointerqueue[ptr].clear();
       }
-      pointerqueue[ptr].clear();
    }
 
    std::map<Variable, std::vector<Variable>> pointsto;
