@@ -160,7 +160,7 @@ private:
 
    //Resolves dependencies of pointer
    void FinalizeVar(Variable ptr, int depth) {
-      if(depth > MAX_DEPTH) {
+      if(depth < MAX_DEPTH) {
          for (auto var : pointerqueue[ptr]) {
             if(pointerqueue[var].size() == 0) {
                for (auto element : pointsto[var])
