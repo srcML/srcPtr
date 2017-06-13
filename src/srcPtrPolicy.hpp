@@ -14,8 +14,10 @@
 #include <exception>
 #include <iostream>
 #include <map>
+#include <stack>
 #include <string>
 #include <vector>
+#include <utility>
 
 /*
 class T must implement:
@@ -81,38 +83,53 @@ public:
       else if (typeid(CallPolicy) == typeid(*policy)) {
          CallPolicy::CallData callData = *policy->Data<CallPolicy::CallData>();
 
-         //Find list of parameters
-         std::string calledFuncName;
-         std::vector<std::string> params;
-         bool pickedUpFuncName = false;
+	 std::stack<std::pair<std::string, std::vector<std::string>>> openFuncs;
+	 std::vector<std::pair<std::string, std::vector<std::string>>> funcCalls; //A list of names of function it's corresponding list of parameters
+
+	 bool pickedUpFuncName = false;
          for(auto it = callData.callargumentlist.begin(); it != callData.callargumentlist.end(); ++it) {
-            if((*it != "(") && (*it != ")")) {
-               if(!pickedUpFuncName) {
-                  pickedUpFuncName = true;
-                  calledFuncName = *it;
-               }
-               else
-                  params.push_back(*it);
-            }
+	   if(*it == "(") {
+	     pickedUpFuncName = false;
+	   }
+	   else if (pickedUpFuncName == false) {
+	     openFuncs.push(std::pair<std::string, std::vector<std::string>>());
+	     openFuncs.top().first = *it;
+	     pickedUpFuncName = true;
+	   }
+	   else if (*it == ")") {
+	     funcCalls.push_back(openFuncs.top());
+	     openFuncs.pop();
+	   }
+	   else {
+	     std::cout << "x" << std::endl;
+	     auto x = *it;
+	     openFuncs.top().second.push_back(x);
+	   }
          }
+	 
 
-         //Identify function that was called
-         Function called = declared.GetPreviousFuncOccurence(callData.fnName, params.size());
+	 for(auto it = funcCalls.begin(); it != funcCalls.end(); ++it) {
+	   
+	   //Identify function that was called
+	   Function called = declared.GetPreviousFuncOccurence(it->first, it->second.size());
 
-         if(called.functionName == "")
-            called = declData.functionTracker.GetFunction(calledFuncName, params.size());
+	   if(called.functionName == "")
+	     called = declData.functionTracker.GetFunction(it->first, it->second.size());
 
-         //Link parameters passed with the function's parameters
-         unsigned int i = 0;
-         for(auto it = params.begin(); it != params.end(); ++it) {
-            std::string name = *it;
-            if(name != "*LITERAL*") {
-               Variable var1 = called.parameters[i];
+	   if(called.functionName == "")
+	     continue;
 
-               ResolveAssignment(var1, "", name, ""); //TODO: take into account modifiers
-            }
-            ++i;
-         }
+	   unsigned int i = 0;
+	   for(auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+	     std::string name = *it2;
+	     if(name != "*LITERAL*") {
+	       Variable var = called.parameters[i];
+
+	       ResolveAssignment(var, "", name, ""); //TODO: take into account modifiers
+	     }
+	     ++i;
+	   }
+	 }
       } 
 
       else if (typeid(FunctionSignaturePolicy) == typeid(*policy)) {
