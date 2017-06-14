@@ -101,7 +101,6 @@ public:
 	     openFuncs.pop();
 	   }
 	   else {
-	     std::cout << "x" << std::endl;
 	     auto x = *it;
 	     openFuncs.top().second.push_back(x);
 	   }
