@@ -12,8 +12,8 @@
 #include <vector>
 
 struct Variable {
-   Variable() : linenumber{-1}, isConst{false}, isReference{false}, isPointer{false}, isStatic{false} {
-      
+   Variable() {
+     Clear();
    }
 
    Variable(const DeclTypePolicy::DeclTypeData &data) {
