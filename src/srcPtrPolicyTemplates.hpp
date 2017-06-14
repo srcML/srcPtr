@@ -89,7 +89,7 @@ private:
 
 class srcPtrAndersen {
 public:
-   const int MAX_DEPTH = 200; //Max recursion depth for computing the transitive closure. Used to prevent infinite loops with cyclic dependencies of pointers. 
+   const int MAX_DEPTH = 50; //Max recursion depth for computing the transitive closure. Used to prevent infinite loops with cyclic dependencies of pointers. 
 
    ~srcPtrAndersen() { }; 
 
