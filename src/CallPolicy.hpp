@@ -18,17 +18,15 @@ class CallPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEvent
         }
     */
     public:
-        struct CallData {
-            void clear() {
+        struct CallData{
+            void clear(){
                 fnName.clear();
                 callargumentlist.clear();
             }
-            std::string fnName;
             std::list<std::string> callargumentlist;
+            std::string fnName;
         };
-
-        ~CallPolicy() { }
-
+        ~CallPolicy(){}
         CallPolicy(std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}): srcSAXEventDispatch::PolicyDispatcher(listeners){
             InitializeEventHandlers();
         }
@@ -40,61 +38,44 @@ class CallPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEvent
     private:
         CallData data;
         std::string currentTypeName, currentCallName, currentModifier, currentSpecifier;
-
-        bool finishedCollectingName = false;
-        std::string fullFuncName = "";
-
+        std::string fullFuncIdentifier;
         void InitializeEventHandlers(){
             using namespace srcSAXEventDispatch;
             closeEventMap[ParserState::call] = [this](srcSAXEventContext& ctx){
-                if(ctx.triggerField[ParserState::call] == 1) { //TODO: Fix
-
-                    if(finishedCollectingName == false) {
-                        data.fnName = fullFuncName;
-                        data.callargumentlist.push_back("(");
-                        data.callargumentlist.push_back(fullFuncName);
-                    }
-
+                if(ctx.triggerField[ParserState::call] == 1){ //TODO: Fix
                     data.callargumentlist.push_back(")");
                     NotifyAll(ctx);
                     data.clear();
-
-                    fullFuncName = "";
-                    finishedCollectingName = false;
-                } else {
+                }else{
                     data.callargumentlist.push_back(")");
                 }
             };
 
             closeEventMap[ParserState::modifier] = [this](srcSAXEventContext& ctx){
-                if(currentModifier == "*"){}
-                else if(currentModifier == "&"){}
+                if(currentModifier == "*") { }
+                else if(currentModifier == "&") { }
             };
 
             closeEventMap[ParserState::tokenstring] = [this](srcSAXEventContext& ctx){
-                if(ctx.IsOpen(ParserState::name) && ctx.IsGreaterThan(ParserState::call, ParserState::argumentlist) && ctx.IsClosed(ParserState::genericargumentlist)){
-                    fullFuncName += ctx.currentToken;
+                if(ctx.IsOpen(ParserState::name) && ctx.IsGreaterThan(ParserState::call,ParserState::argumentlist) && ctx.IsClosed(ParserState::genericargumentlist)){
+                    data.fnName = ctx.currentToken;
+                    fullFuncIdentifier += ctx.currentToken;
                 }
                 
                 if(ctx.And({ParserState::name, ParserState::argument, ParserState::argumentlist}) && ctx.IsEqualTo(ParserState::call,ParserState::argumentlist) && ctx.IsClosed(ParserState::genericargumentlist)){
-                    if(finishedCollectingName == false) {
-                        data.fnName = fullFuncName;
-                        data.callargumentlist.push_back("(");
-                        data.callargumentlist.push_back(fullFuncName);
-                        finishedCollectingName = true;
-                    }
                     data.callargumentlist.push_back(ctx.currentToken);
                 }
-                
+
                 if(ctx.And({ParserState::literal, ParserState::argument, ParserState::argumentlist}) && ctx.IsEqualTo(ParserState::call,ParserState::argumentlist) && ctx.IsClosed(ParserState::genericargumentlist)){
-                    if(finishedCollectingName == false) {
-                        data.fnName = fullFuncName;
-                        data.callargumentlist.push_back("(");
-                        data.callargumentlist.push_back(fullFuncName);
-                        finishedCollectingName = true;
-                    }
-                    data.callargumentlist.push_back("*LITERAL*");	//Illegal c++ variable name as a marker for literal variable
+                    data.callargumentlist.push_back("*LITERAL*");   //Illegal c++ identifier as marker for literals
                 }
+            };
+
+            openEventMap[ParserState::argumentlist] = [this](srcSAXEventContext& ctx) {
+                data.callargumentlist.push_back("(");
+                data.callargumentlist.push_back(fullFuncIdentifier);
+                data.fnName = fullFuncIdentifier;
+                fullFuncIdentifier = "";
             };
         }
 };
