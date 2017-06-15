@@ -284,9 +284,13 @@ public:
       className = "";
       methods.clear();
       members.clear();
+      isStruct = false;
+      isClass = false;
    }
 
    std::string className;
+   bool isStruct = false;
+   bool isClass = false;
    std::vector<Function> methods;
    std::vector<Variable> members;
 };

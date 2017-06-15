@@ -9,6 +9,8 @@
 #include <stack>
 #include <list>
 
+// TODO: nested classes and structs do not currently work
+
 class ClassPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEventDispatch::PolicyDispatcher, public srcSAXEventDispatch::PolicyListener {
     public:
 
@@ -51,6 +53,7 @@ class ClassPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEven
         Class data;
         
         bool inClassDef = false;
+        bool inStructDef = false;
 
         FunctionSignaturePolicy *funcSigPolicy;
         DeclTypePolicy *declTypePolicy;
@@ -59,11 +62,15 @@ class ClassPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEven
         void InitializeEventHandlers() {
             using namespace srcSAXEventDispatch;
 
+            //Classes
             openEventMap[ParserState::classn] = [this](srcSAXEventContext &ctx) {
-                ctx.dispatcher->AddListenerDispatch(funcSigPolicy);
-                ctx.dispatcher->AddListenerDispatch(declTypePolicy);
+                if((!inClassDef) && (!inStructDef)) {
+                    ctx.dispatcher->AddListenerDispatch(funcSigPolicy);
+                    ctx.dispatcher->AddListenerDispatch(declTypePolicy);
 
-                inClassDef = true;
+                    inClassDef = true;
+                    inStructDef = false;
+                }
             };
 
             closeEventMap[ParserState::classn] = [this](srcSAXEventContext &ctx) {
@@ -76,9 +83,36 @@ class ClassPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEven
                 data.Clear();
             };
 
+            //Structs
+            openEventMap[ParserState::structn] = [this](srcSAXEventContext &ctx) {
+                if((!inClassDef) && (!inStructDef)) {
+                    ctx.dispatcher->AddListenerDispatch(funcSigPolicy);
+                    ctx.dispatcher->AddListenerDispatch(declTypePolicy);
+
+                    inStructDef = true;
+                    inClassDef = false;
+                }
+            };
+
+            closeEventMap[ParserState::structn] = [this](srcSAXEventContext &ctx) {
+                ctx.dispatcher->RemoveListenerDispatch(funcSigPolicy);
+                ctx.dispatcher->RemoveListenerDispatch(declTypePolicy);
+
+                inStructDef = false;
+
+                NotifyAll(ctx);
+                data.Clear();
+            };
+
             closeEventMap[ParserState::name] = [this](srcSAXEventContext& ctx){
                 if((ctx.IsOpen(ParserState::classn) && inClassDef) && (data.className == "")) {
                     data.className = ctx.currentToken;
+                    data.isStruct = true;
+                    data.isClass = false;
+                } else if ((ctx.IsOpen(ParserState::structn) && inStructDef) && (data.className == "")) {
+                    data.className = ctx.currentToken;
+                    data.isStruct = true;
+                    data.isClass = false;
                 }
             };
 
