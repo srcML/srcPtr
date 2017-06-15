@@ -83,53 +83,53 @@ public:
       else if (typeid(CallPolicy) == typeid(*policy)) {
          CallPolicy::CallData callData = *policy->Data<CallPolicy::CallData>();
 
-	 std::stack<std::pair<std::string, std::vector<std::string>>> openFuncs;
-	 std::vector<std::pair<std::string, std::vector<std::string>>> funcCalls; //A list of names of function it's corresponding list of parameters
+         std::stack<std::pair<std::string, std::vector<std::string>>> openFuncs;
+         std::vector<std::pair<std::string, std::vector<std::string>>> funcCalls; //A list of names of function it's corresponding list of parameters
 
-	 bool pickedUpFuncName = false;
+         bool pickedUpFuncName = false;
          for(auto it = callData.callargumentlist.begin(); it != callData.callargumentlist.end(); ++it) {
-	   if(*it == "(") {
-	     pickedUpFuncName = false;
-	   }
-	   else if (pickedUpFuncName == false) {
-	     openFuncs.push(std::pair<std::string, std::vector<std::string>>());
-	     openFuncs.top().first = *it;
-	     pickedUpFuncName = true;
-	   }
-	   else if (*it == ")") {
-	     funcCalls.push_back(openFuncs.top());
-	     openFuncs.pop();
-	   }
-	   else {
-	     auto x = *it;
-	     openFuncs.top().second.push_back(x);
-	   }
+            if(*it == "(") {
+               pickedUpFuncName = false;
+            }
+            else if (pickedUpFuncName == false) {
+               openFuncs.push(std::pair<std::string, std::vector<std::string>>());
+               openFuncs.top().first = *it;
+               pickedUpFuncName = true;
+            }
+            else if (*it == ")") {
+               funcCalls.push_back(openFuncs.top());
+               openFuncs.pop();
+            }
+            else {
+               auto x = *it;
+               openFuncs.top().second.push_back(x);
+            }
          }
 	 
 
-	 for(auto it = funcCalls.begin(); it != funcCalls.end(); ++it) {
+         for(auto it = funcCalls.begin(); it != funcCalls.end(); ++it) {
 	   
-	   //Identify function that was called
-	   Function called = declared.GetPreviousFuncOccurence(it->first, it->second.size());
+            //Identify function that was called
+            Function called = declared.GetPreviousFuncOccurence(it->first, it->second.size());
 
-	   if(called.functionName == "")
-	     called = declData.functionTracker.GetFunction(it->first, it->second.size());
+            if(called.functionName == "")
+               called = declData.functionTracker.GetFunction(it->first, it->second.size());
 
-	   if(called.functionName == "")
-	     continue;
+            if(called.functionName == "")
+               continue;
 
-	   unsigned int i = 0;
-	   for(auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
-	     std::string name = *it2;
-	     if(name != "*LITERAL*") {
-	       Variable var = called.parameters[i];
+            unsigned int i = 0;
+            for(auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+               std::string name = *it2;
+               if(name != "*LITERAL*") {
+                  Variable var = called.parameters[i];
 
-	       ResolveAssignment(var, "", name, ""); //TODO: take into account modifiers
-	     }
-	     ++i;
-	   }
-	 }
-      } 
+                  ResolveAssignment(var, "", name, ""); //TODO: take into account modifiers
+               }
+               ++i;
+            }
+         }
+      }  
 
       else if (typeid(FunctionSignaturePolicy) == typeid(*policy)) {
          FunctionSignaturePolicy::SignatureData signatureData = *policy->Data<FunctionSignaturePolicy::SignatureData>();
