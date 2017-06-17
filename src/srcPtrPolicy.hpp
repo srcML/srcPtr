@@ -171,6 +171,8 @@ private:
    bool assignmentOperator = false;
    bool withinDeclAssignment = false;
 
+   bool collectedClassName = false;
+
    void ResetVariables() {
       lhs = "";
       rhs = "";
@@ -268,6 +270,30 @@ private:
          ctx.dispatcher->RemoveListenerDispatch(callPolicy);
          ctx.dispatcher->RemoveListenerDispatch(funcSigPolicy);
          NotifyAll(ctx);
+      };
+
+      closeEventMap[ParserState::name] = [this](srcSAXEventContext& ctx) {
+         if (ctx.IsOpen(ParserState::classn)) { //TODO: fix for nested classes
+            if (!collectedClassName) {
+               Class current = declData.classTracker.GetClass(ctx.currentToken);
+
+               if(current.className != "") {
+                  for(Function f : current.methods) {
+                     declared.AddFuncToFrame(f);
+                  }
+                  for(Variable v : current.members) {
+                     declared.AddVarToFrame(v);
+                  }
+               }
+
+               collectedClassName = true;
+            }
+         }
+
+      };
+
+      closeEventMap[ParserState::classn] = [this](srcSAXEventContext& ctx) {
+         collectedClassName = false;
       };
    }
 };
