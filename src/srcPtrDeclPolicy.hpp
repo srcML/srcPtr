@@ -39,8 +39,10 @@ public:
          FunctionSignaturePolicy::SignatureData signatureData = *policy->Data<FunctionSignaturePolicy::SignatureData>();
          data.functionTracker.AddFunction(signatureData);
       } else if (typeid(ClassPolicy) == typeid(*policy)) {
-         Class classData = *policy->Data<Class>();
-         data.classTracker.AddClass(classData);
+         std::vector<Class> classData = *policy->Data<std::vector<Class>>();
+         for(int i = 0; i < classData.size(); ++i) {
+            data.classTracker.AddClass(classData[i]);
+         }
       }
    }
 

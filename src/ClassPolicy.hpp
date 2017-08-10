@@ -9,8 +9,6 @@
 #include <stack>
 #include <list>
 
-// TODO: nested classes and structs do not currently work
-
 class ClassPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEventDispatch::PolicyDispatcher, public srcSAXEventDispatch::PolicyListener {
     public:
 
@@ -30,14 +28,14 @@ class ClassPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEven
             if (typeid(FunctionSignaturePolicy) == typeid(*policy)) {
                 FunctionSignaturePolicy::SignatureData signatureData = *policy->Data<FunctionSignaturePolicy::SignatureData>();
                 Function funcSig = signatureData;
-                data.methods.push_back(funcSig);
+                data_stack.top().methods.push_back(funcSig);
             }
 
             else if (typeid(DeclTypePolicy) == typeid(*policy)) {
                 if(!(ctx.IsOpen(srcSAXEventDispatch::ParserState::function))) {
                     DeclTypePolicy::DeclTypeData declarationData = *policy->Data<DeclTypePolicy::DeclTypeData>();
                     Variable declVar = declarationData;
-                    data.members.push_back(declVar);
+                    data_stack.top().members.push_back(declVar);
                 }
             }
         }
@@ -45,74 +43,81 @@ class ClassPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEven
     protected:
 
         void * DataInner() const override {
-            return new Class(data);
+            return new std::vector<Class>(data);
         }
 
     private:
 
-        Class data;
-        
-        bool inClassDef = false;
-        bool inStructDef = false;
+        std::stack<Class> data_stack;
+
+        std::vector<Class> data;
 
         FunctionSignaturePolicy *funcSigPolicy;
         DeclTypePolicy *declTypePolicy;
 
+        bool gotClassName = true;
 
         void InitializeEventHandlers() {
             using namespace srcSAXEventDispatch;
 
             //Classes
             openEventMap[ParserState::classn] = [this](srcSAXEventContext &ctx) {
-                if((!inClassDef) && (!inStructDef)) {
+                if(data_stack.empty()) {
                     ctx.dispatcher->AddListenerDispatch(funcSigPolicy);
                     ctx.dispatcher->AddListenerDispatch(declTypePolicy);
-
-                    inClassDef = true;
-                    inStructDef = false;
                 }
+
+                Class current; 
+                current.isStruct = false;
+                data_stack.push(current);
+
+                gotClassName = false;
             };
 
             closeEventMap[ParserState::classn] = [this](srcSAXEventContext &ctx) {
-                ctx.dispatcher->RemoveListenerDispatch(funcSigPolicy);
-                ctx.dispatcher->RemoveListenerDispatch(declTypePolicy);
+                data.push_back(data_stack.top());
+                data_stack.pop();
 
-                inClassDef = false;
+                if(data_stack.empty()) {
+                    ctx.dispatcher->RemoveListenerDispatch(funcSigPolicy);
+                    ctx.dispatcher->RemoveListenerDispatch(declTypePolicy);
 
-                NotifyAll(ctx);
-                data.Clear();
+                    NotifyAll(ctx);
+                    data.clear();
+                }
             };
 
             //Structs
             openEventMap[ParserState::structn] = [this](srcSAXEventContext &ctx) {
-                if((!inClassDef) && (!inStructDef)) {
+                if(data_stack.empty()) {
                     ctx.dispatcher->AddListenerDispatch(funcSigPolicy);
                     ctx.dispatcher->AddListenerDispatch(declTypePolicy);
-
-                    inStructDef = true;
-                    inClassDef = false;
                 }
+
+                Class current; 
+                current.isStruct = true;
+                data_stack.push(current);
+
+                gotClassName = false;
             };
 
             closeEventMap[ParserState::structn] = [this](srcSAXEventContext &ctx) {
-                ctx.dispatcher->RemoveListenerDispatch(funcSigPolicy);
-                ctx.dispatcher->RemoveListenerDispatch(declTypePolicy);
+                data.push_back(data_stack.top());
+                data_stack.pop();
 
-                inStructDef = false;
+                if(data_stack.empty()) {
+                    ctx.dispatcher->RemoveListenerDispatch(funcSigPolicy);
+                    ctx.dispatcher->RemoveListenerDispatch(declTypePolicy);
 
-                NotifyAll(ctx);
-                data.Clear();
+                    NotifyAll(ctx);
+                    data.clear();
+                }
             };
 
             closeEventMap[ParserState::name] = [this](srcSAXEventContext& ctx){
-                if((ctx.IsOpen(ParserState::classn) && inClassDef) && (data.className == "")) {
-                    data.className = ctx.currentToken;
-                    data.isStruct = true;
-                    data.isClass = false;
-                } else if ((ctx.IsOpen(ParserState::structn) && inStructDef) && (data.className == "")) {
-                    data.className = ctx.currentToken;
-                    data.isStruct = true;
-                    data.isClass = false;
+                if((ctx.IsOpen(ParserState::structn) || ctx.IsOpen(ParserState::classn)) && !gotClassName) {
+                    data_stack.top().className = ctx.currentToken;
+                    gotClassName = true;
                 }
             };
 
