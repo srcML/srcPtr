@@ -42,14 +42,17 @@ class TestClassPolicy : public srcSAXEventDispatch::PolicyDispatcher, public src
         TestClassPolicy(std::initializer_list<srcSAXEventDispatch::PolicyListener *> listeners = {}) : srcSAXEventDispatch::PolicyDispatcher(listeners) { }
 
         void Notify(const PolicyDispatcher * policy, const srcSAXEventDispatch::srcSAXEventContext & ctx) override {
-            classdata = *policy->Data<Class>();
-            datatotest.push_back(classdata);
+            datatotest = *policy->Data<std::vector<Class>>();
         }
 
 		void RunTest(){
-			assert(datatotest[0].className == "foo");
-			assert(datatotest[0].members[0].nameofidentifier == "x");
-			assert(datatotest[0].methods[0].functionName == "f");
+			assert(datatotest[0].className == "foo_data");
+			assert(datatotest[0].members[0].nameofidentifier == "z");
+			assert(datatotest[0].members[1].nameofidentifier == "y");
+
+			assert(datatotest[1].className == "foo");
+			assert(datatotest[1].members[0].nameofidentifier == "x");
+			assert(datatotest[1].methods[0].functionName == "Print");
 		}
     protected:
 
@@ -66,7 +69,7 @@ class TestClassPolicy : public srcSAXEventDispatch::PolicyDispatcher, public src
 };
 
 int main(int argc, char** filename){
-	std::string codestr = "class foo { \n public: \n void f() { int y; } \n int x;};";
+	std::string codestr = "class foo { \n public: \n void Print() { }; \n int x; \n struct foo_data { \n int z; \n int y; \n }; \n };";
 	std::string srcmlstr = StringToSrcML(codestr);
 	
 	try {
