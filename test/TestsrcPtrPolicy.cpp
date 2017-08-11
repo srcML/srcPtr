@@ -189,6 +189,14 @@ void TestClasses () {
 		assert(data->pointsToRelationships[0].first.nameofidentifier == "x.number");
 		assert(data->pointsToRelationships[0].second.nameofidentifier == "y");
 	}
+	{
+		srcPtrTestAlgorithm* data = Analyze("class foo { \n public: \n void DoubleAssign(foo& toassign) { next.next = toassign; } \n foo& next; int number; \n }; \n int main() { foo x; foo y; y.next = &x;}; ");
+
+		assert(data->pointsToRelationships[0].first.nameofidentifier == "next.next");
+		assert(data->pointsToRelationships[0].second.nameofidentifier == "toassign");
+		assert(data->pointsToRelationships[1].first.nameofidentifier == "y.next");
+		assert(data->pointsToRelationships[1].second.nameofidentifier == "x");
+	}
 }
 
 int main() {
