@@ -283,6 +283,23 @@ private:
                   }
                   for(Variable v : current.members) {
                      declared.AddVarToFrame(v);
+
+                     //If variable is an object, keep track of it's methods and members
+                     if(declData.classTracker.ContainsKey(v.nameoftype)) {
+                        Class classType = declData.classTracker.GetClass(v.nameoftype);
+
+                        for(int i = 0; i < classType.methods.size(); ++i) {
+                           declared.AddFuncToFrame(v.nameofidentifier + "." + classType.methods[i].functionName, classType.methods[i]);
+                        }
+
+                        for(int i = 0; i < classType.members.size(); ++i) {
+                           Variable v = classType.members[i];
+                           std::string newName = v.nameofidentifier + "." + v.nameofidentifier;
+                           v.nameofidentifier = newName;
+                           declared.AddVarToFrame(v);
+                        }
+                     }
+
                   }
                }
 
