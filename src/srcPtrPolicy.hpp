@@ -61,13 +61,17 @@ public:
          if(declData.classTracker.ContainsKey(declarationData.nameoftype)) {
             Class classType = declData.classTracker.GetClass(declarationData.nameoftype);
 
+            std::string accessor = ".";
+            if(declarationData.isPointer)
+               accessor = "->";
+
             for(int i = 0; i < classType.methods.size(); ++i) {
-               declared.AddFuncToFrame(declarationData.nameofidentifier + "." + classType.methods[i].functionName, classType.methods[i]);
+               declared.AddFuncToFrame(declarationData.nameofidentifier + accessor + classType.methods[i].functionName, classType.methods[i]);
             }
 
             for(int i = 0; i < classType.members.size(); ++i) {
                Variable v = classType.members[i];
-               std::string newName = declarationData.nameofidentifier + "." + v.nameofidentifier;
+               std::string newName = declarationData.nameofidentifier + accessor + v.nameofidentifier;
                v.nameofidentifier = newName;
                declared.AddVarToFrame(v);
             }
@@ -290,13 +294,17 @@ private:
                      if(declData.classTracker.ContainsKey(v.nameoftype)) {
                         Class classType = declData.classTracker.GetClass(v.nameoftype);
 
+                        std::string accessor = ".";
+                        if(v.isPointer)
+                           accessor = "->";
+
                         for(int i = 0; i < classType.methods.size(); ++i) {
-                           declared.AddFuncToFrame(v.nameofidentifier + "." + classType.methods[i].functionName, classType.methods[i]);
+                           declared.AddFuncToFrame(v.nameofidentifier + accessor + classType.methods[i].functionName, classType.methods[i]);
                         }
 
                         for(int i = 0; i < classType.members.size(); ++i) {
                            Variable v = classType.members[i];
-                           std::string newName = v.nameofidentifier + "." + v.nameofidentifier;
+                           std::string newName = v.nameofidentifier + accessor + v.nameofidentifier;
                            v.nameofidentifier = newName;
                            declared.AddVarToFrame(v);
                         }
