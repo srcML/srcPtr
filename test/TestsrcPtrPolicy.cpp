@@ -197,6 +197,14 @@ void TestClasses () {
 		assert(data->pointsToRelationships[1].first.nameofidentifier == "y.next");
 		assert(data->pointsToRelationships[1].second.nameofidentifier == "x");
 	}
+	{
+		srcPtrTestAlgorithm* data = Analyze("class foo { \n public: \n int * number1; \n class foo_inner { \n public: \n void assign() { number2 = &x; }; \n int* number2; \n int x; \n }; \n };");
+
+		assert(data->pointsToRelationships[0].first.nameofidentifier == "number2");
+		assert(data->pointsToRelationships[0].first.nameoftype == "int");
+		assert(data->pointsToRelationships[0].second.nameofidentifier == "x");
+		assert(data->pointsToRelationships[0].second.nameoftype == "int");
+	}
 }
 
 int main() {

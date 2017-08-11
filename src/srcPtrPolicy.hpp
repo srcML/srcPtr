@@ -173,6 +173,8 @@ private:
 
    bool collectedClassName = false;
 
+   std::stack<bool> gotClassName;
+
    void ResetVariables() {
       lhs = "";
       rhs = "";
@@ -273,8 +275,8 @@ private:
       };
 
       closeEventMap[ParserState::name] = [this](srcSAXEventContext& ctx) {
-         if (ctx.IsOpen(ParserState::classn)) { //TODO: fix for nested classes
-            if (!collectedClassName) {
+         if (ctx.IsOpen(ParserState::classn)) {
+            if (!gotClassName.top()) {
                Class current = declData.classTracker.GetClass(ctx.currentToken);
 
                if(current.className != "") {
@@ -303,14 +305,26 @@ private:
                   }
                }
 
-               collectedClassName = true;
+               gotClassName.top() = true;
             }
          }
 
       };
 
+      openEventMap[ParserState::classn] = [this](srcSAXEventContext& ctx) {
+         gotClassName.push(false);
+      };
+
       closeEventMap[ParserState::classn] = [this](srcSAXEventContext& ctx) {
-         collectedClassName = false;
+         gotClassName.pop();
+      };
+
+      openEventMap[ParserState::structn] = [this](srcSAXEventContext& ctx) {
+         gotClassName.push(false);
+      };
+
+      closeEventMap[ParserState::structn] = [this](srcSAXEventContext& ctx) {
+         gotClassName.pop();
       };
    }
 };
