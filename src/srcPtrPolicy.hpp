@@ -88,7 +88,7 @@ public:
                accessor = "->";
 
             for(int i = 0; i < classType.methods.size(); ++i) {
-               declared.AddFuncToFrame(declarationData.nameofidentifier + accessor + classType.methods[i].functionName, classType.methods[i]);
+               declared.AddFuncToFrame(declarationData.nameofidentifier + accessor + classType.methods[i].name, classType.methods[i]);
             }
 
             for(int i = 0; i < classType.members.size(); ++i) {
@@ -138,10 +138,10 @@ public:
             //Identify function that was called
             Function called = declared.GetPreviousFuncOccurence(it->first, it->second.size());
 
-            if(called.functionName == "")
+            if(called.name == "")
                called = declData.functionTracker.GetFunction(it->first, it->second.size());
 
-            if(called.functionName == "")
+            if(called.name == "")
                continue;
 
             unsigned int i = 0;
@@ -321,7 +321,7 @@ private:
                            accessor = "->";
 
                         for(int i = 0; i < classType.methods.size(); ++i) {
-                           declared.AddFuncToFrame(v.nameofidentifier + accessor + classType.methods[i].functionName, classType.methods[i]);
+                           declared.AddFuncToFrame(v.nameofidentifier + accessor + classType.methods[i].name, classType.methods[i]);
                         }
 
                         for(int i = 0; i < classType.members.size(); ++i) {

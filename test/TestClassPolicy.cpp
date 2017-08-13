@@ -52,7 +52,7 @@ class TestClassPolicy : public srcSAXEventDispatch::PolicyDispatcher, public src
 
 			assert(datatotest[1].className == "foo");
 			assert(datatotest[1].members[0].nameofidentifier == "x");
-			assert(datatotest[1].methods[0].functionName == "Print");
+			assert(datatotest[1].methods[0].name == "Print");
 		}
     protected:
 

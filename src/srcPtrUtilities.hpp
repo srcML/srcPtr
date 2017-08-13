@@ -111,14 +111,14 @@ public:
       constPointerReturn = false;
       hasAliasedReturn = false;
       returnType = "";
-      functionName = "";
+      name = "";
       returnTypeModifier = "";
    }
 
    Function(const FunctionSignaturePolicy::SignatureData& rhs) {
       linenumber = rhs.linenumber;
       returnType = rhs.returnType;
-      functionName = rhs.name;
+      name = rhs.name;
       returnTypeModifier = rhs.returnTypeModifier;
       functionNamespaces = rhs.functionNamespaces;
       returnTypeNamespaces = rhs.returnTypeNamespaces;
@@ -135,7 +135,7 @@ public:
    void Clear(){
       linenumber = 0;
       returnType.clear();
-      functionName.clear();
+      name.clear();
       returnTypeModifier.clear();
       parameters.clear();
       functionNamespaces.clear();
@@ -149,19 +149,19 @@ public:
    }
 
    bool operator==(const Function& rhs) const {
-      return ((linenumber == rhs.linenumber) && (returnType == rhs.returnType) && (functionName == rhs.functionName) && (returnTypeModifier == rhs.returnTypeModifier) &&
+      return ((linenumber == rhs.linenumber) && (returnType == rhs.returnType) && (name == rhs.name) && (returnTypeModifier == rhs.returnTypeModifier) &&
               (functionNamespaces == rhs.functionNamespaces) && (returnTypeNamespaces == rhs.returnTypeNamespaces) && (parameters == rhs.parameters) && (isConst == rhs.isConst) &&
               (isMethod == rhs.isMethod) && (isStatic == rhs.isStatic) && (pointerToConstReturn == rhs.pointerToConstReturn) && (constPointerReturn == rhs.constPointerReturn) &&
               (hasAliasedReturn == rhs.hasAliasedReturn));
    }
 
    bool operator<(const Function &rhs) const { // Function required for STL datastructures
-      return (functionName < rhs.functionName);
+      return (name < rhs.name);
    }
 
    int linenumber;
    std::string returnType;
-   std::string functionName;
+   std::string name;
    std::string returnTypeModifier;
    std::vector<std::string> functionNamespaces;
    std::vector<std::string> returnTypeNamespaces;
@@ -205,7 +205,7 @@ public:
    }
 
    void AddFunc(Function toAdd) {
-      std::string key = toAdd.functionName + std::to_string(toAdd.parameters.size()); //TODO: Take into account type of parameter
+      std::string key = toAdd.name + std::to_string(toAdd.parameters.size()); //TODO: Take into account type of parameter
       
       functions.insert(std::pair<std::string, Function>(key, toAdd));
    }
@@ -280,7 +280,7 @@ public:
    }
 
    void AddFunction(Function toAdd) {
-      std::string key = toAdd.functionName + std::to_string(toAdd.parameters.size()); //TODO: Take into account type of parameter
+      std::string key = toAdd.name + std::to_string(toAdd.parameters.size()); //TODO: Take into account type of parameter
       functionNames[key] = toAdd;
    }
 
