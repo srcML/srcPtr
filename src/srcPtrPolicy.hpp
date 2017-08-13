@@ -19,9 +19,10 @@
  * along with srcPtr.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-ifndef INCLUDED_SRC_PTR_POLICY_HPP
+#ifndef INCLUDED_SRC_PTR_POLICY_HPP
 #define INCLUDED_SRC_PTR_POLICY_HPP
 
+#include <DeclDS.hpp>
 #include <DeclTypePolicy.hpp>
 #include <CallPolicy.hpp>
 #include <FunctionSignaturePolicy.hpp>
@@ -75,7 +76,7 @@ public:
 
    void Notify(const PolicyDispatcher *policy, const srcSAXEventDispatch::srcSAXEventContext &ctx) override {
       if (typeid(DeclTypePolicy) == typeid(*policy)) {
-         DeclTypePolicy::DeclTypeData declarationData = *policy->Data<DeclTypePolicy::DeclTypeData>();
+         DeclData declarationData = *policy->Data<DeclData>();
          declared.AddVarToFrame(Variable(declarationData));
 
          //If variable is an object, keep track of it's methods and members

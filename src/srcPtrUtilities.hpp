@@ -37,18 +37,7 @@ struct Variable {
      Clear();
    }
 
-   Variable(const DeclTypePolicy::DeclTypeData &data) {
-      nameoftype = data.nameoftype;
-      nameofidentifier = data.nameofidentifier;
-      namespaces = data.namespaces;
-      linenumber = data.linenumber;
-      isConst = data.isConst;
-      isReference = data.isReference;
-      isPointer = data.isPointer;
-      isStatic = data.isPointer;
-   }
-
-   Variable(const ParamTypePolicy::ParamData &data) {
+   Variable(const DeclData &data) {
       nameoftype = data.nameoftype;
       nameofidentifier = data.nameofidentifier;
       namespaces = data.namespaces;
@@ -129,7 +118,7 @@ public:
    Function(const FunctionSignaturePolicy::SignatureData& rhs) {
       linenumber = rhs.linenumber;
       returnType = rhs.returnType;
-      functionName = rhs.functionName;
+      functionName = rhs.name;
       returnTypeModifier = rhs.returnTypeModifier;
       functionNamespaces = rhs.functionNamespaces;
       returnTypeNamespaces = rhs.returnTypeNamespaces;

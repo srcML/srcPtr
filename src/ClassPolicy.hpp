@@ -23,6 +23,8 @@
 #define INCLUDED_CLASS_POLICY_HPP
 
 #include <srcSAXEventDispatcher.hpp>
+#include <DeclTypePolicy.hpp>
+#include <DeclDS.hpp>
 #include <FunctionSignaturePolicy.hpp>
 #include <srcSAXHandler.hpp>
 #include <exception>
@@ -54,7 +56,7 @@ class ClassPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEven
 
             else if (typeid(DeclTypePolicy) == typeid(*policy)) {
                 if(!(ctx.IsOpen(srcSAXEventDispatch::ParserState::function))) {
-                    DeclTypePolicy::DeclTypeData declarationData = *policy->Data<DeclTypePolicy::DeclTypeData>();
+                    DeclData declarationData = *policy->Data<DeclData>();
                     Variable declVar = declarationData;
                     data_stack.top().members.push_back(declVar);
                 }

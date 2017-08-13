@@ -13,7 +13,7 @@ void TestVariable() {
 		std::vector<std::string> s;
 		s.push_back("std");
 
-		DeclTypePolicy::DeclTypeData data;
+		DeclData data;
 		data.nameoftype = "i";
 		data.nameofidentifier = "int";
 		data.namespaces = s;
@@ -93,7 +93,7 @@ void TestDeclStack() {
 void TestFunction() {
 	{
 		FunctionSignaturePolicy::SignatureData sigData;
-		ParamTypePolicy::ParamData paramData;
+		DeclData paramData;
 
 		paramData.nameofidentifier = "x";
 		paramData.nameoftype = "int";
