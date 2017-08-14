@@ -51,63 +51,6 @@ public:
    srcPtrEmptyAlgorithm *Clone() const { return (new srcPtrEmptyAlgorithm(*this)); }
 };
 
-class srcPtrDataMap {
-public:
-   ~srcPtrDataMap() { }; 
-
-   void AddPointsToRelationship(Variable lhs, Variable rhs) {
-      if (std::find(data[lhs].begin(), data[lhs].end(), rhs) == data[lhs].end()) {
-         data[lhs].push_back(rhs);// Adds reference only if lhs doesn't already point to rhs
-      }
-   }
-
-   void AddAssignmentRelationship(Variable lhs, Variable rhs) { //Same as function above, for this implementation.
-      if (std::find(data[lhs].begin(), data[lhs].end(), rhs) == data[lhs].end()) {
-         data[lhs].push_back(rhs);
-      }
-   }
-
-   void Print() const {
-      for (auto x : data) {
-         std::cout << x.first.linenumber << " - " << x.first.nameoftype << (x.first.isPointer ? " * " : " & ") << x.first << std::endl;
-         for (auto y : x.second)
-			      std::cout << y.linenumber << " - " << y.nameoftype << " " << y << " " << std::endl;
-         std::cout << std::endl << std::endl << std::endl;
-      }
-   }
-
-   void PrintGraphViz() const {
-      std::cout << "digraph pointers {\n";
-
-      for (auto x : data) {
-         for (auto y : x.second) {
-            if(y.nameofidentifier != "")
-               std::cout << "   " << x.first << " -> " << y << "\n";
-         }
-      }
-
-      std::cout << "}";
-   }
-
-   std::vector<Variable> GetPointsTo(Variable ptr) const {
-      return data.at(ptr); // No const overload for operator[]
-   }
-
-	std::vector<Variable> GetPointers() const {
-		std::vector<Variable> pointers;
-		for(auto x : data)
-			pointers.push_back(x.first);
-		return pointers;
-	}
-
-   srcPtrDataMap *Clone() const {
-      return (new srcPtrDataMap(*this));
-   }
-
-private:
-   std::map<Variable, std::vector<Variable>> data;
-};
-
 class srcPtrAndersen {
 public:
    const int MAX_DEPTH = 50; //Max recursion depth for computing the transitive closure. Used to prevent infinite loops with cyclic dependencies of pointers. 

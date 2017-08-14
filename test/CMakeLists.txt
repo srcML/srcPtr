@@ -33,7 +33,6 @@ macro(add_srcptr_test TEST_FILE)
   endmacro()
 
 add_srcptr_test(TestsrcPtrUtilities.cpp)
-add_srcptr_test(TestsrcPtrPolicyData.cpp)
 add_srcptr_test(TestsrcPtrDeclPolicy.cpp)
 add_srcptr_test(TestsrcPtrPolicy.cpp)
 add_srcptr_test(TestClassPolicy.cpp)

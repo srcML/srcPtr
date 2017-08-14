@@ -47,7 +47,6 @@ int main(int argc, char *argv[]) {
 
    po::options_description algorithms("Pointer Analysis Algorithms");
    algorithms.add_options()
-      ("map,m", "use a simple map algorithm")
       ("andersen,a", "use Andersen's pointer analysis algorithm.");
 
    po::options_description desc;
@@ -80,22 +79,7 @@ int main(int argc, char *argv[]) {
          start = std::chrono::high_resolution_clock::now();
       }
 
-      if(vm.count("map")) {
-         srcPtrDataMap *data;
-         srcPtrPolicy<srcPtrDataMap> *policy = new srcPtrPolicy<srcPtrDataMap>(declpolicy->GetData());
-
-         // Second Run
-         srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
-         srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
-         control2.parse(&handler2);
-
-         data = policy->GetData();
-         if(vm.count("graphviz"))
-           data->PrintGraphViz();
-         else
-            data->Print();
-
-      } else if(vm.count("andersen")) {
+      if(vm.count("andersen")) {
          srcPtrDeclPolicy::srcPtrDeclData declData = declpolicy->GetData();
 
          srcPtrAndersen *data;
