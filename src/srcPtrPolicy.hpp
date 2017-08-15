@@ -43,13 +43,13 @@
 
 /*
 class T must implement:
-   virtual void AddPointsToRelationship(Variable, Variable);
-   virtual void AddAssignmentRelationship(Variable, Variable);
-   virtual void Print();
-   virtual void PrintGraphViz();
-   virtual std::vector<Variable> GetPointsTo(Variable);
-   virtual std::vector<Variable> GetPointers();
-   virtual srcPtrData *Clone();
+   void AddPointsToRelationship(Variable, Variable);
+   void AddAssignmentRelationship(Variable, Variable);
+   void Print();
+   void PrintGraphViz();
+   std::vector<Variable> GetPointsTo(Variable);
+   std::vector<Variable> GetPointers();
+   srcPtrData *Clone();
 */
 
 template <class T>
