@@ -116,9 +116,9 @@ public:
          for(auto it = callData.callargumentlist.begin(); it != callData.callargumentlist.end(); ++it) {
             if(*it == "(") {
                pickedUpFuncName = false;
+               openFuncs.push(std::pair<std::string, std::vector<std::string>>());
             }
             else if (pickedUpFuncName == false) {
-               openFuncs.push(std::pair<std::string, std::vector<std::string>>());
                openFuncs.top().first = *it;
                pickedUpFuncName = true;
             }
