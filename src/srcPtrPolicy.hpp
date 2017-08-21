@@ -123,12 +123,16 @@ public:
                pickedUpFuncName = true;
             }
             else if (*it == ")") {
-               funcCalls.push_back(openFuncs.top());
-               openFuncs.pop();
+               if(!openFuncs.empty()) {   //Temporary guards (ideally should work without them)
+                  funcCalls.push_back(openFuncs.top());
+                  openFuncs.pop();
+               }
             }
             else {
-               auto x = *it;
-               openFuncs.top().second.push_back(x);
+               if(!openFuncs.empty()) {   //Temporary guards
+                  auto x = *it;
+                  openFuncs.top().second.push_back(x);
+               }
             }
          }
 	 
