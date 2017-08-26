@@ -25,6 +25,8 @@
 #include <DeclTypePolicy.hpp>
 #include <srcPtrUtilities.hpp>
 
+
+#include <set>
 #include <iostream>
 #include <map>
 #include <string>
@@ -58,9 +60,7 @@ public:
    ~srcPtrAndersen() { }; 
 
    void AddPointsToRelationship(Variable lhs, Variable rhs) {
-      if (std::find(pointsto[lhs].begin(), pointsto[lhs].end(), rhs) == pointsto[lhs].end()) {
-         pointsto[lhs].push_back(rhs);// Adds reference only if lhs doesn't already point to rhs
-      }
+      pointsto[lhs].insert(rhs);// Adds reference only if lhs doesn't already point to rhs
    }
 
    void AddAssignmentRelationship(Variable lhs, Variable rhs) {
@@ -95,7 +95,12 @@ public:
 
    std::vector<Variable> GetPointsTo(Variable ptr) {
       Finalize();
-      return pointsto.at(ptr); // No const overload for operator[]
+      std::set<Variable> x = pointsto.at(ptr); // No const overload for operator[]
+      
+      std::vector<Variable> result; 
+      for(Variable member : x) 
+         result.push_back(member);
+      return result; 
    }
 
    std::vector<Variable> GetPointers() {
@@ -128,18 +133,18 @@ private:
          for (auto var : pointerqueue[ptr]) {
             if(pointerqueue[var].size() == 0) {
                for (auto element : pointsto[var])
-                  pointsto[ptr].push_back(element);
+                  pointsto[ptr].insert(element);
             } else {
-               FinalizeVar(var, ++depth);
+               FinalizeVar(var, ++depth); 
                for (auto element : pointsto[var])
-                  pointsto[ptr].push_back(element);
+                  pointsto[ptr].insert(element);
             }
          }
          pointerqueue[ptr].clear();
       }
    }
 
-   std::map<Variable, std::vector<Variable>> pointsto;
+   std::map<Variable, std::set<Variable>> pointsto;
    std::map<Variable, std::vector<Variable>> pointerqueue;
 };
 
