@@ -119,8 +119,10 @@ public:
                openFuncs.push(std::pair<std::string, std::vector<std::string>>());
             }
             else if (pickedUpFuncName == false) {
-               openFuncs.top().first = *it;
-               pickedUpFuncName = true;
+               if(!openFuncs.empty()) {
+                  openFuncs.top().first = *it;
+                  pickedUpFuncName = true;
+               }
             }
             else if (*it == ")") {
                if(!openFuncs.empty()) {   //Temporary guards (ideally should work without them)
