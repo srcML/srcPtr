@@ -67,7 +67,8 @@ class TestCallPolicy : public srcSAXEventDispatch::PolicyDispatcher, public srcS
 int main(int argc, char** filename){
 	std::string codestr = "class foo { \n public: \n void f() { int y; } \n int x;}; \n int main() \n { \n foo bar; \n bar.f();}";
 	std::string srcmlstr = StringToSrcML(codestr);
-	
+
+
 	try {
     	TestCallPolicy calldata;
     	srcSAXController control(srcmlstr);

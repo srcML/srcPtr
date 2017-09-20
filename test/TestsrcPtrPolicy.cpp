@@ -99,8 +99,8 @@ void TestAssignments() {
 		srcPtrTestAlgorithm* data = Analyze("int main() { int x; int * y; y = &x; }");
 
 		assert(data->assignmentRelationships.size() == 0);
-		assert(data->pointsToRelationships[0].first.nameofidentifier == "y");
-		assert(data->pointsToRelationships[0].second.nameofidentifier == "x");
+		assert(data->pointsToRelationships[0].first.nameOfIdentifier == "y");
+		assert(data->pointsToRelationships[0].second.nameOfIdentifier == "x");
 
 		delete data;
 	}
@@ -109,11 +109,11 @@ void TestAssignments() {
 
 		assert(data->assignmentRelationships.size() == 0);
 
-		assert(data->pointsToRelationships[0].first.nameofidentifier == "ptr1");
-		assert(data->pointsToRelationships[0].second.nameofidentifier == "var");
+		assert(data->pointsToRelationships[0].first.nameOfIdentifier == "ptr1");
+		assert(data->pointsToRelationships[0].second.nameOfIdentifier == "var");
 
-		assert(data->pointsToRelationships[1].first.nameofidentifier == "ptr2");
-		assert(data->pointsToRelationships[1].second.nameofidentifier == "ptr1");
+		assert(data->pointsToRelationships[1].first.nameOfIdentifier == "ptr2");
+		assert(data->pointsToRelationships[1].second.nameOfIdentifier == "ptr1");
 
 		delete data;
 	}
@@ -122,11 +122,11 @@ void TestAssignments() {
 
 		assert(data->assignmentRelationships.size() == 0);
 
-		assert(data->pointsToRelationships[0].first.nameofidentifier == "ptr1");
-		assert(data->pointsToRelationships[0].second.nameofidentifier == "var");
+		assert(data->pointsToRelationships[0].first.nameOfIdentifier == "ptr1");
+		assert(data->pointsToRelationships[0].second.nameOfIdentifier == "var");
 
-		assert(data->pointsToRelationships[1].first.nameofidentifier == "ptr2");
-		assert(data->pointsToRelationships[1].second.nameofidentifier == "ptr1");
+		assert(data->pointsToRelationships[1].first.nameOfIdentifier == "ptr2");
+		assert(data->pointsToRelationships[1].second.nameOfIdentifier == "ptr1");
 
 		delete data;
 	}
@@ -134,8 +134,8 @@ void TestAssignments() {
 		srcPtrTestAlgorithm* data = Analyze("int main() {\nint * x;\nint * y;\ny = x;\n}");
 
 		assert(data->pointsToRelationships.size() == 0);
-		assert(data->assignmentRelationships[0].first.nameofidentifier == "y");
-		assert(data->assignmentRelationships[0].second.nameofidentifier == "x");
+		assert(data->assignmentRelationships[0].first.nameOfIdentifier == "y");
+		assert(data->assignmentRelationships[0].second.nameOfIdentifier == "x");
 
 		delete data;
 	}
@@ -143,8 +143,8 @@ void TestAssignments() {
 		srcPtrTestAlgorithm* data = Analyze("int main(){int* x; int* y=x;}");
 
 		assert(data->pointsToRelationships.size() == 0);
-		assert(data->assignmentRelationships[0].first.nameofidentifier == "y");
-		assert(data->assignmentRelationships[0].second.nameofidentifier == "x");
+		assert(data->assignmentRelationships[0].first.nameOfIdentifier == "y");
+		assert(data->assignmentRelationships[0].second.nameOfIdentifier == "x");
 
 		delete data;
 	}
@@ -152,8 +152,8 @@ void TestAssignments() {
 		srcPtrTestAlgorithm* data = Analyze("int main(){int var;int x; int* y=&x;}");
 		
 		assert(data->assignmentRelationships.size() == 0);
-		assert(data->pointsToRelationships[0].first.nameofidentifier == "y");
-		assert(data->pointsToRelationships[0].second.nameofidentifier == "x");
+		assert(data->pointsToRelationships[0].first.nameOfIdentifier == "y");
+		assert(data->pointsToRelationships[0].second.nameOfIdentifier == "x");
 
 		delete data;
 	}
@@ -163,12 +163,12 @@ void TestFunctions () {
 	{
 		srcPtrTestAlgorithm* data = Analyze("void f(std::string a, int* x, int z) {int y; x = &y;}\n int main() {int*ptr; f(\"yo\", ptr, 12); }");
 
-		assert(data->pointsToRelationships[0].first.nameofidentifier == "x");
-		assert(data->pointsToRelationships[0].first.nameoftype == "int");
-		assert(data->pointsToRelationships[0].second.nameofidentifier == "y");
+		assert(data->pointsToRelationships[0].first.nameOfIdentifier == "x");
+		assert(data->pointsToRelationships[0].first.nameOfType == "int");
+		assert(data->pointsToRelationships[0].second.nameOfIdentifier == "y");
 
-		assert(data->assignmentRelationships[0].first.nameofidentifier == "x");
-		assert(data->assignmentRelationships[0].second.nameofidentifier == "ptr");
+		assert(data->assignmentRelationships[0].first.nameOfIdentifier == "x");
+		assert(data->assignmentRelationships[0].second.nameOfIdentifier == "ptr");
 	}
 }
 
@@ -176,40 +176,40 @@ void TestClasses () {
 	{
 		srcPtrTestAlgorithm* data = Analyze("class foo { \n public: \n void f(int* x) { int y; x = &y; } \n }; \n int main() {int* ptr; foo x; x.f(ptr);};");
 
-		assert(data->pointsToRelationships[0].first.nameofidentifier == "x");
-		assert(data->pointsToRelationships[0].first.nameoftype == "int");
-		assert(data->pointsToRelationships[0].second.nameofidentifier == "y");
+		assert(data->pointsToRelationships[0].first.nameOfIdentifier == "x");
+		assert(data->pointsToRelationships[0].first.nameOfType == "int");
+		assert(data->pointsToRelationships[0].second.nameOfIdentifier == "y");
 
-		assert(data->assignmentRelationships[0].first.nameofidentifier == "x");
-		assert(data->assignmentRelationships[0].second.nameofidentifier == "ptr");
+		assert(data->assignmentRelationships[0].first.nameOfIdentifier == "x");
+		assert(data->assignmentRelationships[0].second.nameOfIdentifier == "ptr");
 	}
 	{
 		srcPtrTestAlgorithm* data = Analyze("class foo { \n public: \n int * number; \n }; \n int main() { foo x; int y; x.number = &y;};");
 
-		assert(data->pointsToRelationships[0].first.nameofidentifier == "x.number");
-		assert(data->pointsToRelationships[0].second.nameofidentifier == "y");
+		assert(data->pointsToRelationships[0].first.nameOfIdentifier == "x.number");
+		assert(data->pointsToRelationships[0].second.nameOfIdentifier == "y");
 	}
 	{
 		srcPtrTestAlgorithm* data = Analyze("class foo { \n public: \n void DoubleAssign(foo& toassign) { next.next = toassign; } \n foo& next; int number; \n }; \n int main() { foo x; foo y; y.next = &x;}; ");
 
-		assert(data->pointsToRelationships[0].first.nameofidentifier == "next.next");
-		assert(data->pointsToRelationships[0].second.nameofidentifier == "toassign");
-		assert(data->pointsToRelationships[1].first.nameofidentifier == "y.next");
-		assert(data->pointsToRelationships[1].second.nameofidentifier == "x");
+		assert(data->pointsToRelationships[0].first.nameOfIdentifier == "next.next");
+		assert(data->pointsToRelationships[0].second.nameOfIdentifier == "toassign");
+		assert(data->pointsToRelationships[1].first.nameOfIdentifier == "y.next");
+		assert(data->pointsToRelationships[1].second.nameOfIdentifier == "x");
 	}
 	{
 		srcPtrTestAlgorithm* data = Analyze("class foo { \n public: \n int * number1; \n class foo_inner { \n public: \n void assign() { number2 = &x; }; \n int* number2; \n int x; \n }; \n };");
 
-		assert(data->pointsToRelationships[0].first.nameofidentifier == "number2");
-		assert(data->pointsToRelationships[0].first.nameoftype == "int");
-		assert(data->pointsToRelationships[0].second.nameofidentifier == "x");
-		assert(data->pointsToRelationships[0].second.nameoftype == "int");
+		assert(data->pointsToRelationships[0].first.nameOfIdentifier == "number2");
+		assert(data->pointsToRelationships[0].first.nameOfType == "int");
+		assert(data->pointsToRelationships[0].second.nameOfIdentifier == "x");
+		assert(data->pointsToRelationships[0].second.nameOfType == "int");
 	}
 	{
 		srcPtrTestAlgorithm* data = Analyze("class foo { \n public: \n int * number; \n }; \n int main() { foo* x; int y; x->number = &y;};");
 
-		assert(data->pointsToRelationships[0].first.nameofidentifier == "x->number");
-		assert(data->pointsToRelationships[0].second.nameofidentifier == "y");
+		assert(data->pointsToRelationships[0].first.nameOfIdentifier == "x->number");
+		assert(data->pointsToRelationships[0].second.nameOfIdentifier == "y");
 	}
 }
 

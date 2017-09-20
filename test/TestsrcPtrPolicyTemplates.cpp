@@ -11,11 +11,11 @@ void TestAndersen() {
       srcPtrAndersen andersen;
 
       Variable ptr1;
-      ptr1.nameofidentifier = "x";
+      ptr1.nameOfIdentifier = "x";
       ptr1.isPointer = true;
 
       Variable ptr2;
-      ptr2.nameofidentifier = "y";
+      ptr2.nameOfIdentifier = "y";
       ptr2.isPointer = true;
 
       andersen.AddAssignmentRelationship(ptr1, ptr2);
@@ -27,15 +27,15 @@ void TestAndersen() {
       srcPtrAndersen andersen;
 
       Variable ptr1;
-      ptr1.nameofidentifier = "x";
+      ptr1.nameOfIdentifier = "x";
       ptr1.isPointer = true;
 
       Variable ptr2;
-      ptr2.nameofidentifier = "y";
+      ptr2.nameOfIdentifier = "y";
       ptr2.isPointer = true;
 
       Variable temp;
-      temp.nameofidentifier = "temp";
+      temp.nameOfIdentifier = "temp";
       temp.isPointer = true;
 
       andersen.AddAssignmentRelationship(temp, ptr2);
@@ -48,19 +48,19 @@ void TestAndersen() {
       srcPtrAndersen andersen;
 
       Variable ptr1;
-      ptr1.nameofidentifier = "ptr1";
+      ptr1.nameOfIdentifier = "ptr1";
       ptr1.isPointer = true;
 
       Variable ptr2;
-      ptr2.nameofidentifier = "ptr2";
+      ptr2.nameOfIdentifier = "ptr2";
       ptr2.isPointer = true;
 
 
       Variable var1;
-      var1.nameofidentifier = "var1";
+      var1.nameOfIdentifier = "var1";
 
       Variable var2;
-      var2.nameofidentifier = "var2";
+      var2.nameOfIdentifier = "var2";
 
       andersen.AddPointsToRelationship(ptr1, var1);
       andersen.AddPointsToRelationship(ptr2, var2);
@@ -68,7 +68,7 @@ void TestAndersen() {
 
       andersen.Finalize();
 
-      assert(andersen.GetPointsTo(ptr1)[0].nameofidentifier == "var1");
+      assert(andersen.GetPointsTo(ptr1)[0].nameOfIdentifier == "var1");
 
       std::vector<Variable> ptr2PointsTo = andersen.GetPointsTo(ptr2);
 

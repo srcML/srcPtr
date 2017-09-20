@@ -38,11 +38,10 @@ struct Variable {
    }
 
    Variable(const DeclData &data) {
-      nameoftype = data.nameoftype;
-      nameofidentifier = data.nameofidentifier;
+      nameOfType = data.nameOfType;
+      nameOfIdentifier = data.nameOfIdentifier;
       namespaces = data.namespaces;
       linenumber = data.linenumber;
-      isConst = data.isConst;
       isReference = data.isReference;
       isPointer = data.isPointer;
       isStatic = data.isPointer;
@@ -50,20 +49,19 @@ struct Variable {
 
    bool operator==(const Variable &rhs) const {
       // Compare each of the variables
-      return ((this->nameoftype == rhs.nameoftype) && (this->nameofidentifier == rhs.nameofidentifier) && (this->namespaces == rhs.namespaces) && (this->linenumber == rhs.linenumber) && (this->isConst == rhs.isConst) && (this->isPointer == rhs.isPointer) && (this->isReference == rhs.isReference) &&
-              (this->isStatic == rhs.isStatic));
+      return ((this->nameOfType == rhs.nameOfType) && (this->nameOfIdentifier == rhs.nameOfIdentifier) && (this->namespaces == rhs.namespaces) && (this->linenumber == rhs.linenumber) && (this->isPointer == rhs.isPointer) && (this->isReference == rhs.isReference) &&
+              (this->isStatic == rhs.isStatic) && (this->nameOfContainingFile == rhs.nameOfContainingFile));
    }
 
    bool operator<(const Variable &rhs) const { // Function required for STL datastructures
-      return (this->nameofidentifier < rhs.nameofidentifier);
+      return (this->nameOfIdentifier < rhs.nameOfIdentifier);
    }
 
    void Clear() {
-      nameoftype.clear();
-      nameofidentifier.clear();
+      nameOfType.clear();
+      nameOfIdentifier.clear();
       namespaces.clear();
       linenumber = -1;
-      isConst = false;
       isReference = false;
       isPointer = false;
       isStatic = false;
@@ -75,27 +73,26 @@ struct Variable {
    }
 
    std::string UniqueIdentifier() {
-      return nameoftype + nameofidentifier + std::to_string(linenumber) + filename;
+      return nameOfType + nameOfIdentifier + std::to_string(linenumber) + nameOfContainingFile;
    }
    std::string SimpleIdentifier() {
-      return nameofidentifier;
+      return nameOfIdentifier;
    }
 
    friend std::ostream &operator<<(std::ostream &sout, const Variable &var);
 
-   std::string nameoftype;
-   std::string nameofidentifier;
+   std::string nameOfType;
+   std::string nameOfIdentifier;
    std::vector<std::string> namespaces;
-   std::string filename;
+   std::string nameOfContainingFile;
    int linenumber;
-   bool isConst;
    bool isReference;
    bool isPointer;
    bool isStatic;
 };
 
 std::ostream &operator<<(std::ostream &sout, const Variable &var) {
-   sout << var.nameofidentifier;
+   sout << var.nameOfIdentifier;
    return sout;
 }
 
@@ -115,7 +112,7 @@ public:
       returnTypeModifier = "";
    }
 
-   Function(const FunctionSignaturePolicy::SignatureData& rhs) {
+   Function(const SignatureData& rhs) {
       linenumber = rhs.linenumber;
       returnType = rhs.returnType;
       name = rhs.name;

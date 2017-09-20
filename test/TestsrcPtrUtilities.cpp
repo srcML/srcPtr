@@ -14,11 +14,10 @@ void TestVariable() {
 		s.push_back("std");
 
 		DeclData data;
-		data.nameoftype = "i";
-		data.nameofidentifier = "int";
+		data.nameOfType = "i";
+		data.nameOfIdentifier = "int";
 		data.namespaces = s;
 		data.linenumber = 12;
-		data.isConst = true;
 		data.isReference = false;
 		data.isPointer = true;
 		data.isStatic = false;
@@ -32,15 +31,15 @@ void TestVariable() {
 void TestDeclStack() {
    {
       Variable var1;
-      var1.nameofidentifier = "var1";
+      var1.nameOfIdentifier = "var1";
       var1.linenumber = 1;
 
       Variable var2;
-      var2.nameofidentifier = "var2";
+      var2.nameOfIdentifier = "var2";
       var2.linenumber = 2;
 
       Variable var3;
-      var3.nameofidentifier = "var3";
+      var3.nameOfIdentifier = "var3";
       var3.linenumber = 3;
 
       DeclStack stack;
@@ -55,15 +54,15 @@ void TestDeclStack() {
    }
    {
       Variable var1;
-      var1.nameofidentifier = "var";
+      var1.nameOfIdentifier = "var";
       var1.linenumber = 1;
 
       Variable var2;
-      var2.nameofidentifier = "var";
+      var2.nameOfIdentifier = "var";
       var2.linenumber = 2;
 
       Variable var3;
-      var3.nameofidentifier = "var";
+      var3.nameOfIdentifier = "var";
       var3.linenumber = 3;
 
       DeclStack stack;
@@ -76,7 +75,7 @@ void TestDeclStack() {
       stack.PopFrame();
 
       Variable var4;
-      var4.nameofidentifier = "var4";
+      var4.nameOfIdentifier = "var4";
       var4.linenumber = 10;
 
       stack.AddVarToFrame(var4);
@@ -92,11 +91,11 @@ void TestDeclStack() {
 
 void TestFunction() {
 	{
-		FunctionSignaturePolicy::SignatureData sigData;
+		SignatureData sigData;
 		DeclData paramData;
 
-		paramData.nameofidentifier = "x";
-		paramData.nameoftype = "int";
+		paramData.nameOfIdentifier = "x";
+		paramData.nameOfType = "int";
 		
 		sigData.linenumber = 12;
 		sigData.returnType = "string";
