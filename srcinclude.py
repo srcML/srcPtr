@@ -5,13 +5,14 @@ import re
 import argparse
 import os
 import os.path
+import subprocess
 
 def main(argv):
     
     #Process Arguments
     parser = argparse.ArgumentParser(description='srcInclude - Program for include analysis and generating srcML based on include order')
 
-    
+    parser.add_argument('-o', nargs=1, type=str, help='file to output srcml to') 
     parser.add_argument('files', metavar='files', type=str, nargs='+', help='files for processing')
     parser.add_argument('--srcml', action='store', nargs=1, required=False, help='generate srcML based on file include order')
 
@@ -45,23 +46,26 @@ def main(argv):
 
     for key, value in includes.items():
         if(os.path.isfile(key)):
-            f.write(key + ": ")
+            f.write(key + "_srcinclude: ")
 
             for x in value:
                 if(os.path.isfile(x)):
-                    f.write(x + " ")
+                    f.write(x + "_srcinclude ")
 
             f.write("\n\t @echo " + key + "\n")
 
     f.write("all: ")
     for key, value in includes.items():
         if(os.path.isfile(key)):
-            f.write(key + " ")
+            f.write(key + "_srcinclude ")
 
-
+    f.close()
 
     #Execute srcML based on ouput of makefile
-    os.system('make all -f srcIncludeMakefile')
+    if not args.o:
+       os.system('srcml --in-order $(make all -f srcIncludeMakefile) > out.xml') 
+    else:
+        os.system('srcml --in-order $(make all -f srcIncludeMakefile) > ' + args.o[0])
 
 if __name__ == "__main__":
     main(sys.argv)
