@@ -47,11 +47,11 @@ class TestClassPolicy : public srcSAXEventDispatch::PolicyDispatcher, public src
 
 		void RunTest(){
 			assert(datatotest[0].className == "foo_data");
-			assert(datatotest[0].members[0].nameOfIdentifier == "z");
-			assert(datatotest[0].members[1].nameOfIdentifier == "y");
+			assert(datatotest[0].members[0].nameofidentifier == "z");
+			assert(datatotest[0].members[1].nameofidentifier == "y");
 
 			assert(datatotest[1].className == "foo");
-			assert(datatotest[1].members[0].nameOfIdentifier == "x");
+			assert(datatotest[1].members[0].nameofidentifier == "x");
 			assert(datatotest[1].methods[0].name == "Print");
 		}
     protected:

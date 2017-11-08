@@ -49,7 +49,7 @@ class ClassPolicy : public srcSAXEventDispatch::EventListener, public srcSAXEven
 
         void Notify(const PolicyDispatcher * policy, const srcSAXEventDispatch::srcSAXEventContext & ctx) override {
             if (typeid(FunctionSignaturePolicy) == typeid(*policy)) {
-                SignatureData signatureData = *policy->Data<SignatureData>();
+                FunctionSignaturePolicy::SignatureData signatureData = *policy->Data<FunctionSignaturePolicy::SignatureData>();
                 Function funcSig = signatureData;
                 data_stack.top().methods.push_back(funcSig);
             }
