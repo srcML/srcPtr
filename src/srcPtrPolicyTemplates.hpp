@@ -86,7 +86,7 @@ public:
       for (auto x : pointsto) {
          for (auto y : x.second) {
             if(y.nameofidentifier != "")
-               std::cout << "   " << x.first << " -> " << y << "\n";
+               std::cout << "   \"" << x.first << "\" -> \"" << y << "\" \n";
          }
       }
 
