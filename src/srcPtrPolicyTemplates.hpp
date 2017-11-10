@@ -71,11 +71,12 @@ public:
 
    void Print() {
       Finalize();
+      std::cout << "_____________________________________________________" << std::endl << std::endl;
       for (auto x : pointsto) {
-         std::cout << x.first.linenumber << " - " << x.first.nameoftype << (x.first.isPointer ? " * " : " & ") << x.first << std::endl;
+         std::cout << x.first.linenumber << " - " << x.first.nameoftype << (x.first.isPointer ? " * " : " & ") << x.first << std::endl << std::endl;
          for (auto y : x.second)
                std::cout << y.linenumber << " - " << y.nameoftype << " " << y << " " << std::endl;
-         std::cout << std::endl << std::endl << std::endl;
+         std::cout << "_____________________________________________________" << std::endl << std::endl;
       }
    }
 
