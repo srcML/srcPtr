@@ -24,6 +24,7 @@
 
 #include <DeclTypePolicy.hpp>
 #include <srcPtrUtilities.hpp>
+#include <VariableRelationships.hpp>
 
 
 #include <set>
@@ -60,43 +61,28 @@ public:
    ~srcPtrAndersen() { }; 
 
    void AddPointsToRelationship(Variable lhs, Variable rhs) {
-      pointsto[lhs].insert(rhs);// Adds reference only if lhs doesn't already point to rhs
+      pointsto.AddRelationship(lhs, rhs);
    }
 
    void AddAssignmentRelationship(Variable lhs, Variable rhs) {
-      if (std::find(pointerqueue[lhs].begin(), pointerqueue[lhs].end(), rhs) == pointerqueue[lhs].end()) {
-         pointerqueue[lhs].push_back(rhs);
-      }
+      pointerqueue.AddRelationship(lhs, rhs);
    }
 
    void Print() {
       Finalize();
-      std::cout << "_____________________________________________________" << std::endl << std::endl;
-      for (auto x : pointsto) {
-         std::cout << x.first.linenumber << " - " << x.first.nameoftype << (x.first.isPointer ? " * " : " & ") << x.first << std::endl << std::endl;
-         for (auto y : x.second)
-               std::cout << y.linenumber << " - " << y.nameoftype << " " << y << " " << std::endl;
-         std::cout << "_____________________________________________________" << std::endl << std::endl;
-      }
+
+      pointsto.Print();
    }
 
    void PrintGraphViz() {
       Finalize();
-      std::cout << "digraph pointers {\n";
 
-      for (auto x : pointsto) {
-         for (auto y : x.second) {
-            if(y.nameofidentifier != "")
-               std::cout << "   \"" << x.first << "\" -> \"" << y << "\" \n";
-         }
-      }
-
-      std::cout << "}";
+      pointsto.PrintGraphViz();
    }
 
    std::vector<Variable> GetPointsTo(Variable ptr) {
       Finalize();
-      std::set<Variable> x = pointsto.at(ptr); // No const overload for operator[]
+      std::set<Variable> x = pointsto.GetRelationships(ptr); // No const overload for operator[]
       
       std::vector<Variable> result; 
       for(Variable member : x) 
@@ -106,10 +92,8 @@ public:
 
    std::vector<Variable> GetPointers() {
       Finalize();
-      std::vector<Variable> pointers;
-      for(auto x : pointsto)
-         pointers.push_back(x.first);
-      return pointers;
+
+      return pointsto.GetKeys();
    }
 
    srcPtrAndersen *Clone() const {
@@ -118,11 +102,13 @@ public:
 
    //Resolves dependencies of each pointer
    void Finalize() {
-      for(auto var : pointsto) {
-         FinalizeVar(var.first, 0);
+      std::vector<Variable> pointsto_keys = pointsto.GetKeys();
+      for(auto var : pointsto_keys) {
+         FinalizeVar(var, 0);
       }
-      for(auto var : pointerqueue) {
-         FinalizeVar(var.first, 0);
+      std::vector<Variable> pointerqueue_keys = pointerqueue.GetKeys();
+      for(auto var : pointerqueue_keys) {
+         FinalizeVar(var, 0);
       }
    }
 
@@ -131,29 +117,30 @@ private:
    //Resolves dependencies of pointer
    void FinalizeVar(Variable ptr, int depth) {
       if(depth < MAX_DEPTH) {
-         for (auto var : pointerqueue[ptr]) {
-            if(pointerqueue[var].size() == 0) {
-               for (auto element : pointsto[var])
-                  pointsto[ptr].insert(element);
+         for (auto var : pointerqueue.GetRelationships(ptr)) {
+            if(pointerqueue.GetRelationships(var).size() == 0) {
+               for (auto element : pointsto.GetRelationships(var))
+                  pointsto.AddRelationship(ptr, element);
             } else {
                FinalizeVar(var, ++depth); 
-               for (auto element : pointsto[var])
-                  pointsto[ptr].insert(element);
+               for (auto element : pointsto.GetRelationships(var))
+                  pointsto.AddRelationship(ptr, element);
             }
          }
-         pointerqueue[ptr].clear();
+
+         pointerqueue.ClearRelationships(ptr);
       }
    }
 
-   std::map<Variable, std::set<Variable>> pointsto;
-   std::map<Variable, std::vector<Variable>> pointerqueue;
+   VariableRelationships pointsto;
+   VariableRelationships pointerqueue;
 };
 
 /*
 class srcPtrDataSteensgaard {
 public:
    void AddPointsToRelationship(Variable lhs, Variable rhs) {
-		
+      
    }
 
    void Print() {
@@ -164,8 +151,8 @@ public:
 
    }
 private:
-	std::vector<int>  rank (100);
-	std::vector<int>  parent (100);
+   std::vector<int>  rank (100);
+   std::vector<int>  parent (100);
    disjoint_sets<int*, int*> ds(&rank[0], &parent[0]);
 };*/
 
