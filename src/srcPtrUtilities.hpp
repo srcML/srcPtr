@@ -322,12 +322,14 @@ private:
    std::map<std::string, Class> classes;
 };
 
+
 class DisjointSet {
 public:
 
    struct DisjointSetElement {
       Variable data;
       DisjointSetElement* nextElement;
+      std::list<DisjointSetElement*> previousElement;
    };
 
    ~DisjointSet() {
@@ -337,7 +339,11 @@ public:
    }
 
    void Union(Variable a, Variable b) {
-      Find(b)->nextElement = Find(a);
+      DisjointSetElement* aTopOfTree = Find(a);
+      DisjointSetElement* bTopOfTree = Find(b);
+
+      bTopOfTree->nextElement = aTopOfTree;
+      aTopOfTree->previousElement.push_back(bTopOfTree);
    };
 
    DisjointSetElement* Find(Variable toFind) {
@@ -361,8 +367,26 @@ public:
       }
    };
 
+   std::list<Variable> GetSet(Variable variable) {
+      DisjointSetElement* topOfTree = Find(variable);
+      std::list<Variable> list;
+
+      AddSubSet(topOfTree, &list);
+
+      return list;
+   };
+
+
 private:
    std::unordered_map<std::string, DisjointSetElement*> map;
+
+   void AddSubSet(DisjointSetElement* element, std::list<Variable>* list) {
+      list->push_back(element->data);
+
+      for (DisjointSetElement* var : element->previousElement) {
+         AddSubSet(var, list);
+      }
+   };
 };
 
 #endif
