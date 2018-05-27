@@ -31,6 +31,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <unordered_map>
 
 struct Variable {
    Variable() {
@@ -319,6 +320,49 @@ public:
 
 private:
    std::map<std::string, Class> classes;
+};
+
+class DisjointSet {
+public:
+
+   struct DisjointSetElement {
+      Variable data;
+      DisjointSetElement* nextElement;
+   };
+
+   ~DisjointSet() {
+      for (auto element : map) {
+         delete element.second;
+      }
+   }
+
+   void Union(Variable a, Variable b) {
+      Find(b)->nextElement = Find(a);
+   };
+
+   DisjointSetElement* Find(Variable toFind) {
+      DisjointSetElement* currentElement = map[toFind.UniqueIdentifier()];
+
+      while (currentElement->nextElement != currentElement) {
+         currentElement = currentElement->nextElement;
+      }
+
+      return currentElement;
+   };
+
+   void MakeSet(Variable variable) {
+      if (map.count(variable.UniqueIdentifier()) == 0) {
+         DisjointSetElement* newElement = new DisjointSetElement;
+
+         newElement->data = variable;
+         newElement->nextElement = newElement;
+
+         map[variable.UniqueIdentifier()] = newElement;
+      }
+   };
+
+private:
+   std::unordered_map<std::string, DisjointSetElement*> map;
 };
 
 #endif
