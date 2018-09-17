@@ -22,9 +22,10 @@
 #ifndef INCLUDED_SRC_PTR_POLICY_TEMPLATES_HPP
 #define INCLUDED_SRC_PTR_POLICY_TEMPLATES_HPP
 
+
+#include <DisjointSet.hpp>
 #include <DeclTypePolicy.hpp>
 #include <srcPtrUtilities.hpp>
-
 
 #include <set>
 #include <iostream>
