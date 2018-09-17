@@ -347,6 +347,7 @@ public:
    };
 
    DisjointSetElement* Find(Variable toFind) {
+ 
       DisjointSetElement* currentElement = map[toFind.UniqueIdentifier()];
 
       while (currentElement->nextElement != currentElement) {

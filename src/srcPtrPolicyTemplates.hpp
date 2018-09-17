@@ -149,24 +149,65 @@ private:
    std::map<Variable, std::vector<Variable>> pointerqueue;
 };
 
-/*
-class srcPtrDataSteensgaard {
+
+class srcPtrSteensgaard {
 public:
+   ~srcPtrSteensgaard() { }; 
+
    void AddPointsToRelationship(Variable lhs, Variable rhs) {
-		
+      ds.MakeSet(rhs);
+      ds.Union(pointsTo[lhs], rhs); 
+   }
+
+   void AddAssignmentRelationship(Variable lhs, Variable rhs) {
+      ds.Union(pointsTo[lhs], pointsTo[rhs]); 
    }
 
    void Print() {
+      std::vector<Variable> pointers = GetPointers();
 
+      for(auto it = pointers.begin(); it != pointers.end(); ++it) {
+         std::cout << *it << std::endl; 
+
+         std::vector<Variable> pointsTo = GetPointsTo(*it);
+         for(auto it2 = pointsTo.begin(); it2 != pointsTo.end(); ++it2) 
+            std::cout << *it2 << std::endl;
+
+         std::cout << "_____________________________________" << std::endl << std::endl;
+      } 
    }
 
-   std::vector<Variable> GetPointsTo(Variable ptr) {
-
+   void PrintGraphViz() {
+   
    }
+
+   std::vector<Variable> GetPointsTo(Variable ptr) { 
+      std::list<Variable> pointedTo = ds.GetSet(pointsTo[ptr]);
+
+      std::vector<Variable> result;
+
+      for(auto it = pointedTo.begin(); it != pointedTo.end(); ++it) {
+         result.push_back(*it);
+      }
+   }
+
+   std::vector<Variable> GetPointers() {
+      std::vector<Variable> pointers;
+
+      for(auto it = pointsTo.begin(); it != pointsTo.end(); ++it) {
+         pointers.push_back(it->first);
+      } 
+
+      return pointers;
+   }
+
+   srcPtrSteensgaard *Clone() const {
+      return (new srcPtrSteensgaard(*this));
+   }
+
 private:
-	std::vector<int>  rank (100);
-	std::vector<int>  parent (100);
-   disjoint_sets<int*, int*> ds(&rank[0], &parent[0]);
-};*/
+   DisjointSet ds;
+   std::map<Variable, Variable> pointsTo;
+};
 
 #endif

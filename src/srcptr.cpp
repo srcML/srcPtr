@@ -47,7 +47,8 @@ int main(int argc, char *argv[]) {
 
    po::options_description algorithms("Pointer Analysis Algorithms");
    algorithms.add_options()
-      ("andersen,a", "use Andersen's pointer analysis algorithm.");
+      ("andersen,a", "use Andersen's pointer analysis algorithm.")
+      ("steensgaard,s", "use Steensgaard's pointer analysis algorithm.");
 
    po::options_description desc;
    desc.add(generic).add(algorithms);
@@ -95,6 +96,24 @@ int main(int argc, char *argv[]) {
            data->PrintGraphViz();
          else
             data->Print();
+      } else if(vm.count("steensgaard")) {
+
+         srcPtrDeclPolicy::srcPtrDeclData declData = declpolicy->GetData();
+
+         srcPtrSteensgaard *data;
+         srcPtrPolicy<srcPtrSteensgaard> *policy = new srcPtrPolicy<srcPtrSteensgaard>(declData);
+
+         // Second Run
+         srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
+         srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
+         control2.parse(&handler2);
+
+         data = policy->GetData();
+         if(vm.count("graphviz"))
+           data->PrintGraphViz();
+         else
+            data->Print();   
+
       } else {
          srcPtrPolicy<srcPtrEmptyAlgorithm> *policy = new srcPtrPolicy<srcPtrEmptyAlgorithm>(declpolicy->GetData());
 
