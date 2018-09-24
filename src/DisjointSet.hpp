@@ -29,10 +29,25 @@
 #include <utility>
 #include <vector>
 #include <unordered_map>
-
+#include <exception>
 
 class DisjointSet {
 public:
+
+   class ItemNotFoundException : public std::exception {
+   public:
+      ItemNotFoundException(Variable var) {
+         this->var = var; 
+      };
+
+      virtual const char* what() const throw() {
+         std::string msg = "Couldn't find element " + var.nameofidentifier;
+
+         return msg.c_str();
+      };
+
+      Variable var; 
+   };
 
    struct DisjointSetElement {
       Variable data;
@@ -55,8 +70,16 @@ public:
    };
 
    DisjointSetElement* Find(Variable toFind) {
- 
-      DisjointSetElement* currentElement = map[toFind.UniqueIdentifier()];
+      DisjointSetElement* currentElement;
+
+      try {
+        currentElement = map.at(toFind.UniqueIdentifier());
+      }
+      catch (const std::out_of_range& oor) {
+         ItemNotFoundException e(toFind);
+
+         throw e;
+      }
 
       while (currentElement->nextElement != currentElement) {
          currentElement = currentElement->nextElement;
