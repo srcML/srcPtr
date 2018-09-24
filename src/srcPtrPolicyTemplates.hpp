@@ -24,7 +24,6 @@
 
 
 #include <DisjointSet.hpp>
-#include <DeclTypePolicy.hpp>
 #include <srcPtrUtilities.hpp>
 
 #include <set>
@@ -32,8 +31,6 @@
 #include <map>
 #include <string>
 #include <vector>
-
-#include <boost/pending/detail/disjoint_sets.hpp>
 
 class srcPtrEmptyAlgorithm {
 public:
@@ -157,11 +154,21 @@ public:
 
    void AddPointsToRelationship(Variable lhs, Variable rhs) {
       ds.MakeSet(rhs);
-      ds.Union(pointsTo[lhs], rhs); 
+      if (pointsTo[lhs].empty()) {
+         pointsTo[lhs] = rhs;
+      }
+      else {
+         ds.Union(pointsTo[lhs], rhs);
+      }
    }
 
    void AddAssignmentRelationship(Variable lhs, Variable rhs) {
-      ds.Union(pointsTo[lhs], pointsTo[rhs]); 
+      if (pointsTo[lhs].empty())
+         pointsTo[lhs] = pointsTo[rhs];
+      else if (pointsTo[rhs].empty())
+         pointsTo[rhs] = pointsTo[lhs];
+      else
+         ds.Union(pointsTo[lhs], pointsTo[rhs]); 
    }
 
    void Print() {
@@ -190,6 +197,8 @@ public:
       for(auto it = pointedTo.begin(); it != pointedTo.end(); ++it) {
          result.push_back(*it);
       }
+
+      return result;
    }
 
    std::vector<Variable> GetPointers() {
