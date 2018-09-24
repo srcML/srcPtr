@@ -77,7 +77,53 @@ void TestAndersen() {
    }
 }
 
+void TestSteensgaard() {
+   Variable var1;
+   Variable var2;
+   Variable var3;
+   Variable ptr1;
+   Variable ptr2;
+
+   var1.linenumber = 1;
+   var1.nameofidentifier = "var1";
+   var1.nameoftype = "int";
+
+   var2.linenumber = 2;
+   var2.nameofidentifier = "var2";
+   var2.nameoftype = "int";
+
+   var3.linenumber = 3;
+   var3.nameofidentifier = "var3";
+   var3.nameoftype = "int";
+
+   ptr1.linenumber = 4;
+   ptr1.nameofidentifier = "ptr1";
+   ptr1.nameoftype = "int";
+   ptr1.isPointer = true;
+
+   ptr2.linenumber = 5; 
+   ptr2.nameofidentifier = "ptr2";
+   ptr2.nameoftype = "int";
+   ptr2.isPointer = true;
+
+   {
+      srcPtrSteensgaard steensgaard;
+
+      steensgaard.AddPointsToRelationship(ptr1, var1);
+      steensgaard.AddPointsToRelationship(ptr1, var2);
+
+      std::vector<Variable> pointsTo = steensgaard.GetPointsTo(ptr1);
+      assert((std::count(pointsTo.begin(), pointsTo.end(), var1) == 1));
+      assert((std::count(pointsTo.begin(), pointsTo.end(), var2) == 1));
+
+      steensgaard.AddAssignmentRelationship(ptr1, ptr2);
+
+      assert(steensgaard.GetPointsTo(ptr1) == steensgaard.GetPointsTo(ptr2));
+   }
+}
+
 int main() {
    TestAndersen();
+   TestSteensgaard();
    return 0;
 }
