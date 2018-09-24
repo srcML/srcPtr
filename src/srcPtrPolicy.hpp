@@ -124,7 +124,7 @@ public:
                   pickedUpFuncName = true;
                }
             }
-            else if (*it == ")") {
+           else if (*it == ")") {
                if(!openFuncs.empty()) {   //Temporary guards (ideally should work without them)
                   funcCalls.push_back(openFuncs.top());
                   openFuncs.pop();

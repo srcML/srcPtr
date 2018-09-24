@@ -73,12 +73,12 @@ public:
 
    srcPtrDeclData data;
 
-protected:
+   protected:
    void *DataInner() const override {
       return new srcPtrDeclData(data);
    }
 
-private:
+   private:
    FunctionSignaturePolicy *functionSignaturePolicy = nullptr;
    ClassPolicy *classPolicy = nullptr;
 

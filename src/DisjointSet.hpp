@@ -33,20 +33,19 @@
 
 class DisjointSet {
 public:
-
    class ItemNotFoundException : public std::exception {
-   public:
-      ItemNotFoundException(Variable var) {
-         this->var = var; 
-      };
+      public:
+         ItemNotFoundException(Variable var) {
+            this->var = var; 
+         };
 
-      virtual const char* what() const throw() {
-         std::string msg = "Couldn't find element " + var.nameofidentifier;
+         virtual const char* what() const throw() {
+            std::string msg = "Couldn't find element " + var.nameofidentifier;
 
-         return msg.c_str();
-      };
+            return msg.c_str();
+         };
 
-      Variable var; 
+         Variable var; 
    };
 
    struct DisjointSetElement {
@@ -73,7 +72,7 @@ public:
       DisjointSetElement* currentElement;
 
       try {
-        currentElement = map.at(toFind.UniqueIdentifier());
+         currentElement = map.at(toFind.UniqueIdentifier());
       }
       catch (const std::out_of_range& oor) {
          ItemNotFoundException e(toFind);

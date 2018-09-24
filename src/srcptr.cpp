@@ -37,7 +37,7 @@
 int main(int argc, char *argv[]) {
 
    namespace po = boost::program_options;
-   
+
    po::options_description generic("Options");
    generic.add_options()
       ("help", "produce help message")
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
       auto start = std::chrono::high_resolution_clock::now();
 
       srcPtrDeclPolicy *declpolicy = new srcPtrDeclPolicy();
-      
+
       // First Run
       srcSAXController control(vm["input"].as<std::vector<std::string>>()[0].c_str());
       srcSAXEventDispatch::srcSAXEventDispatcher<> handler{declpolicy}; //TODO: correct policy usage
@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
 
          data = policy->GetData();
          if(vm.count("graphviz"))
-           data->PrintGraphViz();
+            data->PrintGraphViz();
          else
             data->Print();
       } else if(vm.count("steensgaard")) {
@@ -110,19 +110,19 @@ int main(int argc, char *argv[]) {
 
          data = policy->GetData();
          if(vm.count("graphviz"))
-           data->PrintGraphViz();
+            data->PrintGraphViz();
          else
             data->Print();   
 
       } else {
          srcPtrPolicy<srcPtrEmptyAlgorithm> *policy = new srcPtrPolicy<srcPtrEmptyAlgorithm>(declpolicy->GetData());
 
-         
+
          // Second Run
          srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
          srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
          control2.parse(&handler2);
-         
+
          std::cout << "You specified no algorithm so no pointer data was collected. Please specify an algorithm as defined in --help." << std::endl;
       }
 
