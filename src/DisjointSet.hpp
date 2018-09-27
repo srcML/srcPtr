@@ -40,7 +40,7 @@ public:
          };
 
          virtual const char* what() const throw() {
-            std::string msg = "Couldn't find element " + var.nameofidentifier;
+            std::string msg = "Couldn't find element " + var.nameOfIdentifier;
 
             return msg.c_str();
          };

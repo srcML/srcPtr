@@ -80,21 +80,21 @@ public:
          declared.AddVarToFrame(Variable(declarationData));
 
          //If variable is an object, keep track of it's methods and members
-         if(declData.classTracker.ContainsKey(declarationData.nameoftype)) {
-            Class classType = declData.classTracker.GetClass(declarationData.nameoftype);
+         if(declData.classTracker.ContainsKey(declarationData.nameOfType)) {
+            Class classType = declData.classTracker.GetClass(declarationData.nameOfType);
 
             std::string accessor = ".";
             if(declarationData.isPointer)
                accessor = "->";
 
             for(int i = 0; i < classType.methods.size(); ++i) {
-               declared.AddFuncToFrame(declarationData.nameofidentifier + accessor + classType.methods[i].name, classType.methods[i]);
+               declared.AddFuncToFrame(declarationData.nameOfIdentifier + accessor + classType.methods[i].name, classType.methods[i]);
             }
 
             for(int i = 0; i < classType.members.size(); ++i) {
                Variable v = classType.members[i];
-               std::string newName = declarationData.nameofidentifier + accessor + v.nameofidentifier;
-               v.nameofidentifier = newName;
+               std::string newName = declarationData.nameOfIdentifier + accessor + v.nameOfIdentifier;
+               v.nameOfIdentifier = newName;
                declared.AddVarToFrame(v);
             }
          }
@@ -164,7 +164,7 @@ public:
       }  
 
       else if (typeid(FunctionSignaturePolicy) == typeid(*policy)) {
-         FunctionSignaturePolicy::SignatureData signatureData = *policy->Data<FunctionSignaturePolicy::SignatureData>();
+         SignatureData signatureData = *policy->Data<SignatureData>();
          Function funcSig = signatureData;
          for(Variable var : funcSig.parameters) {
             declared.AddVarToFrame(var);
@@ -319,21 +319,21 @@ private:
                      declared.AddVarToFrame(v);
 
                      //If variable is an object, keep track of it's methods and members
-                     if(declData.classTracker.ContainsKey(v.nameoftype)) {
-                        Class classType = declData.classTracker.GetClass(v.nameoftype);
+                     if(declData.classTracker.ContainsKey(v.nameOfType)) {
+                        Class classType = declData.classTracker.GetClass(v.nameOfType);
 
                         std::string accessor = ".";
                         if(v.isPointer)
                            accessor = "->";
 
                         for(int i = 0; i < classType.methods.size(); ++i) {
-                           declared.AddFuncToFrame(v.nameofidentifier + accessor + classType.methods[i].name, classType.methods[i]);
+                           declared.AddFuncToFrame(v.nameOfIdentifier + accessor + classType.methods[i].name, classType.methods[i]);
                         }
 
                         for(int i = 0; i < classType.members.size(); ++i) {
                            Variable v = classType.members[i];
-                           std::string newName = v.nameofidentifier + accessor + v.nameofidentifier;
-                           v.nameofidentifier = newName;
+                           std::string newName = v.nameOfIdentifier + accessor + v.nameOfIdentifier;
+                           v.nameOfIdentifier = newName;
                            declared.AddVarToFrame(v);
                         }
                      }

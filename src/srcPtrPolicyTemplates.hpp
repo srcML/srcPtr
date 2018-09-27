@@ -71,9 +71,9 @@ public:
       Finalize();
       std::cout << "_____________________________________________________" << std::endl << std::endl;
       for (auto x : pointsto) {
-         std::cout << x.first.linenumber << " - " << x.first.nameoftype << (x.first.isPointer ? " * " : " & ") << x.first << std::endl << std::endl;
+         std::cout << x.first.linenumber << " - " << x.first.nameOfType << (x.first.isPointer ? " * " : " & ") << x.first << std::endl << std::endl;
          for (auto y : x.second)
-               std::cout << y.linenumber << " - " << y.nameoftype << " " << y << " " << std::endl;
+               std::cout << y.linenumber << " - " << y.nameOfType << " " << y << " " << std::endl;
          std::cout << "_____________________________________________________" << std::endl << std::endl;
       }
    }
@@ -84,7 +84,7 @@ public:
 
       for (auto x : pointsto) {
          for (auto y : x.second) {
-            if(y.nameofidentifier != "")
+            if(y.nameOfIdentifier != "")
                std::cout << "   \"" << x.first << "\" -> \"" << y << "\" \n";
          }
       }

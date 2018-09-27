@@ -57,7 +57,7 @@ public:
 
    void Notify(const PolicyDispatcher *policy, const srcSAXEventDispatch::srcSAXEventContext &ctx) override {
       if (typeid(FunctionSignaturePolicy) == typeid(*policy)) {
-         FunctionSignaturePolicy::SignatureData signatureData = *policy->Data<FunctionSignaturePolicy::SignatureData>();
+         SignatureData signatureData = *policy->Data<SignatureData>();
          data.functionTracker.AddFunction(signatureData);
       } else if (typeid(ClassPolicy) == typeid(*policy)) {
          std::vector<Class> classData = *policy->Data<std::vector<Class>>();

@@ -48,7 +48,7 @@ public:
 
    void Notify(const PolicyDispatcher * policy, const srcSAXEventDispatch::srcSAXEventContext & ctx) override {
       if (typeid(FunctionSignaturePolicy) == typeid(*policy)) {
-         FunctionSignaturePolicy::SignatureData signatureData = *policy->Data<FunctionSignaturePolicy::SignatureData>();
+         SignatureData signatureData = *policy->Data<SignatureData>();
          Function funcSig = signatureData;
          data_stack.top().methods.push_back(funcSig);
       }
