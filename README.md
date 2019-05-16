@@ -7,7 +7,7 @@ A lightweight, fast, and flexible 'close to the code' pointer analysis tool.
 srcPtr is available as a Linux binary and preconfigured virtual machine image. Otherwise, you can build it yourself.
 
 #### Binary
-[Ubuntu 18.04.1 x64](http://www.sdml.cs.kent.edu/lmcrs/srcPtr/srcptr_ubuntu_18-04.zip)
+[Ubuntu 18.04 x64](http://www.sdml.cs.kent.edu/lmcrs/srcPtr/srcptr_ubuntu_18-04.zip)
 
 #### Virtual Machine
 [VM Image](http://www.sdml.cs.kent.edu/lmcrs/srcPtr/srcptr_vm_ubuntu_18-04.zip)
