@@ -26,13 +26,8 @@ enable_testing()
 # find needed libraries
 find_package(LibXml2 REQUIRED)
 
-# use the old method of finding Boost for versions 3.30+
-# cmake_policy(SET CMP0167 OLD)
-# find_package(Boost COMPONENTS program_options REQUIRED)
-
 # include needed includes
 include_directories(${LIBXML2_INCLUDE_DIR})
-# include_directories(${Boost_INCLUDE_DIRS})
 add_definitions("-std=c++1y")
 
 # Download the CLI11 parser into directory named "external".
