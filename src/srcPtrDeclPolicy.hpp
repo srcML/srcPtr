@@ -61,7 +61,7 @@ public:
          data.functionTracker.AddFunction(signatureData);
       } else if (typeid(ClassPolicy) == typeid(*policy)) {
          std::vector<Class> classData = *policy->Data<std::vector<Class>>();
-         for(int i = 0; i < classData.size(); ++i) {
+         for(size_t i = 0; i < classData.size(); ++i) {
             data.classTracker.AddClass(classData[i]);
          }
       }
