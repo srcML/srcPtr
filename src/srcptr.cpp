@@ -32,71 +32,64 @@
 #include <string>
 #include <chrono>
 
-#include <boost/program_options.hpp>
+#include <CLI11.hpp>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
+   bool runTimer = false, graphvizOutput = false, useAndersen = false,
+         useSteensgaard = false;
+   std::string inputFile = "";
+   
+   CLI::App app{"srcPtr: A lightweight, fast, and flexible 'close to the code' pointer analysis tool.  "};
+   // Options hold extra data
+   app.add_option  ("-i, --input",  inputFile,              "Name of srcML file of source code with --position option");
+   // flags are booleans
+   app.add_flag  ("-a, --andersen",  useAndersen,         "Use Andersen's pointer analysis algorithm");
+   app.add_flag  ("-s, --steensgaard",  useSteensgaard,   "Use Steensgaard's pointer analysis algorithm");
+   app.add_flag  ("-g, --graphviz",  graphvizOutput,      "Generate GraphViz output");
+   app.add_flag  ("-t, --timer",  runTimer,               "Measure time it takes srcPtr to execute");
+   
+   CLI11_PARSE(app, argc, argv);
 
-   namespace po = boost::program_options;
-
-   po::options_description generic("Options");
-   generic.add_options()
-      ("help", "produce help message")
-      ("graphviz,g", "generate graphViz output")
-      ("timer,t", "measure time it takes srcPtr to execute")
-      ("input", po::value<std::vector<std::string>>()->required(), "name of srcML file to analyze");
-
-   po::options_description algorithms("Pointer Analysis Algorithms");
-   algorithms.add_options()
-      ("andersen,a", "use Andersen's pointer analysis algorithm.")
-      ("steensgaard,s", "use Steensgaard's pointer analysis algorithm.");
-
-   po::options_description desc;
-   desc.add(generic).add(algorithms);
-
-   po::positional_options_description p;
-   p.add("input", -1);
-
-   po::variables_map vm;
-   po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm); 
-
-   if(vm.count("help")) {
-      std::cout << desc << std::endl;
-      return 0;
-   }
-
-   if(vm.count("input")) {
+   try
+   {
       auto start = std::chrono::high_resolution_clock::now();
 
       srcPtrDeclPolicy *declpolicy = new srcPtrDeclPolicy();
 
       // First Run
-      srcSAXController control(vm["input"].as<std::vector<std::string>>()[0].c_str());
-      srcSAXEventDispatch::srcSAXEventDispatcher<> handler{declpolicy}; //TODO: correct policy usage
+      srcSAXController control(inputFile.c_str());
+      srcSAXEventDispatch::srcSAXEventDispatcher<> handler{declpolicy}; // TODO: correct policy usage
       control.parse(&handler);
 
-      if(vm.count("timer")) {
+      if (runTimer)
+      {
          auto end = std::chrono::high_resolution_clock::now();
-         std::cerr << "\n\n" << std::chrono::duration<double, std::milli>(end-start).count() << "ms passed from the first policy's execution." << std::endl;
+         std::cerr << "\n\n"
+                  << std::chrono::duration<double, std::milli>(end - start).count() << "ms passed from the first policy's execution." << std::endl;
          start = std::chrono::high_resolution_clock::now();
       }
 
-      if(vm.count("andersen")) {
+      if (useAndersen)
+      {
          srcPtrDeclPolicy::srcPtrDeclData declData = declpolicy->GetData();
 
          srcPtrAndersen *data;
          srcPtrPolicy<srcPtrAndersen> *policy = new srcPtrPolicy<srcPtrAndersen>(declData);
 
          // Second Run
-         srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
+         srcSAXController control2(inputFile.c_str());
          srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
          control2.parse(&handler2);
 
          data = policy->GetData();
-         if(vm.count("graphviz"))
+         if (graphvizOutput)
             data->PrintGraphViz();
          else
             data->Print();
-      } else if(vm.count("steensgaard")) {
+      }
+      else if (useSteensgaard)
+      {
 
          srcPtrDeclPolicy::srcPtrDeclData declData = declpolicy->GetData();
 
@@ -104,32 +97,40 @@ int main(int argc, char *argv[]) {
          srcPtrPolicy<srcPtrSteensgaard> *policy = new srcPtrPolicy<srcPtrSteensgaard>(declData);
 
          // Second Run
-         srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
+         srcSAXController control2(inputFile.c_str());
          srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
          control2.parse(&handler2);
 
          data = policy->GetData();
-         if(vm.count("graphviz"))
+         if (graphvizOutput)
             data->PrintGraphViz();
          else
-            data->Print();   
-
-      } else {
+            data->Print();
+      }
+      else
+      {
          srcPtrPolicy<srcPtrEmptyAlgorithm> *policy = new srcPtrPolicy<srcPtrEmptyAlgorithm>(declpolicy->GetData());
 
-
          // Second Run
-         srcSAXController control2(vm["input"].as<std::vector<std::string>>()[0].c_str());
+         srcSAXController control2(inputFile.c_str());
          srcSAXEventDispatch::srcSAXEventDispatcher<> handler2{policy};
          control2.parse(&handler2);
 
          std::cout << "You specified no algorithm so no pointer data was collected. Please specify an algorithm as defined in --help." << std::endl;
       }
 
-      if(vm.count("timer")) {
+      if (runTimer)
+      {
          auto end = std::chrono::high_resolution_clock::now();
-         std::cerr << "\n\n" << std::chrono::duration<double, std::milli>(end-start).count() << "ms passed from the second policy's execution." << std::endl;
+         std::cerr << "\n\n"
+                  << std::chrono::duration<double, std::milli>(end - start).count() << "ms passed from the second policy's execution." << std::endl;
       }
+
+      std::cout << std::endl;
+   } catch (std::string& error) {
+      std::cerr << "Error: " << error << std::endl;
+   } catch (SAXError& error) {
+      std::cerr << "Error: " << error.message << " " << error.error_code << std::endl;
    }
 
    return 0;

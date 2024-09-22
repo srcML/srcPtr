@@ -24,4 +24,4 @@ file(GLOB HEADER *.hpp)
 add_definitions("-Wall")
 
 add_executable(srcptr  ${HEADERS} ${SOURCE})
-target_link_libraries(srcptr srcsaxeventdispatch srcsax_static ${LIBXML2_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(srcptr srcsaxeventdispatch srcsax_static ${LIBXML2_LIBRARIES} ${CMAKE_EXTERNAL_SOURCE_DIR}/CLI11.hpp)

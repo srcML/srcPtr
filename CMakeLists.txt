@@ -25,13 +25,15 @@ enable_testing()
 
 # find needed libraries
 find_package(LibXml2 REQUIRED)
-find_package(Boost COMPONENTS program_options REQUIRED)
 
 # include needed includes
 include_directories(${LIBXML2_INCLUDE_DIR})
-include_directories(${Boost_INCLUDE_DIRS})
 add_definitions("-std=c++1y")
 
+# Download the CLI11 parser into directory named "external".
+set(CMAKE_EXTERNAL_SOURCE_DIR ${CMAKE_SOURCE_DIR}/external) # Creates folder if doesn't exists.
+# Name of file is needed since content of file itself are being downloaded.
+file(DOWNLOAD https://github.com/CLIUtils/CLI11/releases/download/v2.3.2/CLI11.hpp ${CMAKE_EXTERNAL_SOURCE_DIR}/CLI11.hpp)
 
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -39,6 +41,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 include_directories(src
+                    external
                     ${CMAKE_SOURCE_DIR}/srcSAX/src/srcsax
                     ${CMAKE_SOURCE_DIR}/srcSAX/src/cpp
                     ${CMAKE_SOURCE_DIR}/srcSAX/src/windows
