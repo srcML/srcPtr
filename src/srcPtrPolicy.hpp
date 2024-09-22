@@ -87,11 +87,11 @@ public:
             if(declarationData.isPointer)
                accessor = "->";
 
-            for(int i = 0; i < classType.methods.size(); ++i) {
+            for(size_t i = 0; i < classType.methods.size(); ++i) {
                declared.AddFuncToFrame(declarationData.nameofidentifier + accessor + classType.methods[i].name, classType.methods[i]);
             }
 
-            for(int i = 0; i < classType.members.size(); ++i) {
+            for(size_t i = 0; i < classType.members.size(); ++i) {
                Variable v = classType.members[i];
                std::string newName = declarationData.nameofidentifier + accessor + v.nameofidentifier;
                v.nameofidentifier = newName;
@@ -326,11 +326,11 @@ private:
                         if(v.isPointer)
                            accessor = "->";
 
-                        for(int i = 0; i < classType.methods.size(); ++i) {
+                        for(size_t i = 0; i < classType.methods.size(); ++i) {
                            declared.AddFuncToFrame(v.nameofidentifier + accessor + classType.methods[i].name, classType.methods[i]);
                         }
 
-                        for(int i = 0; i < classType.members.size(); ++i) {
+                        for(size_t i = 0; i < classType.members.size(); ++i) {
                            Variable v = classType.members[i];
                            std::string newName = v.nameofidentifier + accessor + v.nameofidentifier;
                            v.nameofidentifier = newName;
